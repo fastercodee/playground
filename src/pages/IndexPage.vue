@@ -1,42 +1,94 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
-  </q-page>
+  <div ref="editorRef" class="h-full" />
 </template>
 
-<script setup lang="ts">
-import { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
-import { ref } from 'vue';
+<script lang="ts" setup>
+import {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+} from "@codemirror/autocomplete"
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
+import { javascript } from "@codemirror/lang-javascript"
+import {
+  bracketMatching,
+  defaultHighlightStyle,
+  foldGutter,
+  foldKeymap,
+  indentOnInput,
+  syntaxHighlighting,
+} from "@codemirror/language"
+import { lintKeymap } from "@codemirror/lint"
+import { highlightSelectionMatches, searchKeymap } from "@codemirror/search"
+import { EditorState } from "@codemirror/state"
+import {
+  crosshairCursor,
+  drawSelection,
+  dropCursor,
+  EditorView,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+  rectangularSelection,
+} from "@codemirror/view"
+// import { oneDarkTheme } from "@codemirror/theme-one-dark"
+import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night/esm"
+// import { vscodeDark } from "@uiw/codemirror-theme-vscode/esm"
+// import { xcodeDark } from "@uiw/codemirror-theme-xcode/esm"
+import * as fs from "indexeddb-fs"
 
-const todos = ref<Todo[]>([
-  {
-    id: 1,
-    content: 'ct1'
+window.fs = fs
+
+const initialText = 'console.log("hello, world")'
+
+const editorRef = ref<HTMLDivElement>()
+watch(
+  editorRef,
+  (editorRef) => {
+    if (!editorRef) return
+
+    new EditorView({
+      parent: editorRef,
+      state: EditorState.create({
+        doc: initialText,
+        extensions: [
+          lineNumbers(),
+          highlightActiveLineGutter(),
+          highlightSpecialChars(),
+          history(),
+          foldGutter(),
+          drawSelection(),
+          dropCursor(),
+          EditorState.allowMultipleSelections.of(true),
+          indentOnInput(),
+          syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+          bracketMatching(),
+          closeBrackets(),
+          autocompletion(),
+          rectangularSelection(),
+          crosshairCursor(),
+          highlightActiveLine(),
+          highlightSelectionMatches(),
+          keymap.of([
+            ...closeBracketsKeymap,
+            ...defaultKeymap,
+            ...searchKeymap,
+            ...historyKeymap,
+            ...foldKeymap,
+            ...completionKeymap,
+            ...lintKeymap,
+          ]),
+          javascript({
+            typescript: true,
+          }),
+          tokyoNight,
+        ],
+      }),
+    })
   },
-  {
-    id: 2,
-    content: 'ct2'
-  },
-  {
-    id: 3,
-    content: 'ct3'
-  },
-  {
-    id: 4,
-    content: 'ct4'
-  },
-  {
-    id: 5,
-    content: 'ct5'
-  }
-]);
-const meta = ref<Meta>({
-  totalCount: 1200
-});
+  { immediate: true }
+)
 </script>
