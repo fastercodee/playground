@@ -39,6 +39,7 @@ module.exports = {
     // https://github.com/prettier/eslint-config-prettier#installation
     // usage with Prettier, provided by 'eslint-config-prettier'.
     "prettier",
+    "./.eslintrc-auto-import.json",
   ],
 
   plugins: [
@@ -90,6 +91,6 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "eslint-comments/no-unlimited-disable": "off",
     "vue/no-use-v-if-with-v-for": "off",
-
+    "functional/prefer-immutable-types": "off",
   },
 }

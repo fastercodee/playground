@@ -12,7 +12,7 @@ export interface Options {
 
 function getIconById(id: keyof typeof MaterialIcons.iconDefinitions): string {
   return (
-    "/src/assets/extensions/material-icon-theme/" +
+    "/src/assets/material-icon-theme/" +
     MaterialIcons.iconDefinitions[id].iconPath
   )
 }

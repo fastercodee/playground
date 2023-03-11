@@ -32,7 +32,7 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ["unocss", "indexeddb-fs"],
+    boot: ["unocss", "lightning-fs"],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ["app.scss"],
@@ -117,6 +117,12 @@ module.exports = configure(function (/* ctx */) {
               presetUno(),
               presetOnu(),
             ],
+            rules: [
+              [
+                /^size-\[([^\[\]]+)\]/,
+                ([, value]) => ({ width: value, height: value }),
+              ],
+            ],
           },
         ],
         [
@@ -132,10 +138,16 @@ module.exports = configure(function (/* ctx */) {
               "vue",
               "vue-router",
               {
-                "indexeddb-fs": [["default", "fs"]],
                 "@iconify/vue": ["Icon"],
+                "@vueuse/core": ["computedAsync"],
               },
             ],
+            dirs: ["src/boot/*"],
+            eslintrc: {
+              enabled: true, // Default `false`
+              filepath: "./.eslintrc-auto-import.json", // Default `./.eslintrc-auto-import.json`
+              globalsPropValue: true, // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
+            },
           },
         ],
         [
