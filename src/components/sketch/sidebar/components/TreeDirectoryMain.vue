@@ -69,16 +69,21 @@ const contextmenu = [
     icon: "material-symbols:content-cut-rounded",
     name: "Cut",
     sub: "⌘X",
+    onClick() {
+      clipboardFSStore.cut(props.entry)
+    },
   },
   {
     icon: "material-symbols:content-copy-outline",
     name: "Copy",
     sub: "⌘C",
+    onClick: () => clipboardFSStore.copy(props.entry),
   },
   {
     icon: "material-symbols:content-paste",
     name: "Paste",
     sub: "⌘V",
+    onClick: () => clipboardFSStore.paste(props.entry as Entry<"directory">),
   },
   {
     divider: true,
