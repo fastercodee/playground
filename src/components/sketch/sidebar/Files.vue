@@ -26,7 +26,7 @@ async function init() {
 
 const entryCurrent = computedAsync(async () => {
   const entryRoot: Entry<"dir"> = {
-    fullPath: "",
+    fullPath: () => '',
     name: "",
     type: "dir",
     directory: null as unknown as any,

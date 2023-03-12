@@ -6,12 +6,14 @@ export async function readDetails<Type extends "file" | "dir" = "file" | "dir">(
   name: string,
   directory: Entry<"dir">
 ): Promise<Entry<Type>> {
-  const fullPath = directory.fullPath + "/" + name
+  const fullPath = directory.fullPath() + "/" + name
 
   return {
     type: (await fs.lstat(fullPath)).type as Type,
     name,
-    fullPath,
+    fullPath() {
+      return directory.fullPath() + "/" + this.name
+    },
     directory,
   }
 }
@@ -22,7 +24,9 @@ export async function directoryDetails(entry: Entry<"dir">) {
 
   ;(
     await Promise.all(
-      (await fs.readdir(entry.fullPath)).map((name) => readDetails(name, entry))
+      (
+        await fs.readdir(entry.fullPath())
+      ).map((name) => readDetails(name, entry))
     )
   ).forEach((item) => {
     if (item.type === "file") files.push(item as Entry<"file">)

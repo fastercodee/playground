@@ -94,8 +94,8 @@ const contextmenu = [
     icon: "material-symbols:delete-outline",
     name: "Delete",
     async onClick() {
-      if (props.entry.type === "file") await fs.unlink(props.entry.fullPath)
-      else await fs.rmdir(props.entry.fullPath, { recursive: true })
+      if (props.entry.type === "file") await fs.unlink(props.entry.fullPath())
+      else await fs.rmdir(props.entry.fullPath(), { recursive: true })
 
       emit("deleted")
     },
@@ -103,10 +103,10 @@ const contextmenu = [
 ]
 
 async function changeName(name: string) {
-  renaming.value =false
+  renaming.value = false
   await fs.rename(
-    props.entry.fullPath,
-    `${props.entry.directory.fullPath}/${name}`
+    props.entry.fullPath(),
+    `${props.entry.directory.fullPath()}/${name}`
   )
 
   emit("renamed", name)

@@ -5,7 +5,7 @@
       :opening="opening"
       :actions="contextmenu"
       @click="opening = !opening"
-      @renamed="emit('renamed')"
+      @renamed="emit('renamed', $event)"
       @deleted="emit('deleted')"
     />
 
@@ -22,8 +22,8 @@
       />
       <!-- /add dir -->
       <TreeDirectory
-        v-for="item in decevier.directories"
-        :key="item.fullPath"
+        v-for="(item, index) in decevier.directories"
+        :key="index"
         :entry="item"
         :deep-level="deepLevel + 1"
         :style="{
@@ -47,8 +47,8 @@
       />
       <!-- /add file-->
       <div
-        v-for="item in decevier.files"
-        :key="item.fullPath"
+        v-for="(item, index) in decevier.files"
+        :key="index"
         :style="{
           paddingLeft: 19 + 7 + 7 * deepLevel + 'px',
         }"
@@ -56,7 +56,7 @@
         <TreeDirectoryMain
           :entry="item"
           :opening="false"
-        @renamed="onChildRenamed(item, decevier.files, $event)"
+          @renamed="onChildRenamed(item, decevier.files, $event)"
           @deleted="
             decevier.files.splice(decevier.files.indexOf(item) >>> 0, 1)
           "
@@ -105,20 +105,25 @@ const contextmenu = [
   },
 ]
 
+function sortEntries(entries: Entry[]) {
+  entries.sort((a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0))
+}
 async function createDirectory(name: string, isDir: boolean) {
   creating.value = null
   if (isDir) {
-    await fs.mkdir(`${props.entry.fullPath}/${name}`)
+    await fs.mkdir(`${props.entry.fullPath()}/${name}`)
     decevier.value.directories.push(await readDetails(name, props.entry))
+    sortEntries(decevier.value.directories)
   } else {
-    await fs.writeFile(`${props.entry.fullPath}/${name}`, "")
+    await fs.writeFile(`${props.entry.fullPath()}/${name}`, "")
     decevier.value.files.push(await readDetails(name, props.entry))
+    sortEntries(decevier.value.files)
   }
 
   console.log("create item: %s", name)
 }
 function onChildRenamed(item: Entry, entries: Entry[], newName: string) {
-
-  
+  item.name = newName
+  sortEntries(entries)
 }
 </script>
