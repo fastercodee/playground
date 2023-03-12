@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-nowrap items-center py-[2px] px-2 cursor-pointer">
     <Icon
-      v-if="entry.type === 'dir'"
+      v-if="entry.type === 'directory'"
       :icon="`codicon:chevron-${opening ? 'down' : 'right'}`"
       class="size-[17px] mr-[2px]"
     />
@@ -9,7 +9,7 @@
       :src="
         getIcon({
           light: false,
-          isFolder: entry.type === 'dir',
+          isFolder: entry.type === 'directory',
           isOpen: opening,
           filepath: entry.name,
         })
@@ -20,6 +20,8 @@
     <EditName
       v-else
       :current-name="entry.name"
+      :sib-directories="sibDirectories"
+      :sib-files="sibFiles"
       @save="changeName($event)"
       @cancel="renaming = false"
     />
@@ -48,6 +50,7 @@
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
 import getIcon from "src/assets/material-icon-theme/dist/getIcon"
+import { useClipboardFS } from "src/stores/clipboard-fs"
 import type { Entry } from "src/types/Entry"
 
 const props = defineProps<{
@@ -55,6 +58,9 @@ const props = defineProps<{
   entry: Entry
   // eslint-disable-next-line no-use-before-define
   actions?: typeof contextmenu
+
+  sibDirectories: Entry<"directory">[]
+  sibFiles: Entry<"file">[]
 }>()
 const emit = defineEmits<{
   (name: "renamed", newName: string): void
@@ -64,6 +70,7 @@ const emit = defineEmits<{
 const renaming = ref(false)
 
 // ========= contextmenu ========
+const clipboardFSStore = useClipboardFS()
 const contextmenu = [
   {
     icon: "material-symbols:content-cut-rounded",
@@ -99,8 +106,17 @@ const contextmenu = [
     icon: "material-symbols:delete-outline",
     name: "Delete",
     async onClick() {
-      if (props.entry.type === "file") await fs.unlink(props.entry.fullPath())
-      else await fs.rmdir(props.entry.fullPath(), { recursive: true })
+      if (props.entry.type === "file")
+        await Filesystem.deleteFile({
+          path: props.entry.fullPath(),
+          directory: Directory.External,
+        })
+      else
+        await Filesystem.rmdir({
+          path: props.entry.fullPath(),
+          recursive: true,
+          directory: Directory.External,
+        })
 
       emit("deleted")
     },
@@ -109,10 +125,11 @@ const contextmenu = [
 
 async function changeName(name: string) {
   renaming.value = false
-  await fs.rename(
-    props.entry.fullPath(),
-    `${props.entry.directory.fullPath()}/${name}`
-  )
+  await Filesystem.rename({
+    from: props.entry.fullPath(),
+    to: `${props.entry.directory.fullPath()}/${name}`,
+    directory: Directory.External,
+  })
 
   emit("renamed", name)
 }

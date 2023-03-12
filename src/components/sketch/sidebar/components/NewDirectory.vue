@@ -2,7 +2,7 @@
   <div>
     <div class="flex flex-nowrap items-center py-[2px] px-2 cursor-pointer">
       <Icon
-        v-if="type === 'dir'"
+        v-if="type === 'directory'"
         :icon="`codicon:chevron-right`"
         class="size-[17px] mr-[2px]"
       />
@@ -10,7 +10,7 @@
         :src="
           getIcon({
             light: false,
-            isFolder: type === 'dir',
+            isFolder: type === 'directory',
             isOpen: false,
             filepath: name,
           })
@@ -19,6 +19,9 @@
       />
       <EditName
         current-name=""
+        newer
+        :sib-directories="sibDirectories"
+        :sib-files="sibFiles"
         @input="name = $event"
         @save="emit('save', name)"
         @cancel="emit('cancel')"
@@ -30,9 +33,13 @@
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
 import getIcon from "src/assets/material-icon-theme/dist/getIcon"
+import type { Entry } from "src/types/Entry"
 
 defineProps<{
-  type: "file" | "dir"
+  type: "file" | "directory"
+
+  sibDirectories: Entry<"directory">[]
+  sibFiles: Entry<"file">[]
 }>()
 const emit = defineEmits<{
   (name: "save", val: string): void

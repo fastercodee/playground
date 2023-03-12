@@ -2,6 +2,10 @@ lockfileVersion: 5.4
 
 specifiers:
   '@babel/runtime': ^7.21.0
+  '@capacitor/android': ^4.7.0
+  '@capacitor/app': ^4.1.1
+  '@capacitor/core': ^4.7.0
+  '@capacitor/filesystem': ^4.1.4
   '@codemirror/autocomplete': ^6.4.2
   '@codemirror/commands': ^6.2.2
   '@codemirror/lang-javascript': ^6.1.4
@@ -48,6 +52,10 @@ specifiers:
   vue-router: ^4.0.0
 
 dependencies:
+  '@capacitor/android': 4.7.0_@capacitor+core@4.7.0
+  '@capacitor/app': 4.1.1_@capacitor+core@4.7.0
+  '@capacitor/core': 4.7.0
+  '@capacitor/filesystem': 4.1.4_@capacitor+core@4.7.0
   '@codemirror/autocomplete': 6.4.2_m2g2fjrvetqbsl7zxwctz5ljh4
   '@codemirror/commands': 6.2.2
   '@codemirror/lang-javascript': 6.1.4
@@ -149,6 +157,36 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
+
+  /@capacitor/android/4.7.0_@capacitor+core@4.7.0:
+    resolution: {integrity: sha512-hyglxuzY2mktY0ST+6Y9IpZjSKxBLsG2xtnKWsIqDvXKKBjy5xRjHJMueP4P3u5z+bpLrdY6YlyR9JMIV/Pwcg==}
+    peerDependencies:
+      '@capacitor/core': ^4.6.0
+    dependencies:
+      '@capacitor/core': 4.7.0
+    dev: false
+
+  /@capacitor/app/4.1.1_@capacitor+core@4.7.0:
+    resolution: {integrity: sha512-SJcJA1rhFQyeH6eLfUEbdKkHzAwzahJNVPNXmU88fdmXpMgM2dJGzZj1vrm6e21aQq+Z4aBVLJ2RCdj92zD7wg==}
+    peerDependencies:
+      '@capacitor/core': ^4.0.0
+    dependencies:
+      '@capacitor/core': 4.7.0
+    dev: false
+
+  /@capacitor/core/4.7.0:
+    resolution: {integrity: sha512-LkjHnIoufojVjCZXogEbotN2utXxfo6TvpSgWaYndRPm/SrPFCWM8bPf/WNd8MozOkPFgcxlZnZlGHFGTeydWQ==}
+    dependencies:
+      tslib: 2.5.0
+    dev: false
+
+  /@capacitor/filesystem/4.1.4_@capacitor+core@4.7.0:
+    resolution: {integrity: sha512-ivko1RNK4hq63xhMacq8D6D97N5/SAafTsrmY/pghYrG6Cl2SEY0+IgRu7V9/VWeN3FSplyUPucjUTAFQxXN5g==}
+    peerDependencies:
+      '@capacitor/core': ^4.0.0
+    dependencies:
+      '@capacitor/core': 4.7.0
+    dev: false
 
   /@codemirror/autocomplete/6.4.2_m2g2fjrvetqbsl7zxwctz5ljh4:
     resolution: {integrity: sha512-8WE2xp+D0MpWEv5lZ6zPW1/tf4AGb358T5GWYiKEuCP8MvFfT3tH2mIF9Y2yr2e3KbHuSvsVhosiEyqCpiJhZQ==}
@@ -4196,7 +4234,6 @@ packages:
 
   /tslib/2.5.0:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
-    dev: true
 
   /tsutils/3.21.0_typescript@4.9.5:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}

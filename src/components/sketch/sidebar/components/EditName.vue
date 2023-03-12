@@ -23,9 +23,8 @@
             ? 'bg-yellow-900 border-yellow-600'
             : 'bg-red-900 border-red-600'
         "
-      >
-        {{ error.message }}
-      </span>
+        v-html="error.message"
+      />
     </div>
   </div>
 </template>
@@ -33,10 +32,15 @@
 <script lang="ts" setup>
 import { basename } from "path"
 
+import type { Entry } from "src/types/Entry"
+
 import { checkErrorFileName } from "./checkErrorFileName"
 
 const props = defineProps<{
   currentName: string
+  sibDirectories: Entry<"directory">[]
+  sibFiles: Entry<"file">[]
+  newer?: boolean
 }>()
 const emit = defineEmits<{
   (name: "save", value: string): void
@@ -45,7 +49,13 @@ const emit = defineEmits<{
 }>()
 
 const input = ref(props.currentName)
-const error = computed(() => checkErrorFileName(input.value, [], false))
+const error = computed(() =>
+  checkErrorFileName(
+    input.value,
+    [...props.sibDirectories, ...props.sibFiles],
+    props.newer
+  )
+)
 
 watch(input, (val) => emit("input", val))
 

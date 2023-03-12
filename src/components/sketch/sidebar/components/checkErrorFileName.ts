@@ -1,6 +1,8 @@
+import type { Entry } from "src/types/Entry"
+
 export function checkErrorFileName(
   fileName: string,
-  siblings: string[],
+  siblings: Entry[],
   skipEmpty: boolean
 ) {
   if (fileName === "") {
@@ -12,7 +14,7 @@ export function checkErrorFileName(
         }
   }
 
-  if (siblings.includes(fileName)) {
+  if (siblings.some(item => item.name === fileName)) {
     return {
       type: "error",
       message: `

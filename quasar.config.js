@@ -8,12 +8,10 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
+const { OnuResolver, presetOnu } = require("onu-ui")
 const { extend } = require("quasar")
 const { configure } = require("quasar/wrappers")
-
 const { presetAttributify, presetUno } = require("unocss")
-
-const { OnuResolver, presetOnu } = require("onu-ui")
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -32,7 +30,7 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ["unocss", "lightning-fs"],
+    boot: ["unocss"],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ["app.scss"],
@@ -119,7 +117,7 @@ module.exports = configure(function (/* ctx */) {
             ],
             rules: [
               [
-                /^size-\[([^\[\]]+)\]/,
+                /^size-\[([^[\]]+)\]/,
                 ([, value]) => ({ width: value, height: value }),
               ],
             ],
@@ -140,9 +138,14 @@ module.exports = configure(function (/* ctx */) {
               {
                 "@iconify/vue": ["Icon"],
                 "@vueuse/core": ["computedAsync"],
+                "@capacitor/filesystem": [
+                  "Filesystem",
+                  "Directory",
+                  "Encoding",
+                ],
               },
             ],
-            dirs: ["src/boot/*"],
+            dirs: ["src/logic/*"],
             eslintrc: {
               enabled: true, // Default `false`
               filepath: "./.eslintrc-auto-import.json", // Default `./.eslintrc-auto-import.json`
