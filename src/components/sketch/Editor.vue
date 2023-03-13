@@ -1,5 +1,5 @@
 <template>
-  <div ref="editorRef" class="h-full parent-editor" />
+  <div ref="editorRef" class="h-full w-full parent-editor" />
 </template>
 
 <script lang="ts" setup>
@@ -53,57 +53,7 @@ watch(
   (editorRef) => {
     if (!editorRef) return
 
-    const save = debounce(seasonEditStore.saveFile, 1000)
-
-    const editor = new EditorView({
-      parent: editorRef,
-      state: EditorState.create({
-        doc: initialText,
-        extensions: [
-          EditorView.lineWrapping,
-          lineNumbers(),
-          highlightActiveLineGutter(),
-          highlightSpecialChars(),
-          history(),
-          foldGutter(),
-          drawSelection(),
-          dropCursor(),
-          EditorState.allowMultipleSelections.of(true),
-          indentOnInput(),
-          syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-          bracketMatching(),
-          closeBrackets(),
-          autocompletion(),
-          rectangularSelection(),
-          crosshairCursor(),
-          highlightActiveLine(),
-          highlightSelectionMatches(),
-          keymap.of([
-            ...closeBracketsKeymap,
-            ...defaultKeymap,
-            ...searchKeymap,
-            ...historyKeymap,
-            ...foldKeymap,
-            ...completionKeymap,
-            ...lintKeymap,
-          ]),
-          EditorView.updateListener.of((update) => {
-            if (update.docChanged) {
-              save(editor.state.doc + "")
-            }
-          }),
-          javascript({
-            typescript: true,
-          }),
-          tokyoNight,
-        ],
-      }),
-    })
-
-    seasonEditStore.editor = editor
-    onBeforeUnmount(() => {
-      if (seasonEditStore.editor === editor) seasonEditStore.editor = null
-    }, instance)
+    seasonEditStore.createEditor(editorRef)
   },
   { immediate: true }
 )

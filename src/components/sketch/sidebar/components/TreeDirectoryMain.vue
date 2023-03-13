@@ -154,6 +154,7 @@ function cut() {
 }
 function copy() {
   clipboardFSStore.copy(props.entry)
+  onBeforeUnmount(() => clipboardFSStore.cancelAction(props.entry), instance)
 }
 async function paste() {
   const path = await clipboardFSStore.paste(props.entry as Entry<"directory">)
