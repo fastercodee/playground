@@ -61,6 +61,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
           to: pathSave,
           directory: Directory.External,
         })
+        action.value = null
         return { parent: true, name: newName }
       }
       throw new Error("Maxium scan new name")
@@ -71,7 +72,9 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
         directory: Directory.External,
       })
       if (fn === "rename") action.value?.emit?.("deleted")
-      return { parent: false, name: action.value.entry.name }
+      const { name } = action.value.entry
+      action.value = null
+      return { parent: false, name }
     }
   }
 
@@ -85,6 +88,6 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
     copy,
     cancelAction,
     paste,
-    isEntryCuting,
+    isEntryCuting
   }
 })

@@ -17,7 +17,7 @@
           light: false,
           isFolder: entry.type === 'directory',
           isOpen: opening,
-          filepath: entry.name,
+          filepath: nameInput || entry.name,
         })
       "
       class="size-[1.3em] mr-[5px]"
@@ -28,8 +28,19 @@
       :current-name="entry.name"
       :sib-directories="sibDirectories"
       :sib-files="sibFiles"
-      @save="changeName($event)"
-      @cancel="renaming = false"
+      @save="
+        ($event) => {
+          changeName($event)
+          nameInput = ''
+        }
+      "
+      @cancel="
+        () => {
+          renaming = false
+          nameInput = ''
+        }
+      "
+      @input="nameInput = $event"
     />
 
     <!-- contextmenu -->
@@ -82,6 +93,7 @@ const emit = defineEmits<{
 const { isEntryCuting } = useClipboardFS()
 
 const renaming = ref(false)
+const nameInput = ref("")
 
 // ========= contextmenu ========
 const clipboardFSStore = useClipboardFS()
@@ -92,31 +104,19 @@ const contextmenu = [
     icon: "material-symbols:content-cut-rounded",
     name: "Cut",
     sub: "⌘X",
-    onClick() {
-      clipboardFSStore.cut(props.entry, emit)
-      onBeforeUnmount(
-        () => clipboardFSStore.cancelAction(props.entry),
-        instance
-      )
-    },
+    onClick: cut,
   },
   {
     icon: "material-symbols:content-copy-outline",
     name: "Copy",
     sub: "⌘C",
-    onClick: () => clipboardFSStore.copy(props.entry),
+    onClick: copy,
   },
   {
     icon: "material-symbols:content-paste",
     name: "Paste",
     sub: "⌘V",
-    async onClick() {
-      const path = await clipboardFSStore.paste(
-        props.entry as Entry<"directory">
-      )
-
-      emit("child-added", path)
-    },
+    onClick: paste,
   },
   {
     divider: true,
@@ -149,12 +149,26 @@ const contextmenu = [
   },
 ]
 
+function cut() {
+  clipboardFSStore.cut(props.entry, emit)
+  onBeforeUnmount(() => clipboardFSStore.cancelAction(props.entry), instance)
+}
+function copy() {
+  clipboardFSStore.copy(props.entry)
+}
+async function paste() {
+  const path = await clipboardFSStore.paste(props.entry as Entry<"directory">)
+
+  emit("child-added", path)
+}
+
 async function changeName(name: string) {
   renaming.value = false
   await Filesystem.rename({
     from: props.entry.fullPath(),
     to: `${props.entry.directory.fullPath()}/${name}`,
     directory: Directory.External,
+    toDirectory: Directory.External,
   })
 
   emit("renamed", name)

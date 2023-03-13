@@ -1,6 +1,7 @@
 <template>
   <div>
     <TreeDirectoryMain
+      v-if="!onlyChild"
       :entry="entry"
       :opening="opening"
       :actions="contextmenu"
@@ -30,8 +31,8 @@
       />
       <!-- /add dir -->
       <TreeDirectory
-        v-for="(item, index) in decevier.directories"
-        :key="index"
+        v-for="item in decevier.directories"
+        :key="item.name"
         :entry="item"
         :deep-level="deepLevel + 1"
         :sib-directories="decevier.directories"
@@ -60,8 +61,8 @@
       />
       <!-- /add file-->
       <TreeDirectoryMain
-        v-for="(item, index) in decevier.files"
-        :key="index"
+        v-for="item in decevier.files"
+        :key="item.name"
         :style="{
           paddingLeft: 19 + 8 + 7 + 7 * deepLevel + 'px',
         }"
@@ -70,7 +71,9 @@
         :sib-directories="decevier.directories"
         :sib-files="decevier.files"
         @renamed="onChildRenamed(item, decevier!.files, $event)"
-        @deleted="decevier!.files.splice(decevier!.files.indexOf(item) >>> 0, 1)"
+        @deleted="
+          decevier!.files.splice(decevier!.files.indexOf(item) >>> 0, 1)
+        "
       />
     </div>
   </div>
@@ -85,6 +88,8 @@ const props = defineProps<{
 
   sibDirectories: Entry<"directory">[]
   sibFiles: Entry<"file">[]
+
+  onlyChild?: boolean
 }>()
 const emit = defineEmits<{
   (name: "renamed", newName: string): void
@@ -96,9 +101,11 @@ const emit = defineEmits<{
       name: string
     }
   ): void
+  (name: "load"): void
+  (name: "error", event: any): void
 }>()
 
-const opening = ref(false)
+const opening = ref(props.onlyChild)
 const decevier = ref<{
   files: Entry<"file">[]
   directories: Entry<"directory">[]
@@ -110,6 +117,11 @@ async function loadDecevier() {
 watch(opening, (opening) => {
   if (opening) loadDecevier()
 })
+if (props.onlyChild) {
+  loadDecevier()
+    .then(() => emit("load"))
+    .catch((err) => emit("error", err))
+}
 
 const creating = ref<"file" | "directory" | null>(null)
 
@@ -117,23 +129,26 @@ const contextmenu = [
   {
     icon: "codicon:new-file",
     name: "Add file",
-    onClick() {
-      opening.value = true
-      creating.value = "file"
-    },
+    onClick: addFile,
   },
   {
     icon: "codicon:new-folder",
     name: "Add folder",
-    onClick() {
-      opening.value = true
-      creating.value = "directory"
-    },
+    onClick: addFolder,
   },
   {
     divider: true,
   },
 ]
+
+function addFile() {
+  opening.value = true
+  creating.value = "file"
+}
+function addFolder() {
+  opening.value = true
+  creating.value = "directory"
+}
 
 function sortEntries(entries: Entry[]) {
   entries.sort((a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0))
@@ -184,4 +199,6 @@ async function onChildAdded(info: { parent: boolean; name: string }) {
   sortEntries(entries)
   opening.value = true
 }
+
+defineExpose({ onChildAdded, addFile, addFolder })
 </script>
