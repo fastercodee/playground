@@ -66,10 +66,14 @@
         :style="{
           paddingLeft: 19 + 8 + 7 + 7 * deepLevel + 'px',
         }"
+        :class="{
+          'bg-[rgba(100,100,100,0.2)]': seasonEditStore.isCurrent(item),
+        }"
         :entry="item"
         :opening="false"
         :sib-directories="decevier.directories"
         :sib-files="decevier.files"
+        @click="seasonEditStore.openFile(item)"
         @renamed="onChildRenamed(item, decevier!.files, $event)"
         @deleted="
           decevier!.files.splice(decevier!.files.indexOf(item) >>> 0, 1)
@@ -80,6 +84,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useSeasonEdit } from "src/stores/season-edit"
 import type { Entry } from "src/types/Entry"
 
 const props = defineProps<{
@@ -104,6 +109,8 @@ const emit = defineEmits<{
   (name: "load"): void
   (name: "error", event: any): void
 }>()
+
+const seasonEditStore = useSeasonEdit()
 
 const opening = ref(props.onlyChild)
 const decevier = ref<{

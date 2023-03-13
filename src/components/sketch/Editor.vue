@@ -36,18 +36,26 @@ import {
 } from "@codemirror/view"
 // import { oneDarkTheme } from "@codemirror/theme-one-dark"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night/esm"
+import { debounce } from "quasar"
+import { useSeasonEdit } from "src/stores/season-edit"
 // import { vscodeDark } from "@uiw/codemirror-theme-vscode/esm"
 // import { xcodeDark } from "@uiw/codemirror-theme-xcode/esm"
+
+const seasonEditStore = useSeasonEdit()
+const instance = getCurrentInstance()
 
 const initialText = 'console.log("hello, world")'
 
 const editorRef = ref<HTMLDivElement>()
+
 watch(
   editorRef,
   (editorRef) => {
     if (!editorRef) return
 
-    new EditorView({
+    const save = debounce(seasonEditStore.saveFile, 1000)
+
+    const editor = new EditorView({
       parent: editorRef,
       state: EditorState.create({
         doc: initialText,
@@ -79,6 +87,11 @@ watch(
             ...completionKeymap,
             ...lintKeymap,
           ]),
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged) {
+              save(editor.state.doc + "")
+            }
+          }),
           javascript({
             typescript: true,
           }),
@@ -86,6 +99,11 @@ watch(
         ],
       }),
     })
+
+    seasonEditStore.editor = editor
+    onBeforeUnmount(() => {
+      if (seasonEditStore.editor === editor) seasonEditStore.editor = null
+    }, instance)
   },
   { immediate: true }
 )

@@ -1,8 +1,7 @@
 <template>
   <div
-    class="flex flex-nowrap items-center py-[2px] px-2 cursor-pointer hover:bg-[rgba(100,100,100,0.5)]"
+    class="flex flex-nowrap items-center py-[2px] px-2 cursor-pointer hover:bg-[rgba(100,100,100,0.5)] transition ease duration-100"
     :class="{
-      'bg-[rgba(100,100,100,0.2)]': false,
       'opacity-50': isEntryCuting(entry),
     }"
   >
