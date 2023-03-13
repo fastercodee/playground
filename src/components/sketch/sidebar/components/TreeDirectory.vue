@@ -6,12 +6,16 @@
       :actions="contextmenu"
       :sib-directories="sibDirectories"
       :sib-files="sibFiles"
+      :style="{
+        paddingLeft: deepLevel * 7 + 8 + 'px',
+      }"
       @click="opening = !opening"
       @renamed="emit('renamed', $event)"
       @deleted="emit('deleted')"
+      @child-added="onChildAdded"
     />
 
-    <div v-if="opening">
+    <div v-if="opening && decevier">
       <!-- add dir -->
       <NewDirectory
         v-if="creating === 'directory'"
@@ -30,15 +34,16 @@
         :key="index"
         :entry="item"
         :deep-level="deepLevel + 1"
-        :style="{
-          paddingLeft: 7 * deepLevel + 7 + 'px',
-        }"
         :sib-directories="decevier.directories"
         :sib-files="decevier.files"
-        @renamed="onChildRenamed(item, decevier.directories, $event)"
+        @renamed="onChildRenamed(item, decevier!.directories, $event)"
         @deleted="
-          decevier.files.splice(decevier.directories.indexOf(item) >>> 0, 1)
+          decevier!.directories.splice(
+            decevier!.directories.indexOf(item) >>> 0,
+            1
+          )
         "
+        @child-added="onChildAdded"
       />
 
       <!-- add file -->
@@ -54,24 +59,19 @@
         @cancel="creating = null"
       />
       <!-- /add file-->
-      <div
+      <TreeDirectoryMain
         v-for="(item, index) in decevier.files"
         :key="index"
         :style="{
-          paddingLeft: 19 + 7 + 7 * deepLevel + 'px',
+          paddingLeft: 19 + 8 + 7 + 7 * deepLevel + 'px',
         }"
-      >
-        <TreeDirectoryMain
-          :entry="item"
-          :opening="false"
-          :sib-directories="decevier.directories"
-          :sib-files="decevier.files"
-          @renamed="onChildRenamed(item, decevier.files, $event)"
-          @deleted="
-            decevier.files.splice(decevier.files.indexOf(item) >>> 0, 1)
-          "
-        />
-      </div>
+        :entry="item"
+        :opening="false"
+        :sib-directories="decevier.directories"
+        :sib-files="decevier.files"
+        @renamed="onChildRenamed(item, decevier!.files, $event)"
+        @deleted="decevier!.files.splice(decevier!.files.indexOf(item) >>> 0, 1)"
+      />
     </div>
   </div>
 </template>
@@ -89,10 +89,27 @@ const props = defineProps<{
 const emit = defineEmits<{
   (name: "renamed", newName: string): void
   (name: "deleted"): void
+  (
+    name: "child-added",
+    info: {
+      parent: boolean
+      name: string
+    }
+  ): void
 }>()
 
 const opening = ref(false)
-const decevier = computedAsync(() => directoryDetails(props.entry))
+const decevier = ref<{
+  files: Entry<"file">[]
+  directories: Entry<"directory">[]
+} | null>(null) // computedAsync(() => directoryDetails(props.entry))
+
+async function loadDecevier() {
+  if (!decevier.value) decevier.value = await directoryDetails(props.entry)
+}
+watch(opening, (opening) => {
+  if (opening) loadDecevier()
+})
 
 const creating = ref<"file" | "directory" | null>(null)
 
@@ -128,8 +145,10 @@ async function createDirectory(name: string, isDir: boolean) {
       path: `${props.entry.fullPath()}/${name}`,
       directory: Directory.External,
     })
-    decevier.value.directories.push(await readDetails(name, props.entry))
-    sortEntries(decevier.value.directories)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    decevier.value!.directories.push(await readDetails(name, props.entry))
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    sortEntries(decevier.value!.directories)
   } else {
     await Filesystem.writeFile({
       path: `${props.entry.fullPath()}/${name}`,
@@ -137,8 +156,10 @@ async function createDirectory(name: string, isDir: boolean) {
       encoding: Encoding.UTF8,
       directory: Directory.External,
     })
-    decevier.value.files.push(await readDetails(name, props.entry))
-    sortEntries(decevier.value.files)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    decevier.value!.files.push(await readDetails(name, props.entry))
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    sortEntries(decevier.value!.files)
   }
 
   console.log("create item: %s", name)
@@ -146,5 +167,21 @@ async function createDirectory(name: string, isDir: boolean) {
 function onChildRenamed(item: Entry, entries: Entry[], newName: string) {
   item.name = newName
   sortEntries(entries)
+}
+async function onChildAdded(info: { parent: boolean; name: string }) {
+  if (info.parent) {
+    return emit("child-added", info)
+  }
+
+  const entry = await readDetails(info.name, props.entry)
+  if (!decevier.value) await loadDecevier()
+  const entries =
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    entry.type === "file" ? decevier.value!.files : decevier.value!.directories
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  entries.push(entry as unknown as any)
+  sortEntries(entries)
+  opening.value = true
 }
 </script>

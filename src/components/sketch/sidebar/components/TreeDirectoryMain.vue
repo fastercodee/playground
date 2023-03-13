@@ -1,5 +1,11 @@
 <template>
-  <div class="flex flex-nowrap items-center py-[2px] px-2 cursor-pointer">
+  <div
+    class="flex flex-nowrap items-center py-[2px] px-2 cursor-pointer hover:bg-[rgba(100,100,100,0.5)]"
+    :class="{
+      'bg-[rgba(100,100,100,0.2)]': false,
+      'opacity-50': isEntryCuting(entry),
+    }"
+  >
     <Icon
       v-if="entry.type === 'directory'"
       :icon="`codicon:chevron-${opening ? 'down' : 'right'}`"
@@ -65,19 +71,33 @@ const props = defineProps<{
 const emit = defineEmits<{
   (name: "renamed", newName: string): void
   (name: "deleted"): void
+  (
+    name: "child-added",
+    info: {
+      parent: boolean
+      name: string
+    }
+  ): void
 }>()
+const { isEntryCuting } = useClipboardFS()
 
 const renaming = ref(false)
 
 // ========= contextmenu ========
 const clipboardFSStore = useClipboardFS()
+const instance = getCurrentInstance()
+
 const contextmenu = [
   {
     icon: "material-symbols:content-cut-rounded",
     name: "Cut",
     sub: "⌘X",
     onClick() {
-      clipboardFSStore.cut(props.entry)
+      clipboardFSStore.cut(props.entry, emit)
+      onBeforeUnmount(
+        () => clipboardFSStore.cancelAction(props.entry),
+        instance
+      )
     },
   },
   {
@@ -90,7 +110,13 @@ const contextmenu = [
     icon: "material-symbols:content-paste",
     name: "Paste",
     sub: "⌘V",
-    onClick: () => clipboardFSStore.paste(props.entry as Entry<"directory">),
+    async onClick() {
+      const path = await clipboardFSStore.paste(
+        props.entry as Entry<"directory">
+      )
+
+      emit("child-added", path)
+    },
   },
   {
     divider: true,

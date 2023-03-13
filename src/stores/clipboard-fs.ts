@@ -5,12 +5,14 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
   const action = ref<null | {
     entry: Entry
     action: "mv" | "cp"
+    emit?: (name: "deleted") => void
   }>(null)
 
-  function cut(entry: Entry) {
+  function cut(entry: Entry, emit: (name: "deleted") => void) {
     action.value = {
       entry,
       action: "mv",
+      emit,
     }
   }
   function copy(entry: Entry) {
@@ -19,8 +21,14 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
       action: "cp",
     }
   }
-  async function paste(toEntry: Entry<"directory">) {
-    if (!action.value) return console.warn("action is empty")
+  function cancelAction(entry: Entry) {
+    if (action.value?.entry === entry) action.value = null
+  }
+  async function paste(toEntry: Entry<"directory">): Promise<{
+    parent: boolean
+    name: string
+  }> {
+    if (!action.value) throw new Error("action is empty")
 
     if (toEntry.fullPath().startsWith(action.value.entry.fullPath())) {
       // is end point is children of target
@@ -53,13 +61,17 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
           to: pathSave,
           directory: Directory.External,
         })
+        return { parent: true, name: newName }
       }
+      throw new Error("Maxium scan new name")
     } else {
       await Filesystem[fn]({
         from: action.value.entry.fullPath(),
         to: toEntry.fullPath() + "/" + action.value.entry.name,
         directory: Directory.External,
       })
+      if (fn === "rename") action.value?.emit?.("deleted")
+      return { parent: false, name: action.value.entry.name }
     }
   }
 
@@ -71,6 +83,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
     action,
     cut,
     copy,
+    cancelAction,
     paste,
     isEntryCuting,
   }
