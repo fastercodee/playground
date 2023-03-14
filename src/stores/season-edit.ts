@@ -1,3 +1,5 @@
+import { extname } from "path"
+
 import {
   autocompletion,
   closeBrackets,
@@ -9,7 +11,6 @@ import {
   history as exHistory,
   historyKeymap,
 } from "@codemirror/commands"
-import { javascript } from "@codemirror/lang-javascript"
 import {
   bracketMatching,
   defaultHighlightStyle,
@@ -18,9 +19,13 @@ import {
   indentOnInput,
   syntaxHighlighting,
 } from "@codemirror/language"
-import { lintKeymap } from "@codemirror/lint"
+import { lintGutter, lintKeymap } from "@codemirror/lint"
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search"
-import { Compartment, EditorSelection, EditorState } from "@codemirror/state"
+import {
+  Compartment,
+  EditorSelection,
+  EditorState,
+} from "@codemirror/state"
 import {
   crosshairCursor,
   drawSelection,
@@ -34,7 +39,9 @@ import {
   rectangularSelection,
 } from "@codemirror/view"
 // import { oneDarkTheme } from "@codemirror/theme-one-dark"
+import { langs, loadLanguage } from "@uiw/codemirror-extensions-langs/esm"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night/esm"
+import langMap from "lang-map"
 import { defineStore } from "pinia"
 import { debounce } from "quasar"
 import type { Entry } from "src/logic/fs"
@@ -48,6 +55,21 @@ export const useSeasonEdit = defineStore("season-edit", () => {
   let onChanged: null | ((text: string) => void) = null
 
   function createEditor(editorRef: HTMLDivElement) {
+    const config = {
+      // eslint configuration
+      parserOptions: {
+        ecmaVersion: 2019,
+        sourceType: "module",
+      },
+      env: {
+        browser: true,
+        node: true,
+      },
+      rules: {
+        semi: ["error", "never"],
+      },
+    }
+
     editor.value = new EditorView({
       parent: editorRef,
       state: EditorState.create({
@@ -80,12 +102,11 @@ export const useSeasonEdit = defineStore("season-edit", () => {
             ...completionKeymap,
             ...lintKeymap,
           ]),
-          language.of(
-            javascript({
-              typescript: true,
-            })
-          ),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          language.of(loadLanguage("html")!),
           tokyoNight,
+          lintGutter(),
+          // linter(esLint(new eslint.Linter(), config)),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
               onChanged?.(editor.value?.state.doc + "")
@@ -143,6 +164,37 @@ export const useSeasonEdit = defineStore("season-edit", () => {
         ? EditorSelection.fromJSON(selectionStore.get(entry))
         : undefined,
     })
+    {
+      const oldExt = langMap.languages(entry.name)
+      // eslint-disable-next-line functional/no-loop-statements
+      for (const name of oldExt) {
+        if (name in langs) {
+          editor.value?.dispatch({
+            effects:
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+              language.reconfigure(loadLanguage(name as unknown as any)!),
+          })
+          break
+        }
+      }
+
+      const ext = extname(entry.name).slice(1)
+      console.log({ ext })
+      if (ext === "ts")
+        editor.value?.dispatch({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          effects: language.reconfigure(loadLanguage("typescript")!),
+        })
+      else
+        editor.value?.dispatch({
+          effects: language.reconfigure(
+            ext in language
+              ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any
+                loadLanguage(ext as unknown as any)!
+              : (null as unknown as any)
+          ),
+        })
+    }
     if (!seasons.has(entry)) seasons.add(entry)
 
     history.push(entry)

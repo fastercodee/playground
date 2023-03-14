@@ -50,7 +50,13 @@
           :key="index"
         >
           <q-separator v-if="item.divider" />
-          <q-item v-else clickable v-close-popup @click="item.onClick">
+          <q-item
+            v-else
+            clickable
+            v-close-popup
+            @click="item.onClick"
+            :disable="item.disable?.value"
+          >
             <q-item-section avatar class="min-w-0">
               <Icon :icon="item.icon" class="size-[14px]" />
             </q-item-section>
@@ -116,6 +122,7 @@ const contextmenu = [
     name: "Paste",
     sub: "⌘V",
     onClick: paste,
+    disable: computed(() => !!clipboardFSStore.action),
   },
   {
     divider: true,
