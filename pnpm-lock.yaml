@@ -22,6 +22,7 @@ specifiers:
   '@rollup/plugin-node-resolve': ^15.0.1
   '@tachibana-shin/eslint-config': ^1.1.1
   '@types/node': ^12.20.21
+  '@types/serviceworker': ^0.0.65
   '@typescript-eslint/eslint-plugin': ^5.10.0
   '@typescript-eslint/parser': ^5.10.0
   '@uiw/codemirror-extensions-langs': ^4.19.9
@@ -102,6 +103,7 @@ devDependencies:
   '@rollup/plugin-node-resolve': 15.0.1
   '@tachibana-shin/eslint-config': 1.1.1_vgl77cfdswitgr47lm5swmv43m
   '@types/node': 12.20.55
+  '@types/serviceworker': 0.0.65
   '@typescript-eslint/eslint-plugin': 5.54.1_4rfaf6mlw2mmutqjcopwvbftpu
   '@typescript-eslint/parser': 5.54.1_vgl77cfdswitgr47lm5swmv43m
   autoprefixer: 10.4.14
@@ -968,6 +970,10 @@ packages:
     dependencies:
       '@types/mime': 3.0.1
       '@types/node': 12.20.55
+    dev: true
+
+  /@types/serviceworker/0.0.65:
+    resolution: {integrity: sha512-3Pwcoesimmnvx0/01GtXxMOuzNJUgk3JnqK6EzUwD+yTde4NqjHvd97wtvduj63uUBmL4cAuzVDL5cGsl1ZZtA==}
     dev: true
 
   /@types/web-bluetooth/0.0.16:

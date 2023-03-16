@@ -13,6 +13,6 @@
     "vite": "^4.1.0"
   },
   "dependencies": {
-    "@fcanvas/communicate": "1.1.0-rc.36"
+    "@fcanvas/communicate": "1.1.0-rc.37"
   }
 }

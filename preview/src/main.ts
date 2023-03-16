@@ -1,18 +1,24 @@
 import { listen } from "@fcanvas/communicate"
 
+import type { Communicate } from "./sw"
+
 // eslint-disable-next-line promise/catch-or-return
 navigator.serviceWorker
-  .register("/sw.js", {
-    type: "module",
-  })
+  .register("/src/sw")
   // eslint-disable-next-line promise/always-return
   .then(() => {
     const cast = new BroadcastChannel("sw-fetch")
-    listen(cast, "get content", () => {
+    const buffer = new ArrayBuffer(50)
+
+    listen<Communicate>(cast, "get file", async () => {
+      return null
       return {
-        content: "hello content ",
-        opts: {
-          status: 200,
+        transfer: [buffer],
+        return: {
+          content: buffer,
+          init: {
+            status: 200,
+          },
         },
       }
     })
