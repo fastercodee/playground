@@ -3,17 +3,19 @@ import { listen, put } from "@fcanvas/communicate"
 import type { Communicate } from "./sw"
 import regiser from "./sw?serviceworker"
 
-addEventListener("message", (event) => {
+addEventListener("message", async (event) => {
   const { port2 } = event.data
 
   port2.start()
 
   console.log("port: ", port2)
 
-  put(port2, "get file", {
+  const index = await put<Communicate>(port2, "get file", {
     url: location.href,
     headers: [],
   })
+
+  console.log({ index })
 
   const cast = new BroadcastChannel("sw-fetch")
   // eslint-disable-next-line n/no-unsupported-features/node-builtins

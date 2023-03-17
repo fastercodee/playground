@@ -25,6 +25,7 @@
     "@codemirror/state": "^6.2.0",
     "@codemirror/theme-one-dark": "^6.1.1",
     "@codemirror/view": "^6.9.2",
+    "@fcanvas/communicate": "1.1.0-rc.38",
     "@isomorphic-git/lightning-fs": "^4.6.0",
     "@quasar/extras": "^1.0.0",
     "@uiw/codemirror-extensions-langs": "^4.19.9",

@@ -66,7 +66,7 @@ function vitePluginServiceWorker(): PluginOption {
           resolved.base,
           relative(resolved.root, id)
         )
-
+        this.addWatchFile(id)
         // eslint-disable-next-line n/no-unsupported-features/node-builtins
         await fs.promises.mkdir(dirname(filecache), { recursive: true })
         // eslint-disable-next-line n/no-unsupported-features/node-builtins

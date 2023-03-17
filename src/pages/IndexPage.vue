@@ -9,6 +9,7 @@
           <SeasonManager />
           <Editor />
         </div>
+        <Preview />
         <!-- editor -->
       </div>
     </div>
