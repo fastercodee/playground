@@ -14,6 +14,19 @@ addEventListener("message", async (event) => {
     url: location.href,
     headers: [],
   })
+  // index is content file index.html
+  /** @description - parse index.html and apply DOM */
+  // eslint-disable-next-line no-labels
+  parseIndex: {
+    // eslint-disable-next-line no-labels
+    if (!index) break parseIndex
+
+    // eslint-disable-next-line n/no-unsupported-features/node-builtins
+    const html = new TextDecoder("utf-8").decode(index.content)
+    console.log({ html })
+    document.documentElement.innerHTML = html
+  }
+  /** @end */
 
   console.log({ index })
 

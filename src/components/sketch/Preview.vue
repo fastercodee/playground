@@ -1,6 +1,7 @@
 <template>
   <iframe
     src="https://9999-fcanvas-playground-7b9jc2vskd4.ws-us90.gitpod.io/"
+    class="w-full border border-light-600"
     @load="onLoad"
   />
 </template>
@@ -32,14 +33,33 @@ function onLoad(event: Event) {
       const buffer = await Filesystem.readFile({
         path: join("current", "index.html"),
         directory: Directory.External,
-      }).then((res) => base64ToUint8(res.data).buffer)
+      }).then(toBufferFile)
 
       return {
         transfer: [buffer],
         return: {
           content: buffer,
           init: {
-            status: 200
+            status: 200,
+          },
+        },
+      }
+    }
+
+    if (path.includes(".")) {
+      // loadfile *.* example *.ts, *.js
+
+      const buffer = await Filesystem.readFile({
+        path: join("current", path),
+        directory: Directory.External,
+      }).then(toBufferFile)
+
+      return {
+        transfer: [buffer],
+        return: {
+          content: buffer,
+          init: {
+            status: 200,
           },
         },
       }
