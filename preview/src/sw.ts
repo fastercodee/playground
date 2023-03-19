@@ -33,6 +33,7 @@ addEventListener("fetch", (event) => {
     url.pathname !== "/" &&
     !url.pathname.startsWith("/@vite/") &&
     !url.pathname.startsWith("/node_modules/") &&
+    (!process.env.isDev || !url.pathname.startsWith("/preview-core.ts")) &&
     /^https?:$/g.test(url.protocol)
   ) {
     console.log("send request", url)
