@@ -8,11 +8,15 @@ export class Entry<Type extends "directory" | "file"> {
   ) {}
 
   public fullPath(): string {
-    if (this.directory.fullPath() === "") return this.name
-    return this.directory.fullPath() + "/" + this.name
+    const dir = this.directory.fullPath()
+
+    if (dir === "") return this.name
+    return dir + "/" + this.name
   }
 }
-window.fs = Filesystem
+
+if (import.meta.env.DEV) Object.assign(window, { Filesystem })
+
 export async function readDetails<
   Type extends "directory" | "file" = "directory" | "file"
 >(name: string, directory: Entry<"directory">): Promise<Entry<Type>> {

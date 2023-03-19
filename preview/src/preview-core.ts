@@ -3,6 +3,8 @@ import { listen, put } from "@fcanvas/communicate"
 import type { Communicate } from "./sw"
 import regiser from "./sw?serviceworker"
 
+// eslint-disable-next-line functional/no-let
+let listenParent: (() => void) | undefined
 async function init(event?: MessageEvent<{ port2: MessagePort }>) {
   console.log(event)
   const port2 = event?.data.port2
@@ -14,7 +16,8 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
 
   const cast = new BroadcastChannel("sw-fetch")
 
-  listen<Communicate>(cast, "get file", async (opts) => {
+  listenParent?.()
+  listenParent = listen<Communicate>(cast, "get file", async (opts) => {
     console.log("Request file %s", opts.url)
 
     const res = await put(port2, "get file", opts)
@@ -41,25 +44,29 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
     // eslint-disable-next-line no-labels
     if (!index) break parseIndex
 
-    // eslint-disable-next-line n/no-unsupported-features/node-builtins
-    const html = new TextDecoder("utf-8").decode(index.content)
-    console.log({ html })
-    document.documentElement.innerHTML = html
-    document.documentElement.querySelectorAll("script").forEach((script) => {
-      const newScript = document.createElement("script")
+    if (index.content) {
+      // eslint-disable-next-line n/no-unsupported-features/node-builtins
+      const html = new TextDecoder("utf-8").decode(index.content)
+      console.log({ html })
+      document.documentElement.innerHTML = html
+      document.documentElement.querySelectorAll("script").forEach((script) => {
+        const newScript = document.createElement("script")
 
-      // eslint-disable-next-line functional/no-loop-statements
-      for (let i = 0; i < script.attributes.length; i++) {
-        const { name, value } = script.attributes[i]
+        // eslint-disable-next-line functional/no-loop-statements
+        for (let i = 0; i < script.attributes.length; i++) {
+          const { name, value } = script.attributes[i]
 
-        if (!value) continue
-        newScript.setAttribute(name, value)
-      }
+          if (!value) continue
+          newScript.setAttribute(name, value)
+        }
 
-      newScript.innerHTML = script.innerHTML
+        newScript.innerHTML = script.innerHTML
 
-      script.replaceWith(newScript)
-    })
+        script.replaceWith(newScript)
+      })
+    } else {
+      document.documentElement.innerHTML = "<h1>404 - Not Found</h1>"
+    }
   }
   /** @end */
 

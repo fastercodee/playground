@@ -65,7 +65,12 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+        GITPOD_WORKSPACE_URL: process.env.GITPOD_WORKSPACE_URL,
+        CODESPACE_NAME: process.env.CODESPACE_NAME,
+        GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:
+          process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN,
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

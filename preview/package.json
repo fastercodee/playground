@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 9999",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -16,6 +16,6 @@
     "vite-plugin-singlefile": "^0.13.3"
   },
   "dependencies": {
-    "@fcanvas/communicate": "1.1.0-rc.37"
+    "@fcanvas/communicate": "1.1.0-rc.39"
   }
 }

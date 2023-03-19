@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "test": "echo \"No test specified\" && exit 0",
+    "test": "vitest",
     "dev": "quasar dev"
   },
   "dependencies": {
@@ -38,6 +38,7 @@
     "@vueuse/core": "^9.13.0",
     "browserfs": "^2.0.0",
     "codemirror": "^6.0.1",
+    "esbuild-wasm": "^0.17.12",
     "eslint-linter-browserify": "^8.36.0",
     "file-extension": "^4.0.5",
     "indexeddb-fs": "^1.2.5",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.21.0",
+    "@edge-runtime/vm": "^2.1.2",
     "@iconify/vue": "^4.1.0",
     "@quasar/app-vite": "^1.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
@@ -65,11 +67,14 @@
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-vue": "^9.0.0",
+    "indexeddbshim": "11.0.0-beta.0",
+    "jsdom": "^21.1.1",
     "onu-ui": "1.0.13-alpha",
     "prettier": "^2.5.1",
     "typescript": "^4.5.4",
     "unplugin-auto-import": "^0.15.1",
-    "unplugin-vue-components": "^0.24.1"
+    "unplugin-vue-components": "^0.24.1",
+    "vitest": "^0.29.3"
   },
   "engines": {
     "node": "^18 || ^16 || ^14.19",

@@ -14,7 +14,7 @@ export type Communicate = {
     url: string
     headers: [string, string][]
   }) => Promise<null | {
-    content: ArrayBufferLike
+    content: ArrayBufferLike | null
     init: ResponseInit
   }>
 }
@@ -33,12 +33,15 @@ addEventListener("fetch", (event) => {
     url.pathname !== "/" &&
     !url.pathname.startsWith("/@vite/") &&
     !url.pathname.startsWith("/node_modules/") &&
-    (!process.env.isDev || !url.pathname.startsWith("/preview-core.ts")) &&
+    (!process.env.isDev ||
+      (!url.pathname.startsWith("/src/preview-core.ts") &&
+        url.search !== "?serviceworker" &&
+        !url.pathname.startsWith("/src/sw.ts"))) &&
     /^https?:$/g.test(url.protocol)
   ) {
     console.log("send request", url)
 
-    const response = put(cast, "get file", {
+    const response = put<Communicate>(cast, "get file", {
       url: request.url,
       headers: [...request.headers.entries()],
     }).then((response) =>

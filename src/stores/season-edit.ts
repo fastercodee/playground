@@ -44,7 +44,7 @@ import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night/esm"
 import langMap from "lang-map"
 import { defineStore } from "pinia"
 import { debounce } from "quasar"
-import type { Entry } from "src/logic/fs"
+import type { Entry } from "src/logic/read-details"
 // import { vscodeDark } from "@uiw/codemirror-theme-vscode/esm"
 // import { xcodeDark } from "@uiw/codemirror-theme-xcode/esm"
 
