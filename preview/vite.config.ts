@@ -4,7 +4,8 @@ import { basename, dirname, join, posix, relative } from "path"
 
 import { buildSync } from "esbuild"
 import type { PluginOption, ResolvedConfig } from "vite"
-import { defineConfig, transformWithEsbuild } from "vite"
+import { defineConfig } from "vite"
+import { viteSingleFile } from "vite-plugin-singlefile"
 
 function getAssetHash(content: Buffer): string {
   return createHash("sha256").update(content).digest("hex").slice(0, 8)
@@ -25,26 +26,40 @@ function vitePluginServiceWorker(): PluginOption {
         id = id.replace(/\?serviceworker$/, "")
 
         if (resolved.command === "build") {
-          const { code } = await transformWithEsbuild(src, id, {
+          const code = buildSync({
+            entryPoints: [id],
             format: "esm",
+            bundle: true,
             minify: process.env.NODE_ENV === "production",
             treeShaking: true,
+            write: false,
             sourcemap:
               resolved.build.sourcemap !== "hidden" && resolved.build.sourcemap,
+            define: {
+              "process.env.isDev": JSON.stringify(false),
+            },
             // sideEff
-          })
-          const fileName = posix.join(
-            resolved.build.assetsDir,
-            `${basename(id)}.${getAssetHash(Buffer.from(code))}.js`
-          )
-          const hash = this.emitFile({
-            fileName,
+          }).outputFiles[0].text
+          const filename = `${basename(id)}.${getAssetHash(
+            Buffer.from(code)
+          )}.js`
+          this.emitFile({
+            fileName: filename,
             type: "asset",
             source: code,
           })
+
+          const filePublic = join(
+            resolved.publicDir,
+            relative(resolved.root, id).replace("/", "_")
+          )
+
+          // eslint-disable-next-line n/no-unsupported-features/node-builtins
+          await fs.promises.unlink(filePublic).catch(() => false)
+
           return {
             code: `export default function registerServiceWorker() {
-              return navigator.serviceWorker.register("__VITE_ASSET__${hash}__")
+              return navigator.serviceWorker.register("/${filename}", { scope: '/' })
             }`,
             map: null,
           }
@@ -58,13 +73,15 @@ function vitePluginServiceWorker(): PluginOption {
           treeShaking: true,
           write: false,
           sourcemap: true,
+          define: {
+            "process.env.isDev": JSON.stringify(true),
+          },
           // sideEff
         }).outputFiles[0].text
 
         const filecache = join(
-          resolved.cacheDir,
-          resolved.base,
-          relative(resolved.root, id)
+          resolved.publicDir,
+          relative(resolved.root, id).replace("/", "_")
         )
         this.addWatchFile(id)
         // eslint-disable-next-line n/no-unsupported-features/node-builtins
@@ -75,9 +92,10 @@ function vitePluginServiceWorker(): PluginOption {
         // console.log({ id })
         return {
           code: `export default function registerServiceWorker() {
-            return navigator.serviceWorker.register("${
-              resolved.base
-            }${posix.relative(resolved.root, filecache)}")
+            return navigator.serviceWorker.register("/${posix.relative(
+              resolved.root,
+              relative(resolved.root, id).replace("/", "_")
+            )}", { scope: '/' })
           }`,
           map: null,
         }
@@ -87,5 +105,5 @@ function vitePluginServiceWorker(): PluginOption {
 }
 
 export default defineConfig({
-  plugins: [vitePluginServiceWorker()],
+  plugins: [vitePluginServiceWorker(), viteSingleFile()],
 })
