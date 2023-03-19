@@ -27,6 +27,8 @@ function onLoad(event: Event) {
   listen<Communicate>(port1, "get file", async (opts) => {
     const path = new URL(opts.url).pathname
 
+    console.log("Request file %s", path)
+
     if (path === "/") {
       // load index.html
 
