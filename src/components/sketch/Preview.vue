@@ -26,7 +26,7 @@ onBeforeUnmount(() => {
   listener?.()
 })
 
-function onLoad(event: Event) {
+async function onLoad(event: Event) {
   channel?.port1.close()
   channel?.port2.close()
   const iframe = event.target as HTMLIFrameElement
@@ -41,6 +41,10 @@ function onLoad(event: Event) {
   )
 
   port1.start()
+
+  // eslint-disable-next-line functional/no-let
+  let tsconfigRaw: string | null = null
+
   listener = listen<Communicate>(port1, "get file", async (opts) => {
     const { pathname } = new URL(opts.url)
 
@@ -48,27 +52,34 @@ function onLoad(event: Event) {
 
     // loadfile *.* example *.ts, *.js, eslint
     try {
-      const res = await readFileWithoutExt(join("current", pathname), [
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "json",
-        // " Gcss",
-        // "text"
-      ])
+      const res =
+        pathname === "/"
+          ? await Filesystem.readFile({
+              path: "current/index.html",
+              directory: Directory.External,
+            }).then((res) => {
+              return { content: toBufferFile(res), ext: "html" }
+            })
+          : await readFileWithoutExt(join("current", pathname), [
+              "ts",
+              "tsx",
+              "js",
+              "jsx",
+              "json",
+              // " Gcss",
+              // "text"
+            ])
 
       if (!res) throw new Error("File does not exist.")
+      console.log(res)
 
-      const content = res.ext
+      const content = ["ts", "jsx", "tsx"].includes(res.ext)
         ? await compilerFile(
             res.content,
             basename(pathname),
             res.ext,
-            await Filesystem.readFile({
-              path: join("current", "tsconfig.json"),
-              directory: Directory.External,
-            }).then((res) => res.data)
+            tsconfigRaw ??
+              (tsconfigRaw = await loadWatchFile("current/tsconfig.json", "{}"))
           )
         : res.content
 
@@ -82,6 +93,7 @@ function onLoad(event: Event) {
         },
       }
     } catch (err) {
+      console.error({ err })
       if ((err as Error).message === "File does not exist.")
         return {
           content: null,
@@ -89,7 +101,6 @@ function onLoad(event: Event) {
             status: 404,
           },
         }
-      console.error({ err })
       return {
         content: null,
         init: {

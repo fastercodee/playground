@@ -85,4 +85,34 @@ describe("readFileWithoutExt", async () => {
     expect(new TextDecoder().decode(content)).toBe("hello main.js")
     expect(ext).toBe("js")
   })
+  test("should exact file path in ext exists", async () => {
+    await Promise.all([
+      Filesystem.writeFile({
+        path: "current/main",
+        data: "hello main",
+        directory: Directory.External,
+        encoding: Encoding.UTF8,
+      }),
+      Filesystem.writeFile({
+        path: "current/main.ts",
+        data: "hello main.ts",
+        directory: Directory.External,
+        encoding: Encoding.UTF8,
+      }),
+      Filesystem.writeFile({
+        path: "current/main.js",
+        data: "hello main.js",
+        directory: Directory.External,
+        encoding: Encoding.UTF8,
+      }),
+    ])
+
+    const { content, ext } = await readFileWithoutExt("current/main.ts", [
+      "ts",
+      "js",
+    ])
+
+    expect(new TextDecoder().decode(content)).toBe("hello main")
+    expect(ext).toBeUndefined()
+  })
 })

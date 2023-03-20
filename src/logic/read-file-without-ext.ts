@@ -1,14 +1,16 @@
+import { extname } from "path";
+
 export async function readFileWithoutExt(
   path: string,
   exts: string[]
-): Promise<{ content: ArrayBuffer; ext: string | undefined }> {
+): Promise<{ content: ArrayBuffer; ext: string }> {
   try {
     return {
       content: await Filesystem.readFile({
         path,
         directory: Directory.External,
       }).then(toBufferFile),
-      ext: undefined,
+      ext: extname(path).slice(1),
     }
   } catch (err) {
     if ((err as Error).message === "File does not exist.") {
