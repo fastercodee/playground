@@ -84,9 +84,10 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
   appendIndex()
 
   listen(port2, "refresh", () => {
-    if (hasScriptNoModule) return true
-    else appendIndex()
-    return false
+    return true
+    // if (hasScriptNoModule) return true
+    // else appendIndex()
+    // return false
   })
 }
 

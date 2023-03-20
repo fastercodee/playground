@@ -232,6 +232,8 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     )
   }
 
+  // eslint-disable-next-line functional/no-let
+  let entryChanging: Entry<"file"> | null = null
   async function openFile(entry: Entry<"file">) {
     entry = toRaw(entry)
     if (currentEntry.value === entry) return
@@ -285,14 +287,18 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     history.push(entry)
     if (history.length > 100) history.splice(0, 100 - history.length)
 
+
     onChanged = debounce(async (text) => {
+      if (entryChanging === entry) return
+      entryChanging = entry
       await Filesystem.writeFile({
         path: entry.fullPath(),
         directory: Directory.External,
         data: text,
         encoding: Encoding.UTF8,
       })
-      eventBus.emit('write-file', entry.fullPath())
+      eventBus.emit("write-file", entry.fullPath())
+      entryChanging = null
     }, 1000)
   }
   function closeFile(entry: Entry<"file">) {
@@ -327,7 +333,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       directory: Directory.External,
       encoding: Encoding.UTF8,
     })
-    eventBus.emit('write-file', currentEntry.value.fullPath())
+    eventBus.emit("write-file", currentEntry.value.fullPath())
 
     console.info("saved file %s", currentEntry.value.fullPath())
   }
