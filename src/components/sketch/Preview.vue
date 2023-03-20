@@ -12,6 +12,7 @@ import { basename, join } from "path"
 
 import { listen, put } from "@fcanvas/communicate"
 import type { Communicate } from "app/preview/src/sw"
+import { debounce } from "quasar"
 
 const iframeRef = ref<HTMLIFrameElement>()
 
@@ -111,6 +112,7 @@ async function refreshIFrame() {
     iframeRef.value.src = srcIFrame
   }
 }
+eventBus.on("write-file", debounce(refreshIFrame, 1_000))
 
 async function onLoad() {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

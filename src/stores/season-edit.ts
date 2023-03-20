@@ -285,13 +285,14 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     history.push(entry)
     if (history.length > 100) history.splice(0, 100 - history.length)
 
-    onChanged = debounce((text) => {
-      Filesystem.writeFile({
+    onChanged = debounce(async (text) => {
+      await Filesystem.writeFile({
         path: entry.fullPath(),
         directory: Directory.External,
         data: text,
         encoding: Encoding.UTF8,
       })
+      eventBus.emit('write-file', entry.fullPath())
     }, 1000)
   }
   function closeFile(entry: Entry<"file">) {
@@ -326,6 +327,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       directory: Directory.External,
       encoding: Encoding.UTF8,
     })
+    eventBus.emit('write-file', currentEntry.value.fullPath())
 
     console.info("saved file %s", currentEntry.value.fullPath())
   }

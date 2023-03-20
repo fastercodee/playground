@@ -172,12 +172,14 @@ async function createDirectory(name: string, isDir: boolean) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     sortEntries(decevier.value!.directories)
   } else {
+    const path = `${props.entry.fullPath()}/${name}`
     await Filesystem.writeFile({
-      path: `${props.entry.fullPath()}/${name}`,
+      path,
       data: "",
       encoding: Encoding.UTF8,
       directory: Directory.External,
     })
+    eventBus.emit('write-file', path)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     decevier.value!.files.push(await readDetails(name, props.entry))
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

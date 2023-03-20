@@ -31,7 +31,7 @@ function isPathParent(parent: string, children: string): boolean {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(Filesystem as unknown as any)._copy = async function copy(
+; (Filesystem as unknown as any)._copy = async function copy(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   this: any,
   options: CopyOptions,
@@ -136,6 +136,7 @@ function isPathParent(parent: string, children: string): boolean {
         directory: toDirectory,
         data: file.data,
       })
+      eventBus.emit('write-file', to)
 
       // Copy the mtime/ctime of a renamed file
       if (doRename) {
