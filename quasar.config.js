@@ -133,7 +133,7 @@ module.exports = configure(function (/* ctx */) {
           {
             resolvers: [OnuResolver()],
             // targets to transform
-            include: [/\.[tj]sx?$/, /\.vue$/, /\.vue\?vue/],
+            include: [/\.tsx?$/, /\.vue$/, /\.vue\?vue/],
 
             // global imports to register
             imports: [
