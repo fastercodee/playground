@@ -1,4 +1,5 @@
 import type { CopyOptions, CopyResult } from "@capacitor/filesystem"
+import { FilesystemWeb } from "@capacitor/filesystem/dist/esm/web"
 
 function resolve(path: string): string {
   const posix = path.split("/").filter((item) => item !== ".")
@@ -30,8 +31,7 @@ function isPathParent(parent: string, children: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-; (Filesystem as unknown as any)._copy = async function copy(
+FilesystemWeb.prototype._copy = async function copy(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   this: any,
   options: CopyOptions,
@@ -128,6 +128,13 @@ function isPathParent(parent: string, children: string): boolean {
           path: from,
           directory: fromDirectory,
         })
+        eventBus.emit("write-file", from)
+      }
+
+      // eslint-disable-next-line functional/no-let
+      let encoding;
+      if (!this.isBase64String(file.data)) {
+        encoding = Encoding.UTF8;
       }
 
       // Write the file to the new location
@@ -135,8 +142,9 @@ function isPathParent(parent: string, children: string): boolean {
         path: to,
         directory: toDirectory,
         data: file.data,
+        encoding
       })
-      eventBus.emit('write-file', to)
+      eventBus.emit("write-file", to)
 
       // Copy the mtime/ctime of a renamed file
       if (doRename) {

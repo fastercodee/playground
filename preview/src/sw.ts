@@ -48,7 +48,12 @@ addEventListener("fetch", (event) => {
       response
         ? new Response(response.content, response.init)
         : fetch(event.request)
-    )
+    ).catch(err => {
+      return new Response(err.message, {
+        status: 408,
+        statusText: "Request timeout"
+      })
+    })
 
     event.respondWith(response)
     return

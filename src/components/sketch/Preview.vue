@@ -25,6 +25,9 @@ const srcIFrame = process.env.GITPOD_WORKSPACE_URL
 
 const mimeMap = {
   js: "text/javascript",
+  jsx: "text/javascript",
+  ts: "text/javascript",
+  tsx: "text/javascript",
   html: "text/html",
   css: "text/css",
   png: "image/png",
