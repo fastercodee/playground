@@ -1,0 +1,34 @@
+name: Test
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Depends for pkg canvas
+        run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+
+      - uses: pnpm/action-setup@v2.0.1
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7.25.1
+          run_install: false
+
+      - name: Install depends and run `auto-export`
+        run: |
+          pnpm i --no-frozen-lockfile
+          cd packages/fcanvas
+          pnpm auto-export
+          pnpm -w build
+
+      - name: Test
+        run: |
+          pnpm test
