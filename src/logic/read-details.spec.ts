@@ -29,6 +29,7 @@ describe("read-details", async () => {
   })
 
   test("read one item", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const directory = { fullPath: () => "" } as any
     const out = await readDetails("test-dir", directory)
 

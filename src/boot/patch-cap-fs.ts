@@ -31,7 +31,8 @@ function isPathParent(parent: string, children: string): boolean {
   )
 }
 
-FilesystemWeb.prototype._copy = async function copy(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(FilesystemWeb.prototype as unknown as any)._copy = async function copy(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   this: any,
   options: CopyOptions,
@@ -181,7 +182,7 @@ FilesystemWeb.prototype._copy = async function copy(
         })
       ).files
 
-      // eslint-disable-next-line functional/no-loop-statements
+
       for (const filename of contents) {
         // Move item from the from directory to the to directory
         await this._copy(

@@ -1,4 +1,4 @@
-// eslint-disable-next-line functional/no-classes
+
 export class Entry<Type extends "directory" | "file"> {
   // eslint-disable-next-line no-useless-constructor
   constructor(

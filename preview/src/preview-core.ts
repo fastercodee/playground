@@ -58,7 +58,7 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
           .forEach((script) => {
             const newScript = document.createElement("script")
 
-            // eslint-disable-next-line functional/no-loop-statements
+
             for (let i = 0; i < script.attributes.length; i++) {
               const { name, value } = script.attributes[i]
 
@@ -84,10 +84,9 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
   appendIndex()
 
   listen(port2, "refresh", () => {
-    return true
-    // if (hasScriptNoModule) return true
-    // else appendIndex()
-    // return false
+    if (hasScriptNoModule) return true
+    else appendIndex()
+    return false
   })
 }
 

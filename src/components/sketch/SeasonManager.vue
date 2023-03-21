@@ -82,7 +82,7 @@ const mapName = computed(() => {
       // eslint-disable-next-line functional/no-let
       let dir = item.directory.fullPath()
 
-      // eslint-disable-next-line functional/no-loop-statements
+       
       for (let i = 0; i < 20; i++) {
         const name =
           item.name +

@@ -12,9 +12,7 @@ import { basename, join } from "path"
 
 import { listen, put } from "@fcanvas/communicate"
 import type { Communicate } from "app/preview/src/sw"
-import { debounce } from "quasar"
 
-const instance = getCurrentInstance()
 const iframeRef = ref<HTMLIFrameElement>()
 
 const srcIFrame = process.env.GITPOD_WORKSPACE_URL

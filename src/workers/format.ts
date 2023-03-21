@@ -36,6 +36,7 @@ function pformat(source: string, options: Options) {
     ],
   })
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function pformatWithCursor(
   source: string,
   options: CursorOptions
@@ -57,6 +58,7 @@ function pformatWithCursor(
     ],
   })
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function pcheck(source: string, options?: FileInfoOptions) {
   return check(source, {
     ...options,
