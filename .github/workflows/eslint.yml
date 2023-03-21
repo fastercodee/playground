@@ -35,9 +35,6 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Depends for pkg canvas
-        run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
       - uses: pnpm/action-setup@v2.0.1
         name: Install pnpm
         id: pnpm-install
@@ -49,7 +46,7 @@ jobs:
         run: pnpm i --no-frozen-lockfile
 
       - name: Run ESLint
-        run: pnpm lint #--fix
+        run: pnpm build && pnpm lint #--fix
 
 
       # - name: Commit changes

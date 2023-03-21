@@ -4,44 +4,7 @@ on:
     tags:
       - "v*.*.*"
 jobs:
-  ci:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install Depends for pkg canvas
-        run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
-      - uses: pnpm/action-setup@v2.0.1
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 7.25.1
-          run_install: false
-
-      - name: Install depends and run `auto-export`
-        run: |
-          pnpm i --no-frozen-lockfile
-          cd packages/fcanvas
-          pnpm auto-export
-          pnpm build
-          cd ../..
-          pnpm build
-
-      - name: Typing
-        run: pnpm typing
   release:
-    needs: ci
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -53,30 +16,28 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           node-version: 18
 
-      - name: Install Depends for pkg canvas
-        run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
       - uses: pnpm/action-setup@v2.0.1
         name: Install pnpm
         id: pnpm-install
         with:
           version: 7.25.1
           run_install: false
+          
+      - name: Build
+        run: pnpm build
 
-      - name: Install depends and run `auto-export`
-        run: |
-          pnpm i --no-frozen-lockfile
-          cd packages/fcanvas
-          pnpm auto-export
-          pnpm -w build
-
-      - name: Test & Build
+      - name: Test
         run: pnpm test
+      
+      - name: Typing
+        run: pnpm typing
 
-      - name: Publish to NPM
-        run: pnpm -r publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: dist # The folder the action should deploy.
+
 
   changelog-release:
     needs: release

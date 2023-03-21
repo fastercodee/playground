@@ -2,6 +2,21 @@
 
 A fcanvas playground code
 
+
+[![GitHub license](https://img.shields.io/github/license/fcanvas/playground)](https://github.com/fcanvas/playground/blob/main/LICENSE) <img alt="GitHub Issues" src="https://img.shields.io/github/issues/fcanvas/playground" />
+![](https://api.codiga.io/project/36164/score/svg)
+![](https://api.codiga.io/project/36164/status/svg)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f7aa98fed72047759afb7621e3f4f520)](https://app.codacy.com/gh/fcanvas/playground/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Hits-of-Code](https://hitsofcode.com/github/fcanvas/playground?branch=main)](https://hitsofcode.com/github/fcanvas/playground/view?branch=main)
+
+[![Test](https://github.com/fcanvas/playground/actions/workflows/test.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/test.yml)
+[![CodeQL](https://github.com/fcanvas/playground/actions/workflows/codeql.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/codeql.yml)
+[![ESLint](https://github.com/fcanvas/playground/actions/workflows/eslint.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/eslint.yml)
+[![Prettier](https://github.com/fcanvas/playground/actions/workflows/prettier.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/pretter.yml)
+[![TypeScript Checker Declaration](https://github.com/fcanvas/playground/actions/workflows/typing.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/typing.yml)
+[![Try build](https://github.com/fcanvas/playground/actions/workflows/try-build.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/try-build.yml)
+
+
 ## Install the dependencies
 ```bash
 yarn
