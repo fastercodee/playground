@@ -9,7 +9,7 @@
     "lint": "eslint --ext .js,.ts,.vue ./",
     "pretit": "prettier \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "test": "vitest",
+    "test": "vitest --run",
     "dev": "quasar dev",
     "typing": "vue-tsc --noEmit",
     "build": "quasar build"
