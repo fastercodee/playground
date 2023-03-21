@@ -65,6 +65,7 @@
     "@edge-runtime/vm": "^2.1.2",
     "@iconify/vue": "^4.1.0",
     "@quasar/app-vite": "^1.0.0",
+    "@quasar/cli": "^2.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@tachibana-shin/eslint-config": "^1.1.1",
     "@types/node": "^12.20.55",
