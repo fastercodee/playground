@@ -40,7 +40,7 @@ export const eventBus = { on, emit }
 export class フォロワー {
   private たどる道 = new Set<string>()
 
-  constructor(private readonly コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void) {
+  constructor(private コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void) {
     on("*", (タイプ: keyof Events, パス: string) => {
       switch (タイプ) {
         case "writeFile":
@@ -69,6 +69,14 @@ export class フォロワー {
 
   public addWatchFile(path: string) {
     this.たどる道.add(path)
+  }
+
+  public clear() {
+    this.たどる道.clear()
+  }
+
+  public コールバックを設定(コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void) {
+    this.コールバック = コールバック
   }
 }
 

@@ -122,7 +122,7 @@ const contextmenu = [
     name: "Paste",
     sub: "⌘V",
     onClick: paste,
-    disable: computed(() => !!clipboardFSStore.action),
+    disable: computed(() => !clipboardFSStore.action),
   },
   {
     divider: true,
@@ -183,8 +183,13 @@ async function changeName(name: string) {
     directory: Directory.External,
     toDirectory: Directory.External,
   })
-  eventBus.emit("writeFile", from)
-  eventBus.emit("deleteFile", to)
+  if (props.entry.type === "file") {
+    eventBus.emit("writeFile", to)
+    eventBus.emit("deleteFile", from)
+  } else {
+    eventBus.emit("copyDir", to)
+    eventBus.emit("rmdir", from)
+  }
 
   emit("renamed", name)
 }

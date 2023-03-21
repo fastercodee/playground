@@ -12,7 +12,7 @@ export async function readFileWithoutExt(
         directory: Directory.External,
       }).then(toBufferFile),
       ext,
-      path: path + "." + ext
+      path
     }
   } catch (err) {
     if ((err as Error).message === "File does not exist.") {

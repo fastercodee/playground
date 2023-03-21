@@ -87,6 +87,7 @@ function setup() {
   channel?.port1.close()
   channel?.port2.close()
   listener?.()
+  watchFs.clear()
 
   channel = new MessageChannel()
   const { port1, port2 } = channel
@@ -167,7 +168,9 @@ function setup() {
     }
   })
 
-  async function refreshIFrame() {
+  watchFs.コールバックを設定(async (type, path, pathMatch) => {
+    console.log({ type, path, pathMatch })
+
     if (!iframeRef.value) {
       console.warn("[refresh iframe]: can't refresh iframe because not found.")
       return
@@ -182,7 +185,7 @@ function setup() {
       iframeRef.value.src = ""
       iframeRef.value.src = srcIFrame
     }
-  }
+  })
 
   return port2
 }

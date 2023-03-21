@@ -128,7 +128,6 @@ FilesystemWeb.prototype._copy = async function copy(
           path: from,
           directory: fromDirectory,
         })
-        eventBus.emit("write-file", from)
       }
 
       // eslint-disable-next-line functional/no-let
@@ -144,7 +143,6 @@ FilesystemWeb.prototype._copy = async function copy(
         data: file.data,
         encoding
       })
-      eventBus.emit("write-file", to)
 
       // Copy the mtime/ctime of a renamed file
       if (doRename) {
