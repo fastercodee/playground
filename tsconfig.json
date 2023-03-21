@@ -11,5 +11,5 @@
     "types": ["vitest/globals"],
     "esModuleInterop": true
   },
-  "exclude": ["preview/public/src_sw.ts"]
+  "exclude": ["preview/public/src_sw.ts", "**/*.mjs"]
 }

@@ -38,6 +38,8 @@ import langMap from "lang-map/lib/lang.json"
 import { defineStore } from "pinia"
 import { getSupportInfo } from "prettier"
 import { debounce } from "quasar"
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import * as eslint from "src/logic/linter"
 import type { Entry } from "src/logic/read-details"
 import type { Format } from "src/workers/format"
@@ -267,7 +269,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     ]
 
     console.log({ checkLang })
-     
+
     for (const name of checkLang) {
       if (name in langs) {
         console.log(loadLinter(name))
