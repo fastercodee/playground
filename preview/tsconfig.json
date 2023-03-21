@@ -15,5 +15,6 @@
     "noImplicitReturns": true,
     "skipLibCheck": true
   },
-  "include": ["src", "public/sw.ts"]
+  "include": ["src"],
+  "exclude": ["public/src_sw.ts"]
 }

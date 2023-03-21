@@ -81,7 +81,7 @@ function vitePluginServiceWorker(): PluginOption {
 
         const filecache = join(
           resolved.publicDir,
-          relative(resolved.root, id).replace("/", "_")
+          relative(resolved.root, id).replace("/", "_") + ".js"
         )
         this.addWatchFile(id)
         // eslint-disable-next-line n/no-unsupported-features/node-builtins
@@ -93,9 +93,9 @@ function vitePluginServiceWorker(): PluginOption {
         return {
           code: `export default function registerServiceWorker() {
             return navigator.serviceWorker.register("/${posix.relative(
-              resolved.root,
-              relative(resolved.root, id).replace("/", "_")
-            )}", { scope: '/' })
+            resolved.root,
+            relative(resolved.root, id).replace("/", "_")
+          )}", { scope: '/' })
           }`,
           map: null,
         }

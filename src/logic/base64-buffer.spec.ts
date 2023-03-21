@@ -5,3 +5,5 @@ describe("base64-buffer", () => {
     )
   })
 })
+
+export {}
