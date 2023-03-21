@@ -3,18 +3,19 @@ import { extname } from "path";
 export async function readFileWithoutExt(
   path: string,
   exts: string[]
-): Promise<{ content: ArrayBuffer; ext: string }> {
+): Promise<{ content: ArrayBuffer; ext: string; path: string }> {
   try {
+    const ext = extname(path).slice(1)
     return {
       content: await Filesystem.readFile({
         path,
         directory: Directory.External,
       }).then(toBufferFile),
-      ext: extname(path).slice(1),
+      ext,
+      path: path + "." + ext
     }
   } catch (err) {
     if ((err as Error).message === "File does not exist.") {
-      // eslint-disable-next-line functional/no-loop-statements
       for (let i = 0; i < exts.length; i++) {
         try {
           return {
@@ -23,6 +24,7 @@ export async function readFileWithoutExt(
               directory: Directory.External,
             }).then(toBufferFile),
             ext: exts[i],
+            path: `${path}.${exts[i]}`,
           }
         } catch (err) {
           if (

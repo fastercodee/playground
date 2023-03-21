@@ -41,7 +41,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
     if (toEntry.name === action.value.entry.name) {
       // to sibling
       // scan name
-      // eslint-disable-next-line functional/no-loop-statements
+       
       for (let i = 1; i < 1e3; i++) {
         const newName =
           action.value.entry.name + " copy" + (i === 1 ? "" : ` ${i}`)
@@ -61,16 +61,35 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
           to: pathSave,
           directory: Directory.External,
         })
+        // type toEntry === type action.value.entry is directory
+        if (fn === "copy") {
+          // write directory
+          eventBus.emit("copyDir", pathSave)
+        } else {
+          // write directory
+          eventBus.emit("copyDir", pathSave)
+          eventBus.emit("rmdir", action.value.entry.fullPath())
+        }
         action.value = null
         return { parent: true, name: newName }
       }
       throw new Error("Maxium scan new name")
     } else {
+      const to = toEntry.fullPath() + "/" + action.value.entry.name
       await Filesystem[fn]({
         from: action.value.entry.fullPath(),
-        to: toEntry.fullPath() + "/" + action.value.entry.name,
+        to,
         directory: Directory.External,
       })
+      // type toEntry === type action.value.entry is file
+      if (fn === "copy") {
+        // write directory
+        eventBus.emit("writeFile", to)
+      } else {
+        // write directory
+        eventBus.emit("writeFile", to)
+        eventBus.emit("deleteFile", action.value.entry.fullPath())
+      }
       if (fn === "rename") action.value?.emit?.("deleted")
       const { name } = action.value.entry
       action.value = null

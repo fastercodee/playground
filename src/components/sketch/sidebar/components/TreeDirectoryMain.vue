@@ -138,17 +138,20 @@ const contextmenu = [
     icon: "material-symbols:delete-outline",
     name: "Delete",
     async onClick() {
-      if (props.entry.type === "file")
+      if (props.entry.type === "file") {
         await Filesystem.deleteFile({
           path: props.entry.fullPath(),
           directory: Directory.External,
         })
-      else
+        eventBus.emit("deleteFile", props.entry.fullPath())
+      } else {
         await Filesystem.rmdir({
           path: props.entry.fullPath(),
           recursive: true,
           directory: Directory.External,
         })
+        eventBus.emit("rmdir", props.entry.fullPath())
+      }
 
       emit("deleted")
     },
@@ -171,12 +174,17 @@ async function paste() {
 
 async function changeName(name: string) {
   renaming.value = false
+
+  const from = props.entry.fullPath()
+  const to = `${props.entry.directory.fullPath()}/${name}`
   await Filesystem.rename({
-    from: props.entry.fullPath(),
-    to: `${props.entry.directory.fullPath()}/${name}`,
+    from,
+    to,
     directory: Directory.External,
     toDirectory: Directory.External,
   })
+  eventBus.emit("writeFile", from)
+  eventBus.emit("deleteFile", to)
 
   emit("renamed", name)
 }

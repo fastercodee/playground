@@ -79,6 +79,10 @@ onUnmounted(() => {
   listener?.()
 })
 
+const watchFs = new WatcherFs((type, path, pathMatch) => {
+  console.log({ type, path, pathMatch })
+})
+
 function setup() {
   channel?.port1.close()
   channel?.port2.close()
@@ -102,7 +106,11 @@ function setup() {
               path: "current/index.html",
               directory: Directory.External,
             }).then((res) => {
-              return { content: toBufferFile(res), ext: "html" }
+              return {
+                content: toBufferFile(res),
+                ext: "html",
+                path: "current/index.html",
+              }
             })
           : await readFileWithoutExt(join("current", pathname), [
               "ts",
@@ -113,6 +121,8 @@ function setup() {
               // " Gcss",
               // "text"
             ])
+
+      watchFs.addWatchFile(res.path)
 
       if (!res) throw new Error("File does not exist.")
 
@@ -173,7 +183,6 @@ function setup() {
       iframeRef.value.src = srcIFrame
     }
   }
-  eventBus.on("write-file", debounce(refreshIFrame, 1_000), instance)
 
   return port2
 }

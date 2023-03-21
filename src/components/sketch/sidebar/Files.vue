@@ -72,6 +72,7 @@ const entryCurrent = computedAsync(
       fullPath: () => "",
       name: "",
       type: "directory",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       directory: null as unknown as any,
     }
     // entryRoot.directory = entryRoot
@@ -103,6 +104,7 @@ async function paste() {
 function onLoad() {
   console.log("on load files")
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function onError(err: any) {
   console.error(err)
 }

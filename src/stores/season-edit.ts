@@ -267,7 +267,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     ]
 
     console.log({ checkLang })
-    // eslint-disable-next-line functional/no-loop-statements
+     
     for (const name of checkLang) {
       if (name in langs) {
         console.log(loadLinter(name))
@@ -297,7 +297,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
         data: text,
         encoding: Encoding.UTF8,
       })
-      eventBus.emit("write-file", entry.fullPath())
+      eventBus.emit("writeFile", entry.fullPath())
       entryChanging = null
     }, 1000)
   }
@@ -308,7 +308,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     onChanged = null
 
     seasons.delete(entry)
-    // eslint-disable-next-line functional/no-loop-statements
+
     for (let i = 0; i < history.length; i++) {
       if (history[i] === entry) {
         history.splice(i, 1)
@@ -333,7 +333,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       directory: Directory.External,
       encoding: Encoding.UTF8,
     })
-    eventBus.emit("write-file", currentEntry.value.fullPath())
+    eventBus.emit("writeFile", currentEntry.value.fullPath())
 
     console.info("saved file %s", currentEntry.value.fullPath())
   }

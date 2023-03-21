@@ -37,13 +37,14 @@ describe("readFileWithoutExt", async () => {
       }),
     ])
 
-    const { content, ext } = await readFileWithoutExt("current/main", [
+    const { content, ext, path } = await readFileWithoutExt("current/main", [
       "ts",
       "js",
     ])
 
     expect(new TextDecoder().decode(content)).toBe("hello main")
-    expect(ext).toBeUndefined()
+    expect(path).toBe("current/main")
+    expect(ext).toBe("")
   })
   test("should path ext 1 exists", async () => {
     await Promise.all([
@@ -61,12 +62,13 @@ describe("readFileWithoutExt", async () => {
       }),
     ])
 
-    const { content, ext } = await readFileWithoutExt("current/main", [
+    const { content, ext, path } = await readFileWithoutExt("current/main", [
       "ts",
       "js",
     ])
 
     expect(new TextDecoder().decode(content)).toBe("hello main.ts")
+    expect(path).toBe("current/main.ts")
     expect(ext).toBe("ts")
   })
   test("should path ext 2 exists", async () => {
@@ -77,12 +79,13 @@ describe("readFileWithoutExt", async () => {
       encoding: Encoding.UTF8,
     })
 
-    const { content, ext } = await readFileWithoutExt("current/main", [
+    const { content, ext, path } = await readFileWithoutExt("current/main", [
       "ts",
       "js",
     ])
 
     expect(new TextDecoder().decode(content)).toBe("hello main.js")
+    expect(path).toBe("current/main.js")
     expect(ext).toBe("js")
   })
   test("should exact file path in ext exists", async () => {
@@ -107,12 +110,13 @@ describe("readFileWithoutExt", async () => {
       }),
     ])
 
-    const { content, ext } = await readFileWithoutExt("current/main.ts", [
+    const { content, ext, path } = await readFileWithoutExt("current/main.ts", [
       "ts",
       "js",
     ])
 
     expect(new TextDecoder().decode(content)).toBe("hello main")
+    expect(path).toBe("current/main.ts")
     expect(ext).toBeUndefined()
   })
 })

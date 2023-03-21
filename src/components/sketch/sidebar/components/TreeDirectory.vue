@@ -107,6 +107,7 @@ const emit = defineEmits<{
     }
   ): void
   (name: "load"): void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (name: "error", event: any): void
 }>()
 
@@ -179,7 +180,7 @@ async function createDirectory(name: string, isDir: boolean) {
       encoding: Encoding.UTF8,
       directory: Directory.External,
     })
-    eventBus.emit('write-file', path)
+    eventBus.emit("writeFile", path)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     decevier.value!.files.push(await readDetails(name, props.entry))
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
