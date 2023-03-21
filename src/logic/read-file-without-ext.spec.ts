@@ -115,7 +115,7 @@ describe("readFileWithoutExt", async () => {
       "js",
     ])
 
-    expect(new TextDecoder().decode(content)).toBe("hello main")
+    expect(new TextDecoder().decode(content)).toBe("hello main.ts")
     expect(path).toBe("current/main.ts")
     expect(ext).toBeUndefined()
   })
