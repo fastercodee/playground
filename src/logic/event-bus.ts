@@ -41,7 +41,7 @@ export class フォロワー {
   private たどる道 = new Set<string>()
 
   constructor(private コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void) {
-    on("*", (タイプ: keyof Events, パス: string) => {
+    const handle = (タイプ: keyof Events, パス: string) => {
       switch (タイプ) {
         case "writeFile":
         case "deleteFile":
@@ -64,6 +64,20 @@ export class フォロワー {
             }
           }
       }
+    }
+
+    // eslint-disable-next-line functional/no-let
+    let called = false
+    const resolved = Promise.resolve()
+    on("*", (タイプ: keyof Events, パス: string) => {
+      if (called) return
+      called = true
+      // eslint-disable-next-line promise/catch-or-return, promise/always-return
+      resolved.then(() => {
+        handle(タイプ, パス)
+        called = false
+      })
+
     }, getCurrentInstance())
   }
 
