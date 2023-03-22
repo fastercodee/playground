@@ -40,8 +40,10 @@ export const eventBus = { on, emit }
 export class フォロワー {
   private たどる道 = new Set<string>()
 
-  constructor(private コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void) {
+  constructor(private コールバック?: (タイプ: keyof Events, パス: string, pathWatch: string) => void) {
     const handle = (タイプ: keyof Events, パス: string) => {
+
+      if (!this.コールバック) return
       switch (タイプ) {
         case "writeFile":
         case "deleteFile":

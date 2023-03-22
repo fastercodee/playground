@@ -77,9 +77,7 @@ onUnmounted(() => {
   listener?.()
 })
 
-const watchFs = new WatcherFs((type, path, pathMatch) => {
-  console.log({ type, path, pathMatch })
-})
+const watchFs = new WatcherFs()
 
 function setup() {
   channel?.port1.close()
@@ -167,7 +165,7 @@ function setup() {
   })
 
   watchFs.コールバックを設定(async (type, path, pathMatch) => {
-    console.log({ type, path, pathMatch })
+    console.log("send request refresh:", { type, path, pathMatch })
 
     if (!iframeRef.value) {
       console.warn("[refresh iframe]: can't refresh iframe because not found.")
