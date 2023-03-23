@@ -1,4 +1,11 @@
 <template>
+  <Console
+    :data="console.value"
+    :_get-list-link-async="_getListLinkAsync"
+    :read-link-object-async="readLinkObjectAsync"
+    :call-fn-link-async="callFnLinkAsync"
+    :anchor="Anchor"
+  />
   <iframe
     :src="srcIFrame"
     class="w-full border border-light-600 bg-white"
@@ -15,6 +22,12 @@ import type { ComPreviewCore } from "app/preview/src/preview-core"
 import type { Communicate } from "app/preview/src/sw"
 import { Console, DataAPI } from "vue-console-feed"
 import type { Data } from "vue-console-feed"
+import type {
+  _getListLink,
+  callFnLink,
+  readLinkObject,
+} from "vue-console-feed/encode"
+import "vue-console-feed/style.css"
 
 import type { ComPreviewVue } from "./Preview.types"
 
@@ -98,7 +111,7 @@ function setup() {
   listener = listen<Communicate>(port1, "get file", async (opts) => {
     const { pathname } = new URL(opts.url)
 
-    console.log("Request file %s", pathname)
+    window.console.log("Request file %s", pathname)
 
     // loadfile *.* example *.ts, *.js, eslint
     try {
@@ -152,7 +165,7 @@ function setup() {
         },
       }
     } catch (err) {
-      console.error({ err })
+      window.console.error({ err })
       if ((err as Error).message === "File does not exist.")
         return {
           content: null,
@@ -170,10 +183,12 @@ function setup() {
   })
 
   watchFs.コールバックを設定(async (type, path, pathMatch) => {
-    console.log("send request refresh:", { type, path, pathMatch })
+    window.console.log("send request refresh:", { type, path, pathMatch })
 
     if (!iframeRef.value) {
-      console.warn("[refresh iframe]: can't refresh iframe because not found.")
+      window.console.warn(
+        "[refresh iframe]: can't refresh iframe because not found."
+      )
       return
     }
 
@@ -188,11 +203,12 @@ function setup() {
     }
   })
 
+  setupConsole(port1)
+
   return port2
 }
 async function onLoad(event: Event) {
   const port2 = setup()
-  setupConsole(port2)
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   ;(event.target as HTMLIFrameElement)!.contentWindow!.postMessage(
     { port2 },
@@ -200,10 +216,17 @@ async function onLoad(event: Event) {
   )
 }
 
-function setupConsole(port2: MessagePort) {
-  const console = new DataAPI(true)
+const console = new DataAPI(true)
 
-  listen<ComPreviewCore, "console">(port2, "console", (opts) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type HPromise<T extends (...args: any) => any> = (...args: Parameters<T>) => any
+
+const _getListLinkAsync = ref<HPromise<typeof _getListLink>>()
+const readLinkObjectAsync = ref<HPromise<typeof readLinkObject>>()
+const callFnLinkAsync = ref<HPromise<typeof callFnLink>>()
+
+function setupConsole(port: MessagePort) {
+  listen<ComPreviewCore, "console">(port, "console", (opts) => {
     // eslint-disable-next-line @typescript-eslint/ban-types
     ;(console[opts.type] as unknown as Function)(...(opts.args as unknown[]))
   })
@@ -211,22 +234,24 @@ function setupConsole(port2: MessagePort) {
   function createAPIAsync(
     type: "_getListLink" | "readLinkObject" | "callFnLink"
   ) {
-    return (link: Data.Link) =>
-      put<ComPreviewVue, typeof type>(port2, type, link)
+    return (link: Data.Link) => {
+      window.console.log("call help %s", type, link)
+
+      return put<ComPreviewVue, typeof type>(port, type, link)
+    }
   }
 
-  const getListLinkAsync = createAPIAsync("_getListLink")
-  const readLinkObjectAsync = createAPIAsync("readLinkObject")
-  const callFnLinkAsync = createAPIAsync("callFnLink")
-
-  function Anchor(options: { text: string; href: string }) {
-    return h(
-      "a",
-      {
-        href: options.href,
-      },
-      [options.text]
-    )
-  }
+  _getListLinkAsync.value = createAPIAsync("_getListLink")
+  readLinkObjectAsync.value = createAPIAsync("readLinkObject")
+  callFnLinkAsync.value = createAPIAsync("callFnLink")
+}
+function Anchor(options: { text: string; href: string }) {
+  return h(
+    "a",
+    {
+      href: options.href,
+    },
+    [options.text]
+  )
 }
 </script>
