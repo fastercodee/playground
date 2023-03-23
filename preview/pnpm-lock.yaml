@@ -7,9 +7,11 @@ specifiers:
   typescript: ^4.9.3
   vite: ^4.1.0
   vite-plugin-singlefile: ^0.13.3
+  vue-console-feed: ^0.0.28
 
 dependencies:
   '@fcanvas/communicate': 1.1.0-rc.39
+  vue-console-feed: 0.0.28
 
 devDependencies:
   esbuild: 0.17.12
@@ -606,6 +608,10 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /sprintf-js/1.1.2:
+    resolution: {integrity: sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==}
+    dev: false
+
   /supports-preserve-symlinks-flag/1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
@@ -667,6 +673,13 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
+
+  /vue-console-feed/0.0.28:
+    resolution: {integrity: sha512-IHxhVIEof/9iHfhtw7MrjuoaR7eoJEvjkw6dPLNsNrgZ1DTwcwl9MFhcWvbJtNpS/7elMXf+5UiMmYrrY/Eccg==}
+    engines: {node: '>=10'}
+    dependencies:
+      sprintf-js: 1.1.2
+    dev: false
 
   /xmlbuilder/15.1.1:
     resolution: {integrity: sha512-yMqGBqtXyeN1e3TGYvgNgDVZ3j84W4cwkOXQswghol6APgZWaff9lnbvN7MHYJOiXsvGPXtjTYJEiC9J2wv9Eg==}

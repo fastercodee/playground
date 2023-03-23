@@ -16,6 +16,7 @@
     "vite-plugin-singlefile": "^0.13.3"
   },
   "dependencies": {
-    "@fcanvas/communicate": "1.1.0-rc.39"
+    "@fcanvas/communicate": "1.1.0-rc.39",
+    "vue-console-feed": "^0.0.28"
   }
 }

@@ -11,7 +11,15 @@
 import { basename, join } from "path"
 
 import { listen, put } from "@fcanvas/communicate"
+import type { ComPreviewCore } from "app/preview/src/preview-core"
 import type { Communicate } from "app/preview/src/sw"
+import { Console, DataAPI } from "vue-console-feed"
+import type {
+  Data,
+} from "vue-console-feed"
+
+import type { ComPreviewVue } from "./Preview.types"
+
 
 const iframeRef = ref<HTMLIFrameElement>()
 
@@ -187,10 +195,41 @@ function setup() {
 }
 async function onLoad(event: Event) {
   const port2 = setup()
+  setupConsole(port2)
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   ;(event.target as HTMLIFrameElement)!.contentWindow!.postMessage(
     { port2 },
     { transfer: [port2], targetOrigin: "*" }
   )
+}
+
+function setupConsole(port2: MessagePort) {
+  const console = new DataAPI(true)
+
+  listen<ComPreviewCore, "console">(port2, "console", (opts) => {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    (console[opts.type] as unknown as Function)(...opts.args as unknown[])
+  })
+
+  function createAPIAsync(
+    type: "_getListLink" | "readLinkObject" | "callFnLink"
+  ) {
+    return (link: Data.Link) =>
+      put<ComPreviewVue, typeof type>(port2, type, link)
+  }
+
+  const getListLinkAsync = createAPIAsync("_getListLink")
+  const readLinkObjectAsync = createAPIAsync("readLinkObject")
+  const callFnLinkAsync = createAPIAsync("callFnLink")
+
+  function Anchor(options: { text: string; href: string }) {
+    return h(
+      "a",
+      {
+        href: options.href,
+      },
+      [options.text]
+    )
+  }
 }
 </script>

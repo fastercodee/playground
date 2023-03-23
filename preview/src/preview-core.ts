@@ -1,8 +1,25 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { listen, put } from "@fcanvas/communicate"
+import { listen, put, ping } from "@fcanvas/communicate"
 
 import type { Communicate } from "./sw"
 import regiser from "./sw?serviceworker"
+import { ComPreviewVue } from "../../src/components/sketch/Preview.types"
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { printfArgs } from "vue-console-feed/data-api"
+import {
+  _getListLink,
+  callFnLink,
+  clearLinkStore,
+  Encode,
+  readLinkObject
+} from "vue-console-feed/encode"
+import { Table } from "vue-console-feed/table"
+
+
+
+
 
 // eslint-disable-next-line functional/no-let
 let listenParent: (() => void) | undefined
@@ -88,8 +105,106 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
     else appendIndex()
     return false
   })
+
+  setupConsole(port2)
 }
 
 regiser()
 if (parent !== window) addEventListener("message", init)
 else init()
+
+export type ComPreviewCore = {
+  console(opts: {
+    type: "log" | "warn" | 'info' | 'debug' | 'error' | /** */ 'group' | 'groupEnd' | /** */ "count" | "countReset" | "time" | "timeLog" | "timeEnd"
+    args: (ReturnType<typeof Encode>)[]
+  } | {
+    type: "table"
+    args: (ReturnType<typeof Table>)[]
+  } | {
+    type: "clear",
+    args: []
+  }): void
+
+}
+
+function setupConsole(port2: MessagePort) {
+  ; (["log", "warn", "info", "debug", "error"] as const).forEach((name) => {
+    const cbRoot = (console)[name]
+      // eslint-disable-next-line functional/functional-parameters
+      ; (console as unknown as any)[name] = function (...args: unknown[]) {
+        ping<ComPreviewCore, "console">(port2, 'console', {
+          type: name,
+          args: printfArgs(args).map((item: unknown) => Encode(item, 2))
+        })
+
+        cbRoot.apply(this, args)
+      }
+  })
+  const { table } = console
+  console.table = function (value: unknown) {
+    if (value !== null && typeof value === "object")
+      ping<ComPreviewCore, "console">(port2, 'console', {
+        type: "table",
+        args: [Table(value, 1)]
+      })
+    else
+      ping<ComPreviewCore, "console">(port2, 'console', {
+        type: "log",
+        args: [Encode(value, 1)]
+      })
+    return table.call(this, value)
+  }
+    ; (["group", "groupEnd"] as const).forEach((name) => {
+      const cbRoot = (console)[name]
+        ; (console as unknown as any)[name] = function (value?: unknown) {
+          ping<ComPreviewCore, "console">(port2, 'console', {
+            type: name,
+            args: value !== undefined ? [Encode(value, 1)] : []
+          })
+
+          cbRoot.call(this, value)
+        }
+    })
+    ; (["count", "countReset", "time", "timeLog", "timeEnd"] as const).forEach(
+      (name) => {
+        const cbRoot = (console)[name]
+          ; (console as unknown as any)[name] = function (value?: unknown) {
+            ping<ComPreviewCore, "console">(port2, 'console', {
+              type: name,
+              args: value !== undefined ? [Encode(value + "", 1)] : []
+            })
+
+            cbRoot.call(this, value as string)
+          }
+      }
+    )
+  const { clear } = console
+  console.clear = function () {
+    ping<ComPreviewCore, "console">(port2, 'console', {
+      type: 'clear',
+      args: []
+    })
+
+    clear.call(this)
+  }
+  // ========================
+
+  // ===== error globals ====
+  addEventListener("error", (event) => {
+    ping<ComPreviewCore, "console">(port2, 'console', {
+      type: "error",
+      args: [Encode(event.error, 1)]
+    })
+  })
+  // ========================
+
+  // ====== API Async ======
+  listen<ComPreviewVue, "_getListLink">(port2, "_getListLink", _getListLink)
+  listen<ComPreviewVue, "readLinkObject">(port2, "readLinkObject", readLinkObject)
+  listen<ComPreviewVue, "callFnLink">(port2, "callFnLink", callFnLink)
+
+  listen<ComPreviewVue, "clear">(port2, 'clear', () => {
+    console.clear()
+    clearLinkStore()
+  })
+}
