@@ -1,4 +1,4 @@
-import { extname } from "path";
+import { extname } from "path"
 
 export async function readFileWithoutExt(
   path: string,
@@ -12,7 +12,7 @@ export async function readFileWithoutExt(
         directory: Directory.External,
       }).then(toBufferFile),
       ext,
-      path
+      path,
     }
   } catch (err) {
     if ((err as Error).message === "File does not exist.") {

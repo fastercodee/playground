@@ -7,7 +7,7 @@ export interface Options {
   readonly isOpen: boolean
   readonly isFolder: boolean
   readonly filepath: string
-  readonly language?: keyof typeof MaterialIcons["languageIds"]
+  readonly language?: keyof (typeof MaterialIcons)["languageIds"]
 }
 
 function getIconById(id: keyof typeof MaterialIcons.iconDefinitions): string {
@@ -22,7 +22,7 @@ function getIconDefinitions({
   isOpen,
   isFolder,
   filepath,
-  language
+  language,
 }: Options): string {
   filepath = basename(filepath).toLowerCase()
 

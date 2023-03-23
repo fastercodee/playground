@@ -1,25 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { listen, put, ping } from "@fcanvas/communicate"
-
-import type { Communicate } from "./sw"
-import regiser from "./sw?serviceworker"
-import { ComPreviewVue } from "../../src/components/sketch/Preview.types"
-
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { listen, ping, put } from "@fcanvas/communicate"
 import { printfArgs } from "vue-console-feed/data-api"
 import {
   _getListLink,
   callFnLink,
   clearLinkStore,
   Encode,
-  readLinkObject
+  readLinkObject,
 } from "vue-console-feed/encode"
 import { Table } from "vue-console-feed/table"
 
+import type { ComPreviewVue } from "../../src/components/sketch/Preview.types"
 
-
-
+import type { Communicate } from "./sw"
+import regiser from "./sw?serviceworker"
 
 // eslint-disable-next-line functional/no-let
 let listenParent: (() => void) | undefined
@@ -75,7 +69,6 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
           .forEach((script) => {
             const newScript = document.createElement("script")
 
-
             for (let i = 0; i < script.attributes.length; i++) {
               const { name, value } = script.attributes[i]
 
@@ -113,76 +106,99 @@ regiser()
 if (parent !== window) addEventListener("message", init)
 else init()
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ComPreviewCore = {
-  console(opts: {
-    type: "log" | "warn" | 'info' | 'debug' | 'error' | /** */ 'group' | 'groupEnd' | /** */ "count" | "countReset" | "time" | "timeLog" | "timeEnd"
-    args: (ReturnType<typeof Encode>)[]
-  } | {
-    type: "table"
-    args: (ReturnType<typeof Table>)[]
-  } | {
-    type: "clear",
-    args: []
-  }): void
-
+  console(
+    opts:
+      | {
+          type:
+            | "log"
+            | "warn"
+            | "info"
+            | "debug"
+            | "error"
+            | /** */ "group"
+            | "groupEnd"
+            | /** */ "count"
+            | "countReset"
+            | "time"
+            | "timeLog"
+            | "timeEnd"
+          args: ReturnType<typeof Encode>[]
+        }
+      | {
+          type: "table"
+          args: ReturnType<typeof Table>[]
+        }
+      | {
+          type: "clear"
+          args: []
+        }
+  ): void
 }
 
 function setupConsole(port2: MessagePort) {
-  ; (["log", "warn", "info", "debug", "error"] as const).forEach((name) => {
-    const cbRoot = (console)[name]
-      // eslint-disable-next-line functional/functional-parameters
-      ; (console as unknown as any)[name] = function (...args: unknown[]) {
-        ping<ComPreviewCore, "console">(port2, 'console', {
-          type: name,
-          args: printfArgs(args).map((item: unknown) => Encode(item, 2))
-        })
+  ;(["log", "warn", "info", "debug", "error"] as const).forEach((name) => {
+    const cbRoot = console[name]
+    // eslint-disable-next-line functional/functional-parameters, @typescript-eslint/no-explicit-any
+    ;(console as unknown as any)[name] = function (...args: unknown[]) {
+      ping<ComPreviewCore, "console">(port2, "console", {
+        type: name,
+        args: printfArgs(args).map((item: unknown) => Encode(item, 2)),
+      })
 
-        cbRoot.apply(this, args)
-      }
+      cbRoot.apply(this, args)
+    }
   })
+  // eslint-disable-next-line n/no-unsupported-features/node-builtins
   const { table } = console
+  // eslint-disable-next-line n/no-unsupported-features/node-builtins
   console.table = function (value: unknown) {
     if (value !== null && typeof value === "object")
-      ping<ComPreviewCore, "console">(port2, 'console', {
+      ping<ComPreviewCore, "console">(port2, "console", {
         type: "table",
-        args: [Table(value, 1)]
+        args: [Table(value, 1)],
       })
     else
-      ping<ComPreviewCore, "console">(port2, 'console', {
+      ping<ComPreviewCore, "console">(port2, "console", {
         type: "log",
-        args: [Encode(value, 1)]
+        args: [Encode(value, 1)],
       })
     return table.call(this, value)
   }
-    ; (["group", "groupEnd"] as const).forEach((name) => {
-      const cbRoot = (console)[name]
-        ; (console as unknown as any)[name] = function (value?: unknown) {
-          ping<ComPreviewCore, "console">(port2, 'console', {
-            type: name,
-            args: value !== undefined ? [Encode(value, 1)] : []
-          })
+  ;(["group", "groupEnd"] as const).forEach((name) => {
+    const cbRoot = console[name]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(console as unknown as any)[name] = function (value?: unknown) {
+      ping<ComPreviewCore, "console">(port2, "console", {
+        type: name,
+        args: value !== undefined ? [Encode(value, 1)] : [],
+      })
 
-          cbRoot.call(this, value)
-        }
-    })
-    ; (["count", "countReset", "time", "timeLog", "timeEnd"] as const).forEach(
-      (name) => {
-        const cbRoot = (console)[name]
-          ; (console as unknown as any)[name] = function (value?: unknown) {
-            ping<ComPreviewCore, "console">(port2, 'console', {
-              type: name,
-              args: value !== undefined ? [Encode(value + "", 1)] : []
-            })
+      cbRoot.call(this, value)
+    }
+  })
+  ;(["count", "countReset", "time", "timeLog", "timeEnd"] as const).forEach(
+    (name) => {
+      const cbRoot = console[name]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(console as unknown as any)[name] = function (value?: unknown) {
+        ping<ComPreviewCore, "console">(port2, "console", {
+          type: name,
+          args: value !== undefined ? [Encode(value + "", 1)] : [],
+        })
 
-            cbRoot.call(this, value as string)
-          }
+        cbRoot.call(this, value as string)
       }
-    )
+    }
+  )
+  // eslint-disable-next-line n/no-unsupported-features/node-builtins
   const { clear } = console
+  // eslint-disable-next-line n/no-unsupported-features/node-builtins
   console.clear = function () {
-    ping<ComPreviewCore, "console">(port2, 'console', {
-      type: 'clear',
-      args: []
+    ping<ComPreviewCore, "console">(port2, "console", {
+      type: "clear",
+      args: [],
     })
 
     clear.call(this)
@@ -191,19 +207,24 @@ function setupConsole(port2: MessagePort) {
 
   // ===== error globals ====
   addEventListener("error", (event) => {
-    ping<ComPreviewCore, "console">(port2, 'console', {
+    ping<ComPreviewCore, "console">(port2, "console", {
       type: "error",
-      args: [Encode(event.error, 1)]
+      args: [Encode(event.error, 1)],
     })
   })
   // ========================
 
   // ====== API Async ======
   listen<ComPreviewVue, "_getListLink">(port2, "_getListLink", _getListLink)
-  listen<ComPreviewVue, "readLinkObject">(port2, "readLinkObject", readLinkObject)
+  listen<ComPreviewVue, "readLinkObject">(
+    port2,
+    "readLinkObject",
+    readLinkObject
+  )
   listen<ComPreviewVue, "callFnLink">(port2, "callFnLink", callFnLink)
 
-  listen<ComPreviewVue, "clear">(port2, 'clear', () => {
+  listen<ComPreviewVue, "clear">(port2, "clear", () => {
+    // eslint-disable-next-line n/no-unsupported-features/node-builtins
     console.clear()
     clearLinkStore()
   })

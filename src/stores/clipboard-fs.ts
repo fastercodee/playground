@@ -41,7 +41,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
     if (toEntry.name === action.value.entry.name) {
       // to sibling
       // scan name
-       
+
       for (let i = 1; i < 1e3; i++) {
         const newName =
           action.value.entry.name + " copy" + (i === 1 ? "" : ` ${i}`)
@@ -107,6 +107,6 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
     copy,
     cancelAction,
     paste,
-    isEntryCuting
+    isEntryCuting,
   }
 })

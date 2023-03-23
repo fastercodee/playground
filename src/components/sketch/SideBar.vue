@@ -56,7 +56,9 @@
       hidden: tabSelection === null,
     }"
   >
-    <div class="h-full border-r border-gray-700 overflow-x-hidden relative flex flex-col flex-nowrap">
+    <div
+      class="h-full border-r border-gray-700 overflow-x-hidden relative flex flex-col flex-nowrap"
+    >
       <KeepAlive>
         <Files v-if="tabSelection === 'file'" />
       </KeepAlive>

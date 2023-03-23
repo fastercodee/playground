@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-let */
- 
+
 function b64ToUint6(nChr: number) {
   return nChr > 64 && nChr < 91
     ? nChr - 65

@@ -1,24 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ComponentInternalInstance } from "vue"
 
-const store = new Map<string, Set<((...args: any) => void)>>()
-
+const store = new Map<string, Set<(...args: any) => void>>()
 
 interface Events {
-  "writeFile": [string]
+  writeFile: [string]
   deleteFile: [string]
   rmdir: [string]
   copyDir: [string]
 }
 
-function on(name: "*", cb: (type: keyof Events,
-  ...args: Events[keyof Events]) => void, instance: ComponentInternalInstance | null): void
-function on<N extends keyof Events>(name: N, cb: (...args: Events[N]) => void, instance: ComponentInternalInstance | null): void
-function on<N extends keyof Events>(name: N, cb: (...args: Events[N]) => void, instance: ComponentInternalInstance | null) {
+function on(
+  name: "*",
+  cb: (type: keyof Events, ...args: Events[keyof Events]) => void,
+  instance: ComponentInternalInstance | null
+): void
+function on<N extends keyof Events>(
+  name: N,
+  cb: (...args: Events[N]) => void,
+  instance: ComponentInternalInstance | null
+): void
+function on<N extends keyof Events>(
+  name: N,
+  cb: (...args: Events[N]) => void,
+  instance: ComponentInternalInstance | null
+) {
   // eslint-disable-next-line functional/no-let
   let listeners = store.get(name)
 
-  if (!listeners) store.set(name, listeners = new Set())
+  if (!listeners) store.set(name, (listeners = new Set()))
 
   listeners.add(cb)
 
@@ -30,19 +40,23 @@ function on<N extends keyof Events>(name: N, cb: (...args: Events[N]) => void, i
 // eslint-disable-next-line functional/functional-parameters
 function emit<N extends keyof Events>(name: N, ...args: Events[N]) {
   // eslint-disable-next-line n/no-callback-literal
-  store.get(name)?.forEach(cb => cb(...args))
-  store.get("*")?.forEach(cb => cb(name, ...args))
+  store.get(name)?.forEach((cb) => cb(...args))
+  store.get("*")?.forEach((cb) => cb(name, ...args))
 }
 
 export const eventBus = { on, emit }
 
-
 export class フォロワー {
   private たどる道 = new Set<string>()
 
-  constructor(private コールバック?: (タイプ: keyof Events, パス: string, pathWatch: string) => void) {
+  constructor(
+    private コールバック?: (
+      タイプ: keyof Events,
+      パス: string,
+      pathWatch: string
+    ) => void
+  ) {
     const handle = (タイプ: keyof Events, パス: string) => {
-
       if (!this.コールバック) return
       switch (タイプ) {
         case "writeFile":
@@ -71,16 +85,19 @@ export class フォロワー {
     // eslint-disable-next-line functional/no-let
     let called = false
     const resolved = Promise.resolve()
-    on("*", (タイプ: keyof Events, パス: string) => {
-      if (called) return
-      called = true
-      // eslint-disable-next-line promise/catch-or-return, promise/always-return
-      resolved.then(() => {
-        handle(タイプ, パス)
-        called = false
-      })
-
-    }, getCurrentInstance())
+    on(
+      "*",
+      (タイプ: keyof Events, パス: string) => {
+        if (called) return
+        called = true
+        // eslint-disable-next-line promise/catch-or-return, promise/always-return
+        resolved.then(() => {
+          handle(タイプ, パス)
+          called = false
+        })
+      },
+      getCurrentInstance()
+    )
   }
 
   public addWatchFile(path: string) {
@@ -91,10 +108,15 @@ export class フォロワー {
     this.たどる道.clear()
   }
 
-  public コールバックを設定(コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void) {
+  public コールバックを設定(
+    コールバック: (
+      タイプ: keyof Events,
+      パス: string,
+      pathWatch: string
+    ) => void
+  ) {
     this.コールバック = コールバック
   }
 }
-
 
 export { フォロワー as WatcherFs }

@@ -93,9 +93,9 @@ function vitePluginServiceWorker(): PluginOption {
         return {
           code: `export default function registerServiceWorker() {
             return navigator.serviceWorker.register("/${posix.relative(
-            resolved.root,
-            relative(resolved.root, id).replace("/", "_")
-          )}", { scope: '/' })
+              resolved.root,
+              relative(resolved.root, id).replace("/", "_")
+            )}", { scope: '/' })
           }`,
           map: null,
         }

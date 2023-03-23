@@ -14,12 +14,9 @@ import { listen, put } from "@fcanvas/communicate"
 import type { ComPreviewCore } from "app/preview/src/preview-core"
 import type { Communicate } from "app/preview/src/sw"
 import { Console, DataAPI } from "vue-console-feed"
-import type {
-  Data,
-} from "vue-console-feed"
+import type { Data } from "vue-console-feed"
 
 import type { ComPreviewVue } from "./Preview.types"
-
 
 const iframeRef = ref<HTMLIFrameElement>()
 
@@ -208,7 +205,7 @@ function setupConsole(port2: MessagePort) {
 
   listen<ComPreviewCore, "console">(port2, "console", (opts) => {
     // eslint-disable-next-line @typescript-eslint/ban-types
-    (console[opts.type] as unknown as Function)(...opts.args as unknown[])
+    ;(console[opts.type] as unknown as Function)(...(opts.args as unknown[]))
   })
 
   function createAPIAsync(

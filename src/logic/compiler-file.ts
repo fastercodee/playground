@@ -23,6 +23,6 @@ export async function compilerFile(
     sourcefile: `${filename}.${ext}`,
     tsconfigRaw,
   })
-  
+
   return new TextEncoder().encode(res.code).buffer
 }

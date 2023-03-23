@@ -44,16 +44,18 @@ addEventListener("fetch", (event) => {
     const response = put<Communicate>(cast, "get file", {
       url: request.url,
       headers: [...request.headers.entries()],
-    }).then((response) =>
-      response
-        ? new Response(response.content, response.init)
-        : fetch(event.request)
-    ).catch(err => {
-      return new Response(err.message, {
-        status: 408,
-        statusText: "Request timeout"
-      })
     })
+      .then((response) =>
+        response
+          ? new Response(response.content, response.init)
+          : fetch(event.request)
+      )
+      .catch((err) => {
+        return new Response(err.message, {
+          status: 408,
+          statusText: "Request timeout",
+        })
+      })
 
     event.respondWith(response)
     return

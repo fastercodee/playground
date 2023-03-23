@@ -10,11 +10,11 @@ export function checkErrorFileName(
       ? undefined
       : {
           type: "error",
-          message: "A file or folder name must be provided."
+          message: "A file or folder name must be provided.",
         }
   }
 
-  if (siblings.some(item => item.name === fileName)) {
+  if (siblings.some((item) => item.name === fileName)) {
     return {
       type: "error",
       message: `
@@ -22,7 +22,7 @@ export function checkErrorFileName(
           File or folder <span class="font-bold">${fileName}</span> already
           exists at this location.
         </span>
-      `
+      `,
     }
   }
 
@@ -32,14 +32,14 @@ export function checkErrorFileName(
       message: `<span>
           The name <span class="font-bold">${fileName}</span> is not a valid
           as file or directory. Please select a different file name.
-        </span>`
+        </span>`,
     }
   }
 
   if (fileName[0] === "/" || fileName[0] === "\\") {
     return {
       type: "error",
-      message: "A file or folder name cannot start with a slash."
+      message: "A file or folder name cannot start with a slash.",
     }
   }
 
@@ -47,7 +47,7 @@ export function checkErrorFileName(
     return {
       type: "warn",
       message:
-        "Leading or trailing whitespace detected in a file or folder name."
+        "Leading or trailing whitespace detected in a file or folder name.",
     }
   }
 
@@ -57,7 +57,7 @@ export function checkErrorFileName(
       message: `<span>
           The name <span class="font-bold">${fileName}</span> is not a valid
           as file or folder name. Please select a different file name.
-        </span>`
+        </span>`,
     }
   }
 }

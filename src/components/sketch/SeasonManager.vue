@@ -66,7 +66,7 @@ const containerRef = ref<HTMLDivElement>()
 
 const mapName = computed(() => {
   const repeats = new Map<string, Entry<"file">[]>()
-  seasonEditStore.seasons.forEach(( entry ) => {
+  seasonEditStore.seasons.forEach((entry) => {
     // eslint-disable-next-line functional/no-let
     let store = repeats.get(entry.name)
     if (!store) repeats.set(entry.name, (store = []))
@@ -82,7 +82,6 @@ const mapName = computed(() => {
       // eslint-disable-next-line functional/no-let
       let dir = item.directory.fullPath()
 
-       
       for (let i = 0; i < 20; i++) {
         const name =
           item.name +

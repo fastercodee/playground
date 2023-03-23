@@ -289,7 +289,6 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     history.push(entry)
     if (history.length > 100) history.splice(0, 100 - history.length)
 
-
     onChanged = debounce(async (text) => {
       if (entryChanging === entry) return
       entryChanging = entry

@@ -32,7 +32,7 @@ function isPathParent(parent: string, children: string): boolean {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-(FilesystemWeb.prototype as unknown as any)._copy = async function copy(
+;(FilesystemWeb.prototype as unknown as any)._copy = async function copy(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   this: any,
   options: CopyOptions,
@@ -132,9 +132,9 @@ function isPathParent(parent: string, children: string): boolean {
       }
 
       // eslint-disable-next-line functional/no-let
-      let encoding;
+      let encoding
       if (!this.isBase64String(file.data)) {
-        encoding = Encoding.UTF8;
+        encoding = Encoding.UTF8
       }
 
       // Write the file to the new location
@@ -142,7 +142,7 @@ function isPathParent(parent: string, children: string): boolean {
         path: to,
         directory: toDirectory,
         data: file.data,
-        encoding
+        encoding,
       })
 
       // Copy the mtime/ctime of a renamed file
@@ -181,7 +181,6 @@ function isPathParent(parent: string, children: string): boolean {
           directory: fromDirectory,
         })
       ).files
-
 
       for (const filename of contents) {
         // Move item from the from directory to the to directory
