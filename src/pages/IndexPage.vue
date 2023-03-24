@@ -4,6 +4,7 @@
 
     <div class="flex h-full flex-1 w-full">
       <SideBar />
+      <SettingLayout />
       <div class="flex flex-1 min-w-0">
         <Editor />
         <Preview />

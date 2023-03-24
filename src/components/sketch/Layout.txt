@@ -1,0 +1,29 @@
+columns:
+| editor | console | preview |
+| ========================== |
+
+rows:
+| editor  |
+| console |
+| preview |
+| ======= |
+
+bottom:
+| editor | console |
+|     preview      |
+| ================ |
+
+right:
+| editor  | preview |
+| console |         |
+| ================= |
+
+top:
+|       editor      |
+| console | preview |
+| ================= |
+
+left:
+| editor  | preview |
+|         | console |
+| ================= |
