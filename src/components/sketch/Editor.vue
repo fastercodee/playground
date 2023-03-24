@@ -1,5 +1,8 @@
 <template>
-  <div ref="editorRef" class="h-full w-full parent-editor" />
+  <div class="flex flex-col flex-nowrap w-full">
+    <SeasonManager />
+    <div ref="editorRef" class="h-full w-full parent-editor" />
+  </div>
 </template>
 
 <script lang="ts" setup>

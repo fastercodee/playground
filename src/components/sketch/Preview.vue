@@ -1,11 +1,4 @@
 <template>
-  <Console
-    :data="console.value"
-    :_get-list-link-async="_getListLinkAsync"
-    :read-link-object-async="readLinkObjectAsync"
-    :call-fn-link-async="callFnLinkAsync"
-    :anchor="Anchor"
-  />
   <iframe
     :src="srcIFrame"
     class="w-full border border-light-600 bg-white"
@@ -18,20 +11,10 @@
 import { basename, join } from "path"
 
 import { listen, put } from "@fcanvas/communicate"
-import type { ComPreviewCore } from "app/preview/src/preview-core"
 import type { Communicate } from "app/preview/src/sw"
-import { Console, DataAPI } from "vue-console-feed"
-import type { Data } from "vue-console-feed"
-import type {
-  _getListLink,
-  callFnLink,
-  readLinkObject,
-} from "vue-console-feed/encode"
-import "vue-console-feed/style.css"
-
-import type { ComPreviewVue } from "./Preview.types"
 
 const iframeRef = ref<HTMLIFrameElement>()
+const previewStore = usePreviewStore()
 
 const srcIFrame = process.env.GITPOD_WORKSPACE_URL
   ? process.env.GITPOD_WORKSPACE_URL.replace("https://", "https://9999-")
@@ -86,25 +69,19 @@ const mimeMap = {
 }
 
 // eslint-disable-next-line functional/no-let
-let channel: MessageChannel | null = null
-// eslint-disable-next-line functional/no-let
 let listener: null | (() => void) = null
 onUnmounted(() => {
-  channel?.port1.close()
-  channel?.port2.close()
+  previewStore.setChannel(null)
   listener?.()
 })
 
 const watchFs = new WatcherFs()
 
 function setup() {
-  channel?.port1.close()
-  channel?.port2.close()
+  const { port1, port2 } = previewStore.setChannel(new MessageChannel())
+
   listener?.()
   watchFs.clear()
-
-  channel = new MessageChannel()
-  const { port1, port2 } = channel
 
   port1.start()
 
@@ -203,8 +180,6 @@ function setup() {
     }
   })
 
-  setupConsole(port1)
-
   return port2
 }
 async function onLoad(event: Event) {
@@ -213,45 +188,6 @@ async function onLoad(event: Event) {
   ;(event.target as HTMLIFrameElement)!.contentWindow!.postMessage(
     { port2 },
     { transfer: [port2], targetOrigin: "*" }
-  )
-}
-
-const console = new DataAPI(true)
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type HPromise<T extends (...args: any) => any> = (...args: Parameters<T>) => any
-
-const _getListLinkAsync = ref<HPromise<typeof _getListLink>>()
-const readLinkObjectAsync = ref<HPromise<typeof readLinkObject>>()
-const callFnLinkAsync = ref<HPromise<typeof callFnLink>>()
-
-function setupConsole(port: MessagePort) {
-  listen<ComPreviewCore, "console">(port, "console", (opts) => {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    ;(console[opts.type] as unknown as Function)(...(opts.args as unknown[]))
-  })
-
-  function createAPIAsync(
-    type: "_getListLink" | "readLinkObject" | "callFnLink"
-  ) {
-    return (link: Data.Link) => {
-      window.console.log("call help %s", type, link)
-
-      return put<ComPreviewVue, typeof type>(port, type, link)
-    }
-  }
-
-  _getListLinkAsync.value = createAPIAsync("_getListLink")
-  readLinkObjectAsync.value = createAPIAsync("readLinkObject")
-  callFnLinkAsync.value = createAPIAsync("callFnLink")
-}
-function Anchor(options: { text: string; href: string }) {
-  return h(
-    "a",
-    {
-      href: options.href,
-    },
-    [options.text]
   )
 }
 </script>

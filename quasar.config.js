@@ -147,10 +147,10 @@ module.exports = configure(function (/* ctx */) {
                   "Filesystem",
                   "Directory",
                   "Encoding",
-                ],
+                ]
               },
             ],
-            dirs: ["src/logic/**/*.ts", "src/logic/**/*.tsx"],
+            dirs: ["src/logic/**/*.ts", "src/logic/**/*.tsx", "src/stores/**/*.ts"],
             eslintrc: {
               enabled: true, // Default `false`
               filepath: "./.eslintrc-auto-import.json", // Default `./.eslintrc-auto-import.json`

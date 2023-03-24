@@ -54,13 +54,20 @@ async function init() {
 
   await Filesystem.writeFile({
     path: "current/index.html",
-    data: "hello index.html",
+    data: `
+<h1>Hello h1</h1>
+\<script src="/src/main.js"><\/script>
+    `,
     encoding: Encoding.UTF8,
     directory: Directory.External,
   })
   await Filesystem.writeFile({
     path: "current/src/main.js",
-    data: 'console.log("hello main.js")',
+    data: `
+setInterval(() => {
+  document.querySelector("h1").textContent = new Date().toString();
+}, 1000)
+    `,
     encoding: Encoding.UTF8,
     directory: Directory.External,
   })
