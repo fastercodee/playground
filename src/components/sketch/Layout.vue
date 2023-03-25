@@ -1,18 +1,33 @@
 <template>
   <div class="container w-full h-full" :class="Mode[settingsStore.mode]">
-    <div
+
+    <Resizable
       class="area_1"
+      :enable="{
+        top: false,
+        right: false,
+        bottom: false,
+        left: true,
+        topRight: false,
+        bottomRight: false,
+        bottomLeft: false,
+        topLeft: false,
+      }"
+      max-width="100%"
+    >
+    <div
       :ref="(el) => (targetRef.area_1 = el as HTMLDivElement)"
-    ></div>
+    />
+    </Resizable>
     <div class="group">
       <div
         class="area_2"
         :ref="(el) => (targetRef.area_2 = el as HTMLDivElement)"
-      ></div>
+      />
       <div
         class="area_3"
         :ref="(el) => (targetRef.area_3 = el as HTMLDivElement)"
-      ></div>
+      />
     </div>
   </div>
 
@@ -30,8 +45,11 @@
 </template>
 
 <script lang="ts" setup>
+import { Resizable } from "vue-re-resizable"
+
 import type { Area } from "./Layout.types"
 import { AreaComponent, Mode } from "./Layout.types"
+import "vue-re-resizable/dist/style.css"
 
 const settingsStore = useSettingsStore()
 
