@@ -74,6 +74,7 @@
     "@types/serviceworker": "^0.0.65",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
+    "@unocss/transformer-directives": "^0.50.6",
     "autoprefixer": "^10.4.2",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",

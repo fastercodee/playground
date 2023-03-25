@@ -8,6 +8,7 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
+const { default: transformerDirectives } = require("@unocss/transformer-directives")
 const { OnuResolver, presetOnu } = require("onu-ui")
 const { extend } = require("quasar")
 const { configure } = require("quasar/wrappers")
@@ -125,6 +126,9 @@ module.exports = configure(function (/* ctx */) {
                 /^size-\[([^[\]]+)\]/,
                 ([, value]) => ({ width: value, height: value }),
               ],
+            ],
+            transformers: [
+              transformerDirectives(),
             ],
           },
         ],

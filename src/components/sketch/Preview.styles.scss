@@ -1,0 +1,100 @@
+.container {
+  @apply w-full h-full;
+
+  &.columns {
+    &,
+    & .group {
+      @apply flex flex-col flex-nowrap;
+    }
+    .area_1 {
+      @apply w-full;
+      height: (100% / 3);
+    }
+    .group {
+      @apply w-full;
+      height: (100% / 3 * 2);
+      .area_2,
+      .area_3 {
+        @apply w-full h-1/2;
+      }
+    }
+  }
+  &.rows {
+    &,
+    & .group {
+      @apply flex flex-nowrap;
+    }
+    .area_1 {
+      @apply h-full;
+      width: (100% / 3);
+    }
+    .group {
+      @apply w-full;
+      width: (100% / 3 * 2);
+      .area_2,
+      .area_3 {
+        @apply w-1/2;
+      }
+    }
+  }
+  &.bottom {
+    @apply flex flex-col flex-nowrap;
+    .area_1 {
+      order: 2;
+    }
+    .area_1,
+    .group {
+      @apply w-full h-1/2;
+    }
+    .group {
+      @apply flex flex-nowrap;
+      order: 1;
+      .area_2,
+      .area_3 {
+        @apply w-1/2 h-full;
+      }
+    }
+  }
+  &.right {
+    @apply flex flex-nowrap;
+    .area_1 {
+      order: 2;
+      @apply w-1/2 h-full;
+    }
+    .group {
+      @apply flex flex-col flex-nowrap w-1/2 h-full;
+      order: 1;
+      .area_2,
+      .area_3 {
+        @apply w-full h-1/2;
+      }
+    }
+  }
+  &.top {
+    @apply flex flex-col flex-nowrap;
+    .area_1,
+    .group {
+      @apply w-full h-1/2;
+    }
+    .group {
+      @apply flex flex-nowrap;
+      .area_2,
+      .area_3 {
+        @apply w-1/2 h-full;
+      }
+    }
+  }
+  &.left {
+    @apply flex flex-nowrap;
+    .area_1,.group {
+      @apply w-1/2 h-full;
+    }
+    .group {
+      @apply flex flex-col flex-nowrap;
+      .area_2,
+      .area_3 {
+        @apply w-full h-1/2;
+      }
+    }
+  }
+}
