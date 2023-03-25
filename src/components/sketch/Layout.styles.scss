@@ -1,5 +1,5 @@
 .container {
-  @apply w-full h-full;
+  @apply w-full h-full relative;
 
   &.columns {
     &,
@@ -11,8 +11,7 @@
       height: (100% / 3);
     }
     .group {
-      @apply w-full;
-      height: (100% / 3 * 2);
+      @apply w-full h-full;
       .area_2,
       .area_3 {
         @apply w-full h-1/2;
@@ -29,8 +28,7 @@
       width: (100% / 3);
     }
     .group {
-      @apply w-full;
-      width: (100% / 3 * 2);
+      @apply w-full h-full;
       .area_2,
       .area_3 {
         @apply w-1/2;
@@ -42,12 +40,11 @@
     .area_1 {
       order: 2;
     }
-    .area_1,
-    .group {
+    .area_1 {
       @apply w-full h-1/2;
     }
     .group {
-      @apply flex flex-nowrap;
+      @apply flex flex-nowrap w-full h-full;
       order: 1;
       .area_2,
       .area_3 {
@@ -60,9 +57,10 @@
     .area_1 {
       order: 2;
       @apply w-1/2 h-full;
+      --width: 50%;
     }
     .group {
-      @apply flex flex-col flex-nowrap w-1/2 h-full;
+      @apply flex flex-col flex-nowrap w-full h-full;
       order: 1;
       .area_2,
       .area_3 {
@@ -72,12 +70,11 @@
   }
   &.top {
     @apply flex flex-col flex-nowrap;
-    .area_1,
-    .group {
+    .area_1 {
       @apply w-full h-1/2;
     }
     .group {
-      @apply flex flex-nowrap;
+      @apply flex flex-nowrap w-full h-full;
       .area_2,
       .area_3 {
         @apply w-1/2 h-full;
@@ -86,11 +83,11 @@
   }
   &.left {
     @apply flex flex-nowrap;
-    .area_1,.group {
+    .area_1 {
       @apply w-1/2 h-full;
     }
     .group {
-      @apply flex flex-col flex-nowrap;
+      @apply flex flex-col flex-nowrap w-full h-full;
       .area_2,
       .area_3 {
         @apply w-full h-1/2;

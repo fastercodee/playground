@@ -27,6 +27,7 @@
         class="bottom-12px left-25px right-auto top-auto text-[10px] py-2px px-5px"
       />
     </button>
+    <button @click="settingsLayout = !settingsLayout">Settings Layout</button>
 
     <q-separator class="!w-[calc(100%-12px)] h-[1px]" />
 
@@ -64,6 +65,8 @@
       </KeepAlive>
     </div>
   </Resizable>
+
+  <DialogSettingLayout v-model="settingsLayout" />
 </template>
 
 <script lang="ts" setup>
@@ -84,4 +87,6 @@ const tabs: {
     value: "file",
   },
 ]
+
+const settingsLayout = ref(false)
 </script>
