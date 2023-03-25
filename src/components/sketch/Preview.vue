@@ -1,7 +1,7 @@
 <template>
   <iframe
     :src="srcIFrame"
-    class="w-full border border-light-600 bg-white"
+    class="w-full h-full border border-light-600 bg-white"
     ref="iframeRef"
     @load="onLoad"
   />

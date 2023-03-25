@@ -1,16 +1,8 @@
 <template>
-  <q-page class="flex column w-full">
+  <q-page class="flex flex-nowrap w-full w-[100vw] h-[100vh]">
     <!-- <ToolBar /> -->
 
-    <div class="flex h-full flex-1 w-full">
-      <SideBar />
-      <SettingLayout />
-      <div class="flex flex-1 min-w-0">
-        <Editor />
-        <Preview />
-        <!-- editor -->
-      </div>
-      <Console />
-    </div>
+    <SideBar />
+    <Layout />
   </q-page>
 </template>
