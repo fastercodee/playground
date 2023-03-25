@@ -52,4 +52,4 @@ const map = computed(
 )
 </script>
 
-<style lang="scss" scoped src="./Preview.styles.scss"></style>
+<style lang="scss" scoped src="./Layout.styles.scss"></style>

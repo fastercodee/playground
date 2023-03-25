@@ -71,8 +71,6 @@ import { Icon } from "@iconify/vue"
 import { Resizable } from "vue-re-resizable"
 import "vue-re-resizable/dist/style.css"
 
-import Files from "./sidebar/Files.vue"
-
 const tabSelection = ref<null | "file" | "search" | "change" | "setting">(
   "file"
 )

@@ -154,7 +154,7 @@ function apply() {
 </script>
 
 <style lang="scss" scoped>
-@import "./Preview.styles.scss";
+@import "./Layout.styles.scss";
 
 .icon {
   width: 28px;
