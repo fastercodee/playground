@@ -3,7 +3,7 @@ import { AreaComponent, Mode } from "components/sketch/Layout.types";
 import { defineStore } from "pinia";
 
 export const useSettingsStore = defineStore("settings", () => {
-  const mode = ref<Mode>(Mode.left)
+  const mode = ref<Mode>(Mode.top)
   // bottom reverse
   // right reverse
 
