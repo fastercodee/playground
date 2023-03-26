@@ -49,7 +49,7 @@
         :ref="(el) => (resizableRef.area_2 = el as InstanceType<typeof Resizable>)"
       >
         <div
-          class="w-full h-full"
+          class="w-full h-full relative"
           :ref="(el) => (targetRef.area_2 = el as HTMLDivElement)"
         />
       </Resizable>

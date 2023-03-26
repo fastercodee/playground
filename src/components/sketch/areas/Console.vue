@@ -1,15 +1,31 @@
 <template>
-  <Console
-    :data="console.value"
-    :_get-list-link-async="_getListLinkAsync"
-    :read-link-object-async="readLinkObjectAsync"
-    :call-fn-link-async="callFnLinkAsync"
-    :anchor="Anchor"
-  />
+  <div class="flex flex-col flex-nowrap h-full">
+    <header
+      class="py-[5px] px-2 border-gray-700 border-t text-[12px] flex flex-nowrap justify-between items-center"
+    >
+      CONSOLE
+      <div>
+        <q-btn dense round size="sm" class="mr-1" @click="console.clear()">
+          <Icon icon="codicon:clear-all" width="2em" height="2em" />
+        </q-btn>
+        <q-btn dense round icon="close" size="sm" />
+      </div>
+    </header>
+    <div class="overflow-y-auto h-full">
+      <Console
+        :data="console.value"
+        :_get-list-link-async="_getListLinkAsync"
+        :read-link-object-async="readLinkObjectAsync"
+        :call-fn-link-async="callFnLinkAsync"
+        :anchor="Anchor"
+      />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { listen, put } from "@fcanvas/communicate"
+import { Icon } from "@iconify/vue"
 import type { ComPreviewCore } from "app/preview/src/preview-core"
 import { Console, DataAPI, Encode } from "vue-console-feed"
 import type { Data } from "vue-console-feed"

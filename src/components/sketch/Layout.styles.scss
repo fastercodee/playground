@@ -1,6 +1,11 @@
 .container {
   @apply w-full h-full relative;
 
+  .group,
+  .area_1 {
+    @apply min-w-0 min-h-0;
+  }
+
   &.columns {
     &,
     & .group {
