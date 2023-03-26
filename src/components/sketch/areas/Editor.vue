@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col flex-nowrap w-full">
+  <div class="flex flex-col flex-nowrap w-full h-full">
     <SeasonManager />
-    <div ref="editorRef" class="h-full w-full parent-editor" />
+    <div ref="editorRef" class="h-full w-full min-h-0 parent-editor" />
   </div>
 </template>
 
