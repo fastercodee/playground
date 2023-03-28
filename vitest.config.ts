@@ -6,6 +6,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    setupFiles: "./setup.vitest.ts"
   },
   plugins: [
     AutoImport({
@@ -24,7 +25,7 @@ export default defineConfig({
           "@capacitor/filesystem": ["Filesystem", "Directory", "Encoding"],
         },
       ],
-      dirs: ["src/logic/*"],
+      dirs: ["src/logic/*.ts"],
       eslintrc: {
         enabled: true, // Default `false`
         filepath: "./.eslintrc-auto-import.json", // Default `./.eslintrc-auto-import.json`
