@@ -2,22 +2,22 @@ import { globby } from "./globby"
 
 async function cleanupFS() {
   const { files } = await Filesystem.readdir({
-    path: "",
+    path: "globby",
     directory: Directory.External
-  })
+  }).catch(() => ({files: []}));
 
   for (const file of files) {
-    if (file.type === 'file')
+    if (file.type === "file")
       await Filesystem.deleteFile({
-        path: file.name,
+        path: "globby/" + file.name,
         directory: Directory.External
       })
     else
       await Filesystem.rmdir({
-        path: file.name,
+        path: "globby/" + file.name,
         directory: Directory.External,
         recursive: true
-      })
+      }).catch(() => false)
   }
 }
 
@@ -26,23 +26,23 @@ describe("globby", async () => {
   // init files
 
   await Filesystem.writeFile({
-    path: "foo.js",
+    path: "globby/foo.js",
     directory: Directory.External,
     data: "",
     encoding: Encoding.UTF8
   })
   await Filesystem.writeFile({
-    path: "bar.js",
+    path: "globby/bar.js",
     directory: Directory.External,
     data: "",
     encoding: Encoding.UTF8
   })
   await Filesystem.mkdir({
-    path: "src",
+    path: "globby/src",
     directory: Directory.External
   })
   await Filesystem.writeFile({
-    path: "src/main.js",
+    path: "globby/src/main.js",
     directory: Directory.External,
     data: "",
     encoding: Encoding.UTF8
@@ -51,21 +51,21 @@ describe("globby", async () => {
   test("include", async () => {
     const files: string[] = []
 
-    for await (const file of await globby("", ["*.js"], [])) {
+    for await (const file of await globby("globby/", ["*.js"], [])) {
       files.push(file)
     }
 
-    expect(files).toEqual(["foo.js", "bar.js", "src/main.js"])
+    expect(files).toEqual(["globby/foo.js", "globby/bar.js", "globby/src/main.js"])
   })
 
   test("ignore", async () => {
     const files: string[] = []
 
-    for await (const file of await globby("", ["*.js"], ['main.js'])) {
+    for await (const file of await globby("globby/", ["*.js"], ["main.js"])) {
       files.push(file)
     }
 
-    expect(files).toEqual(["foo.js", "bar.js"])
+    expect(files).toEqual(["globby/foo.js", "globby/bar.js"])
 
   })
 })

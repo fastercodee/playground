@@ -1,3 +1,7 @@
+/* eslint-env webworker */
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="../../node_modules/typescript/lib/lib.webworker.d.ts" />
+
 import { listen } from "@fcanvas/communicate"
 import type {
   CursorOptions,

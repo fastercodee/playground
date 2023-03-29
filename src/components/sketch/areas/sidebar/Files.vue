@@ -56,8 +56,8 @@ async function init() {
     path: "current/index.html",
     data: `
 <h1>Hello h1</h1>
-\<script src="/src/main.js"><\/script>
-    `,
+\\<script src="/src/main.js"><\\/script>
+    `.replace(/\\/g, ""),
     encoding: Encoding.UTF8,
     directory: Directory.External,
   })

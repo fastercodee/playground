@@ -63,6 +63,9 @@
       <KeepAlive>
         <Files v-if="tabSelection === 'file'" />
       </KeepAlive>
+      <KeepAlive>
+        <Search v-if="tabSelection === 'search'" />
+      </KeepAlive>
     </div>
   </Resizable>
 
@@ -75,7 +78,7 @@ import { Resizable } from "vue-re-resizable"
 import "vue-re-resizable/dist/style.css"
 
 const tabSelection = ref<null | "file" | "search" | "change" | "setting">(
-  "file"
+  "search"
 )
 const tabs: {
   icon: string
@@ -85,6 +88,10 @@ const tabs: {
   {
     icon: "codicon:files",
     value: "file",
+  },
+  {
+    icon: "codicon:search",
+    value: "search",
   },
 ]
 
