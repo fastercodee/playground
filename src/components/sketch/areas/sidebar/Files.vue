@@ -1,21 +1,21 @@
 <template>
-  <header class="py-2 px-3 text-[12px] flex justify-between">
+  <header class="py-2 px-3 text-12px flex justify-between">
     HEADER
     <div>
       <Icon
         icon="codicon:new-file"
-        class="w-[16px] h-[16px] mr-2"
+        class="w-16px h-16px mr-2"
         @click="treeRef?.addFile()"
       />
       <Icon
         icon="codicon:new-folder"
-        class="w-[16px] h-[16px] mr-2"
+        class="w-16px h-16px mr-2"
         @click="treeRef?.addFolder()"
       />
       <Icon
         v-if="clipboardFSStore.action"
         icon="material-symbols:content-paste"
-        class="w-[16px] h-[16px]"
+        class="w-16px h-16px"
         @click="paste"
       />
     </div>

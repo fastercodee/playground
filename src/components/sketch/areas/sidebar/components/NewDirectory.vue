@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="flex flex-nowrap items-center py-[2px] px-2 cursor-pointer">
+    <div class="flex flex-nowrap items-center py-2px px-2 cursor-pointer">
       <Icon
         v-if="type === 'directory'"
         :icon="`codicon:chevron-right`"
-        class="size-[17px] mr-[2px]"
+        class="size-17px mr-2px"
       />
       <img
         :src="
@@ -15,7 +15,7 @@
             filepath: name,
           })
         "
-        class="size-[1.3em] mr-[5px]"
+        class="size-[1.3em] mr-5px"
       />
       <EditName
         current-name=""

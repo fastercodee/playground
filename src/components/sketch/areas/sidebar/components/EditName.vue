@@ -17,7 +17,7 @@
 
     <div v-if="error" class="absolute w-full left-0">
       <span
-        class="text-[12px] px-1 py-[5px] border border-top-none block w-full"
+        class="text-12px px-1 py-5px border border-top-none block w-full"
         :class="
           error.type === 'warn'
             ? 'bg-yellow-900 border-yellow-600'

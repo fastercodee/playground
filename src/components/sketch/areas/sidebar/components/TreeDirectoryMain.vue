@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-nowrap items-center py-[2px] px-2 cursor-pointer hover:bg-[rgba(100,100,100,0.5)] transition ease duration-100"
+    class="flex flex-nowrap items-center py-2px px-2 cursor-pointer hover:bg-[rgba(100,100,100,0.5)] transition ease duration-100"
     :class="{
       'opacity-50': isEntryCuting(entry),
     }"
@@ -8,7 +8,7 @@
     <Icon
       v-if="entry.type === 'directory'"
       :icon="`codicon:chevron-${opening ? 'down' : 'right'}`"
-      class="size-[17px] mr-[2px]"
+      class="size-17px mr-2px"
     />
     <img
       :src="
@@ -19,7 +19,7 @@
           filepath: nameInput || entry.name,
         })
       "
-      class="size-[1.3em] mr-[5px]"
+      class="size-[1.3em] mr-5px"
     />
     <span v-if="!renaming">{{ entry.name }}</span>
     <EditName
@@ -58,7 +58,7 @@
             :disable="item.disable?.value"
           >
             <q-item-section avatar class="min-w-0">
-              <Icon :icon="item.icon" class="size-[14px]" />
+              <Icon :icon="item.icon" class="size-14px" />
             </q-item-section>
             <q-item-section>{{ item.name }}</q-item-section>
             <q-item-section side>{{ item.sub }}</q-item-section>

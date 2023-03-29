@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col flex-nowrap h-full">
     <header
-      class="py-[5px] px-2 border-gray-700 border-t text-[12px] flex flex-nowrap justify-between items-center"
+      class="py-5px px-2 border-gray-700 border-t text-12px flex flex-nowrap justify-between items-center"
     >
       CONSOLE
       <div>

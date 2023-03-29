@@ -1,11 +1,11 @@
 <template>
   <div
-    class="flex flex-col items-center flex-nowrap border-r border-gray-700 children:w-[48px] children:h-[48px] children:text-gray-500"
+    class="flex flex-col items-center flex-nowrap border-r border-gray-700 children:w-48px children:h-48px children:text-gray-500"
   >
     <button
       v-for="{ icon, value, badge } in tabs"
       :key="value"
-      class="hover:text-gray-400 relative before:bg-light-300 before:absolute before:h-full before:w-[2px] before:top-0 before:left-0"
+      class="hover:text-gray-400 relative before:bg-light-300 before:absolute before:h-full before:w-2px before:top-0 before:left-0"
       :class="{
         '!text-inherit': tabSelection === value,
         'before:content-DEFAULT': tabSelection === value,
@@ -17,22 +17,22 @@
         }
       "
     >
-      <Icon :icon="icon" class="w-[24px] h-[24px]" />
+      <Icon :icon="icon" class="w-24px h-24px" />
       <q-badge
         v-if="badge && badge.value"
         floating
         rounded
         align="bottom"
         :label="badge.value"
-        class="bottom-12px left-25px right-auto top-auto text-[10px] py-2px px-5px"
+        class="bottom-12px left-25px right-auto top-auto text-10px py-2px px-5px"
       />
     </button>
     <button @click="settingsLayout = !settingsLayout">Settings Layout</button>
 
-    <q-separator class="!w-[calc(100%-12px)] h-[1px]" />
+    <q-separator class="!w-[calc(100%-12px)] h-1px" />
 
     <button class="hover:text-gray-400 relative">
-      <Icon icon="fluent:window-console-20-filled" class="w-[24px] h-[24px]" />
+      <Icon icon="fluent:window-console-20-filled" class="w-24px h-24px" />
     </button>
   </div>
 

@@ -1,8 +1,8 @@
 <template>
-  <header class="py-2 px-3 text-[12px] flex justify-between">
+  <header class="py-2 px-3 text-12px flex justify-between">
     SEARCH
     <div>
-      <Icon icon="codicon:refresh" class="w-[16px] h-[16px] mr-2" />
+      <Icon icon="codicon:refresh" class="w-16px h-16px mr-2" />
     </div>
   </header>
   <main class="min-h-0 h-full select-none">
@@ -122,7 +122,7 @@ const excludeActions = [
 
 <style lang="scss" scoped>
 .input-group {
-  @apply w-full h-[30px]  px-2 text-[13px] border border-gray-600 border-opacity-80;
+  @apply w-full h-30px  px-2 text-13px border border-gray-600 border-opacity-80;
   @apply flex flex-nowrap items-center justify-between;
 
   .input-action {

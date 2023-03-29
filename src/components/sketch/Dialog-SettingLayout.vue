@@ -22,7 +22,7 @@
               }"
             >
               <span class="icon" :class="`icon-${Mode[value]}`" />
-              <span class="ml-[10px] text-white capitalize font-normal">{{
+              <span class="ml-10px text-white capitalize font-normal">{{
                 Mode[value]
               }}</span>
             </div>
@@ -33,7 +33,7 @@
       <q-card-section>
         <div class="text-subtitle1">Preview</div>
         <!-- frame preview -->
-        <div class="aspect-[4/3] max-w-full w-[340px] text-center">
+        <div class="aspect-4/3 max-w-full w-340px text-center">
           <div class="container" :class="Mode[mode]">
             <div class="area_1">
               <q-select

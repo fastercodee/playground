@@ -13,7 +13,7 @@
       "
     >
       <span
-        class="py-[5px] pl-2.5 pr-1 inline-flex items-center cursor-pointer group"
+        class="py-5px pl-2.5 pr-1 inline-flex items-center cursor-pointer group"
         :class="{
           'border-b border-blue-400 bg-blue-400 bg-opacity-10':
             seasonEditStore.isCurrent(entry),
@@ -31,7 +31,7 @@
               filepath: entry.fullPath(),
             })
           "
-          class="size-[1.3em] mr-[5px]"
+          class="size-[1.3em] mr-5px"
         />
         {{ (tmp = mapName.get(entry))?.[0] ?? entry.name }}
 
