@@ -2,7 +2,7 @@
   <q-dialog full-height>
     <q-card>
       <q-card-section>
-        <q-card-title class="text-subtitle1">Setting Layout</q-card-title>
+        <div class="text-subtitle1">Setting Layout</div>
       </q-card-section>
       <q-card-section>
         <section class="row">
