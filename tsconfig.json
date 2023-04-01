@@ -9,7 +9,12 @@
     /* end */
     "baseUrl": "./",
     "types": ["vitest/globals"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["esnext", "DOM"]
   },
-  "exclude": ["preview/public/src_sw.ts", "preview/public/src_sw.ts.js", "**/*.mjs"]
+  "exclude": [
+    "preview/public/src_sw.ts",
+    "preview/public/src_sw.ts.js",
+    "**/*.mjs"
+  ]
 }
