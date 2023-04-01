@@ -4,7 +4,11 @@
     "esbenp.prettier-vscode",
     "editorconfig.editorconfig",
     "vue.volar",
-    "wayou.vscode-todo-highlight"
+    "wayou.vscode-todo-highlight",
+    "tabnine.tabnine-vscode",
+    "codeium.codeium",
+    "antfu.unocss",
+    "antfu.iconify"
   ],
   "unwantedRecommendations": [
     "octref.vetur",
