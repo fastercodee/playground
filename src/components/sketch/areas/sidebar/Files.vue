@@ -76,7 +76,7 @@ setInterval(() => {
 const entryCurrent = computedAsync(
   async () => {
     const entryRoot: Entry<"directory"> = {
-      fullPath: () => "",
+      fullPath:  "",
       name: "",
       type: "directory",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

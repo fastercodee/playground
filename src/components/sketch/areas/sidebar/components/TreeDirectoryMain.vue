@@ -140,17 +140,17 @@ const contextmenu = [
     async onClick() {
       if (props.entry.type === "file") {
         await Filesystem.deleteFile({
-          path: props.entry.fullPath(),
+          path: props.entry.fullPath,
           directory: Directory.External,
         })
-        eventBus.emit("deleteFile", props.entry.fullPath())
+        eventBus.emit("deleteFile", props.entry.fullPath)
       } else {
         await Filesystem.rmdir({
-          path: props.entry.fullPath(),
+          path: props.entry.fullPath,
           recursive: true,
           directory: Directory.External,
         })
-        eventBus.emit("rmdir", props.entry.fullPath())
+        eventBus.emit("rmdir", props.entry.fullPath)
       }
 
       emit("deleted")
@@ -175,8 +175,8 @@ async function paste() {
 async function changeName(name: string) {
   renaming.value = false
 
-  const from = props.entry.fullPath()
-  const to = `${props.entry.directory.fullPath()}/${name}`
+  const from = props.entry.fullPath
+  const to = `${props.entry.directory.fullPath}/${name}`
   await Filesystem.rename({
     from,
     to,

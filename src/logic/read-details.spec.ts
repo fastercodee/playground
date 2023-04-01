@@ -33,7 +33,7 @@ describe("read-details", async () => {
     const directory = { fullPath: () => "" } as any
     const out = await readDetails("test-dir", directory)
 
-    expect(out.fullPath()).toEqual("test-dir")
+    expect(out.fullPath).toEqual("test-dir")
     expect(out.type).toEqual("directory")
     expect(out.name).toEqual("test-dir")
     expect(out.directory).toBe(directory)

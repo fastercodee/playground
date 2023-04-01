@@ -165,7 +165,7 @@ async function createDirectory(name: string, isDir: boolean) {
   creating.value = null
   if (isDir) {
     await Filesystem.mkdir({
-      path: `${props.entry.fullPath()}/${name}`,
+      path: `${props.entry.fullPath}/${name}`,
       directory: Directory.External,
     })
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -173,7 +173,7 @@ async function createDirectory(name: string, isDir: boolean) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     sortEntries(decevier.value!.directories)
   } else {
-    const path = `${props.entry.fullPath()}/${name}`
+    const path = `${props.entry.fullPath}/${name}`
     await Filesystem.writeFile({
       path,
       data: "",

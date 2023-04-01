@@ -246,7 +246,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     // find from season exists?
 
     const insert = await Filesystem.readFile({
-      path: entry.fullPath(),
+      path: entry.fullPath,
       directory: Directory.External,
       encoding: Encoding.UTF8,
     }).then((res) => res.data)
@@ -293,12 +293,12 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       if (entryChanging === entry) return
       entryChanging = entry
       await Filesystem.writeFile({
-        path: entry.fullPath(),
+        path: entry.fullPath,
         directory: Directory.External,
         data: text,
         encoding: Encoding.UTF8,
       })
-      eventBus.emit("writeFile", entry.fullPath())
+      eventBus.emit("writeFile", entry.fullPath)
       entryChanging = null
     }, 1000)
   }
@@ -329,14 +329,14 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     if (!currentEntry.value) return
 
     await Filesystem.writeFile({
-      path: currentEntry.value.fullPath(),
+      path: currentEntry.value.fullPath,
       data: text,
       directory: Directory.External,
       encoding: Encoding.UTF8,
     })
-    eventBus.emit("writeFile", currentEntry.value.fullPath())
+    eventBus.emit("writeFile", currentEntry.value.fullPath)
 
-    console.info("saved file %s", currentEntry.value.fullPath())
+    console.info("saved file %s", currentEntry.value.fullPath)
   }
 
   function isCurrent(entry: Entry<"file">) {

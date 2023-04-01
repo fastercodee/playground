@@ -19,7 +19,7 @@
             seasonEditStore.isCurrent(entry),
         }"
         v-for="entry in seasonEditStore.seasons.keys()"
-        :key="entry.fullPath()"
+        :key="entry.fullPath"
         @click="seasonEditStore.openFile(entry)"
       >
         <img
@@ -28,7 +28,7 @@
               light: false,
               isFolder: false,
               isOpen: false,
-              filepath: entry.fullPath(),
+              filepath: entry.fullPath,
             })
           "
           class="size-[1.3em] mr-5px"
@@ -80,7 +80,7 @@ const mapName = computed(() => {
     item.forEach((item) => {
       if (!names.has(item.name)) return names.set(item.name, item)
       // eslint-disable-next-line functional/no-let
-      let dir = item.directory.fullPath()
+      let dir = item.directory.fullPath
 
       for (let i = 0; i < 20; i++) {
         const name =

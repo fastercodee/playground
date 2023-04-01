@@ -30,7 +30,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
   }> {
     if (!action.value) throw new Error("action is empty")
 
-    if (toEntry.fullPath().startsWith(action.value.entry.fullPath())) {
+    if (toEntry.fullPath.startsWith(action.value.entry.fullPath)) {
       // is end point is children of target
       throw new Error(
         "Can't run action because end point is children of target."
@@ -45,7 +45,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
       for (let i = 1; i < 1e3; i++) {
         const newName =
           action.value.entry.name + " copy" + (i === 1 ? "" : ` ${i}`)
-        const pathSave = toEntry.directory.fullPath() + "/" + newName
+        const pathSave = toEntry.directory.fullPath + "/" + newName
 
         if (
           await Filesystem.stat({
@@ -57,7 +57,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
         }
 
         await Filesystem[fn]({
-          from: action.value.entry.fullPath(),
+          from: action.value.entry.fullPath,
           to: pathSave,
           directory: Directory.External,
         })
@@ -68,16 +68,16 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
         } else {
           // write directory
           eventBus.emit("copyDir", pathSave)
-          eventBus.emit("rmdir", action.value.entry.fullPath())
+          eventBus.emit("rmdir", action.value.entry.fullPath)
         }
         action.value = null
         return { parent: true, name: newName }
       }
       throw new Error("Maxium scan new name")
     } else {
-      const to = toEntry.fullPath() + "/" + action.value.entry.name
+      const to = toEntry.fullPath + "/" + action.value.entry.name
       await Filesystem[fn]({
-        from: action.value.entry.fullPath(),
+        from: action.value.entry.fullPath,
         to,
         directory: Directory.External,
       })
@@ -88,7 +88,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
       } else {
         // write directory
         eventBus.emit("writeFile", to)
-        eventBus.emit("deleteFile", action.value.entry.fullPath())
+        eventBus.emit("deleteFile", action.value.entry.fullPath)
       }
       if (fn === "rename") action.value?.emit?.("deleted")
       const { name } = action.value.entry

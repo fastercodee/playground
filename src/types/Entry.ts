@@ -4,6 +4,6 @@ export interface Entry<
 > {
   type: Type
   name: string
-  fullPath: () => string
+  get fullPath(): string
   directory: Entry<"directory">
 }
