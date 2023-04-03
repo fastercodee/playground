@@ -9,7 +9,7 @@ describe("search-text", () => {
       search: "Hello",
       caseSensitive: false,
       wholeWord: false,
-      regexp: false
+      regexp: false,
     }
     const result = Array.from(Array.from(searchText(text, options)))
 
@@ -20,8 +20,8 @@ describe("search-text", () => {
         after: " World",
         before: "",
         posStart: 0,
-        posEnd: 5
-      }
+        posEnd: 5,
+      },
     ])
   })
   test("case sensitive search", () => {
@@ -30,7 +30,7 @@ describe("search-text", () => {
       search: "hello",
       caseSensitive: true,
       wholeWord: false,
-      regexp: false
+      regexp: false,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([])
@@ -41,7 +41,7 @@ describe("search-text", () => {
       search: "Hello",
       caseSensitive: false,
       wholeWord: true,
-      regexp: false
+      regexp: false,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([
@@ -51,8 +51,8 @@ describe("search-text", () => {
         after: " World",
         before: "",
         posStart: 0,
-        posEnd: 5
-      }
+        posEnd: 5,
+      },
     ])
   })
   test("regex search", () => {
@@ -61,7 +61,7 @@ describe("search-text", () => {
       search: "Hello",
       caseSensitive: false,
       wholeWord: false,
-      regexp: true
+      regexp: true,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([
@@ -71,9 +71,8 @@ describe("search-text", () => {
         after: " World",
         before: "",
         posStart: 0,
-        posEnd: 5
-
-      }
+        posEnd: 5,
+      },
     ])
   })
   test("regex search with case sensitive", () => {
@@ -82,7 +81,7 @@ describe("search-text", () => {
       search: "Hello",
       caseSensitive: true,
       wholeWord: false,
-      regexp: true
+      regexp: true,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([
@@ -92,8 +91,8 @@ describe("search-text", () => {
         after: " World",
         before: "",
         posStart: 0,
-        posEnd: 5
-      }
+        posEnd: 5,
+      },
     ])
   })
   test("regex search with whole word", () => {
@@ -102,7 +101,7 @@ describe("search-text", () => {
       search: "Hello",
       caseSensitive: false,
       wholeWord: true,
-      regexp: true
+      regexp: true,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([
@@ -111,11 +110,9 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "",
-        posStart: 0
-        ,
-        posEnd: 5
-
-      }
+        posStart: 0,
+        posEnd: 5,
+      },
     ])
   })
   test("regex search with case sensitive and whole word", () => {
@@ -124,7 +121,7 @@ describe("search-text", () => {
       search: "Hello",
       caseSensitive: true,
       wholeWord: true,
-      regexp: true
+      regexp: true,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([
@@ -133,11 +130,9 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "",
-        posStart: 0
-        ,
-        posEnd: 5
-
-      }
+        posStart: 0,
+        posEnd: 5,
+      },
     ])
   })
   test("before text matches", () => {
@@ -146,7 +141,7 @@ describe("search-text", () => {
       search: "Hello",
       caseSensitive: false,
       wholeWord: true,
-      regexp: true
+      regexp: true,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([
@@ -156,9 +151,8 @@ describe("search-text", () => {
         after: " World",
         before: "Shin! ",
         posStart: 6,
-        posEnd: 11
-
-      }
+        posEnd: 11,
+      },
     ])
   })
   test("after text matches", () => {
@@ -167,7 +161,7 @@ describe("search-text", () => {
       search: "Hello",
       caseSensitive: false,
       wholeWord: true,
-      regexp: true
+      regexp: true,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([
@@ -176,11 +170,9 @@ describe("search-text", () => {
         match: "Hello",
         after: " World! Ohayo! Shin",
         before: "",
-        posStart: 0
-        ,
-        posEnd: 5
-
-      }
+        posStart: 0,
+        posEnd: 5,
+      },
     ])
   })
   test("multi line", () => {
@@ -191,7 +183,7 @@ Sayonara!`
       search: "Sayonara",
       caseSensitive: false,
       wholeWord: true,
-      regexp: true
+      regexp: true,
     }
     const result = Array.from(searchText(text, options))
     expect(result).toEqual([
@@ -200,9 +192,9 @@ Sayonara!`
         match: "Sayonara",
         after: "!",
         before: "",
-        posStart:26,
-        posEnd: 34
-      }
+        posStart: 26,
+        posEnd: 34,
+      },
     ])
   })
 })

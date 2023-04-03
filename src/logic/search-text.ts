@@ -98,7 +98,7 @@ export function* searchText(
       before: getStringBeforeMatch(text, lengthMatch, match.index ?? -1),
       after: getStringAfterMatches(text, lengthMatch, match.index ?? -1),
       posStart,
-      posEnd
+      posEnd,
     }
   }
 }

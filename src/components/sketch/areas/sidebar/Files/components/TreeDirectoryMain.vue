@@ -58,7 +58,7 @@
             :disable="item.disable?.value"
           >
             <q-item-section avatar class="min-w-0">
-              <Icon :icon="item.icon" class="size-14px" />
+              <Icon :icon="item.icon!" class="size-14px" />
             </q-item-section>
             <q-item-section>{{ item.name }}</q-item-section>
             <q-item-section side>{{ item.sub }}</q-item-section>
@@ -77,7 +77,7 @@ import type { Entry } from "src/types/Entry"
 
 const props = defineProps<{
   opening: boolean
-  entry: Entry
+  entry: Entry<"file" | "directory">
   // eslint-disable-next-line no-use-before-define
   actions?: typeof contextmenu
 

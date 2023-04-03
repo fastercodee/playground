@@ -3,25 +3,28 @@ import type { Entry } from "src/types/Entry"
 
 export const useClipboardFS = defineStore("clipboard-fs", () => {
   const action = ref<null | {
-    entry: Entry
+    entry: Entry<"file" | "directory">
     action: "mv" | "cp"
     emit?: (name: "deleted") => void
   }>(null)
 
-  function cut(entry: Entry, emit: (name: "deleted") => void) {
+  function cut(
+    entry: Entry<"file" | "directory">,
+    emit: (name: "deleted") => void
+  ) {
     action.value = {
       entry,
       action: "mv",
       emit,
     }
   }
-  function copy(entry: Entry) {
+  function copy(entry: Entry<"file" | "directory">) {
     action.value = {
       entry,
       action: "cp",
     }
   }
-  function cancelAction(entry: Entry) {
+  function cancelAction(entry: Entry<"file" | "directory">) {
     if (action.value?.entry === entry) action.value = null
   }
   async function paste(toEntry: Entry<"directory">): Promise<{
@@ -97,7 +100,7 @@ export const useClipboardFS = defineStore("clipboard-fs", () => {
     }
   }
 
-  function isEntryCuting(entry: Entry) {
+  function isEntryCuting(entry: Entry<"file" | "directory">) {
     return action.value?.action === "mv" && action.value.entry === entry
   }
 

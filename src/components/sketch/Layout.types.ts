@@ -7,7 +7,7 @@ export enum Area {
 export enum AreaComponent {
   Editor,
   Console,
-  Preview
+  Preview,
 }
 export const AreaComponentSize = 3
 
@@ -19,4 +19,4 @@ export enum Mode {
   top,
   left,
 }
-export const ModeSize = 6// as unknown as Record<Mode, number>
+export const ModeSize = 6 // as unknown as Record<Mode, number>

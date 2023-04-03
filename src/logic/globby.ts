@@ -2,7 +2,11 @@ import { join } from "path"
 
 import { contains } from "micromatch"
 
-export async function* globby(dir: string, include: string[], exclude: string[]): AsyncGenerator<string> {
+export async function* globby(
+  dir: string,
+  include: string[],
+  exclude: string[]
+): AsyncGenerator<string> {
   const { files } = await Filesystem.readdir({
     path: dir,
     directory: Directory.External,

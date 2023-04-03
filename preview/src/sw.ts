@@ -1,4 +1,5 @@
 /// <reference types="@types/serviceworker" />
+
 import { put } from "@fcanvas/communicate"
 addEventListener("install", () => {
   self.skipWaiting()

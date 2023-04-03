@@ -8,7 +8,9 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-const { default: transformerDirectives } = require("@unocss/transformer-directives")
+const {
+  default: transformerDirectives,
+} = require("@unocss/transformer-directives")
 const { OnuResolver, presetOnu } = require("onu-ui")
 const { extend } = require("quasar")
 const { configure } = require("quasar/wrappers")
@@ -127,9 +129,7 @@ module.exports = configure(function (/* ctx */) {
                 ([, value]) => ({ width: value, height: value }),
               ],
             ],
-            transformers: [
-              transformerDirectives(),
-            ],
+            transformers: [transformerDirectives()],
           },
         ],
         [
@@ -151,10 +151,14 @@ module.exports = configure(function (/* ctx */) {
                   "Filesystem",
                   "Directory",
                   "Encoding",
-                ]
+                ],
               },
             ],
-            dirs: ["src/logic/**/*.ts", "src/logic/**/*.tsx", "src/stores/**/*.ts"],
+            dirs: [
+              "src/logic/**/*.ts",
+              "src/logic/**/*.tsx",
+              "src/stores/**/*.ts",
+            ],
             eslintrc: {
               enabled: true, // Default `false`
               filepath: "./.eslintrc-auto-import.json", // Default `./.eslintrc-auto-import.json`

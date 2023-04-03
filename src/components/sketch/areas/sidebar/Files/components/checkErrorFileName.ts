@@ -2,7 +2,7 @@ import type { Entry } from "src/types/Entry"
 
 export function checkErrorFileName(
   fileName: string,
-  siblings: Entry[],
+  siblings: Entry<"file" | "directory">[],
   skipEmpty: boolean
 ) {
   if (fileName === "") {

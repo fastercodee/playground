@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: "./setup.vitest.ts"
+    setupFiles: "./setup.vitest.ts",
   },
   plugins: [
     AutoImport({

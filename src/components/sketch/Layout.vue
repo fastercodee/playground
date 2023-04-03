@@ -1,5 +1,8 @@
 <template>
-  <div class="container overflow-hidden max-w-full" :class="Mode[settingsStore.mode]">
+  <div
+    class="container overflow-hidden max-w-full"
+    :class="Mode[settingsStore.mode]"
+  >
     <Resizable
       class="area_1"
       :enable="{

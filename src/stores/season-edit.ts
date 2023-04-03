@@ -1,4 +1,4 @@
-import { basename, dirname, extname } from "path"
+import { basename, extname } from "path"
 
 import { autocompletion, closeBrackets } from "@codemirror/autocomplete"
 import { history as exHistory } from "@codemirror/commands"
@@ -354,13 +354,8 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       // TODO: 偽
       const entry = /* 偽 */ new Entry(
         "file",
-        basename((fullpath)),
-        {
-          type: "directory",
-          name: basename(dirname(fullpath)),
-          fullPath: dirname(fullpath),
-          directory: null as unknown as Entry<"directory">,
-        }
+        basename(fullpath),
+        createFakeDirectory(fullpath)
       )
 
       await openFile(entry)
@@ -372,7 +367,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       selection: EditorSelection.create([
         EditorSelection.range(match.posStart, match.posEnd),
         EditorSelection.cursor(match.posStart + 1),
-      ])
+      ]),
     })
   }
 
@@ -385,6 +380,6 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     saveFile,
     isCurrent,
 
-    openMatch
+    openMatch,
   }
 })

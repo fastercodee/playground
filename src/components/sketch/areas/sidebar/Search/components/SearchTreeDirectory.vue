@@ -23,7 +23,7 @@
 <script lang="ts" setup>
 import type { Match } from "src/logic/search-text"
 
-const props = defineProps<{
+defineProps<{
   fullpath: string
   matches: Match[]
 }>()

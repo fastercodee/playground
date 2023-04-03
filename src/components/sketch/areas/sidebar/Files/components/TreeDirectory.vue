@@ -158,7 +158,7 @@ function addFolder() {
   creating.value = "directory"
 }
 
-function sortEntries(entries: Entry[]) {
+function sortEntries(entries: Entry<"file" | "directory">[]) {
   entries.sort((a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0))
 }
 async function createDirectory(name: string, isDir: boolean) {
@@ -189,7 +189,11 @@ async function createDirectory(name: string, isDir: boolean) {
 
   console.log("create item: %s", name)
 }
-function onChildRenamed(item: Entry, entries: Entry[], newName: string) {
+function onChildRenamed(
+  item: Entry<"file" | "directory">,
+  entries: Entry<"file" | "directory">[],
+  newName: string
+) {
   item.name = newName
   sortEntries(entries)
 }

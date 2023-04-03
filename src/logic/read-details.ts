@@ -6,36 +6,30 @@ const watcher = new フォロワー((タイプ, パス, ですか) => {
   watcher.deleteWatchFile(ですか)
   entryStore.delete(ですか)
 })
-
 export class Entry<Type extends "directory" | "file"> {
   public readonly __is_entry = true
 
   constructor(
     public type: Type,
     public name: string,
-    public directory: Entry<"directory"> | Omit<Entry<"directory">, "__is_entry"> & { __is_entry?: false },
+    public directory: Entry<"directory">
   ) {
     const { fullPath } = this
     const inCache = entryStore.get(fullPath) as Entry<Type> | undefined
 
     if (import.meta.env.DEV)
-      Object.assign(this, { __r_fake: !directory.__is_entry ,__fake: !directory.__is_entry })
+      Object.assign(this, {
+        __r_fake: !directory.__is_entry,
+        __fake: !directory.__is_entry,
+      })
 
     if (inCache) {
-      if (directory.__is_entry)
-        inCache.directory = directory;
+      if (directory.__is_entry) inCache.directory = directory
 
       if (import.meta.env.DEV)
         Object.assign(inCache, { __fake: !inCache.directory.__is_entry })
-
-      ;[
-        inCache.type,
-        inCache.name,
-      ] = [
-          this.type,
-          this.name,
-        ]
-      return (inCache)
+      ;[inCache.type, inCache.name] = [this.type, this.name]
+      return inCache
     }
 
     entryStore.set(fullPath, this)
@@ -69,19 +63,19 @@ export async function directoryDetails(entry: Entry<"directory">) {
   const files: Entry<"file">[] = []
   const directories: Entry<"directory">[] = []
 
-    ; (
-      await Promise.all(
-        (
-          await Filesystem.readdir({
-            path: entry.fullPath,
-            directory: Directory.External,
-          })
-        ).files.map((item) => new Entry(item.type, item.name, entry))
-      )
-    ).forEach((item) => {
-      if (item.type === "file") files.push(item as Entry<"file">)
-      else directories.push(item as Entry<"directory">)
-    })
+  ;(
+    await Promise.all(
+      (
+        await Filesystem.readdir({
+          path: entry.fullPath,
+          directory: Directory.External,
+        })
+      ).files.map((item) => new Entry(item.type, item.name, entry))
+    )
+  ).forEach((item) => {
+    if (item.type === "file") files.push(item as Entry<"file">)
+    else directories.push(item as Entry<"directory">)
+  })
 
   return { files, directories }
 }

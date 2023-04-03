@@ -75,13 +75,7 @@ setInterval(() => {
 
 const entryCurrent = computedAsync(
   async () => {
-    const entryRoot: Entry<"directory"> = {
-      fullPath:  "",
-      name: "",
-      type: "directory",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      directory: null as unknown as any,
-    }
+    const entryRoot: Entry<"directory"> = createFakeDirectory("")
     // entryRoot.directory = entryRoot
 
     try {

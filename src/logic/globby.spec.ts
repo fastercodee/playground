@@ -3,20 +3,20 @@ import { globby } from "./globby"
 async function cleanupFS() {
   const { files } = await Filesystem.readdir({
     path: "globby",
-    directory: Directory.External
-  }).catch(() => ({files: []}));
+    directory: Directory.External,
+  }).catch(() => ({ files: [] }))
 
   for (const file of files) {
     if (file.type === "file")
       await Filesystem.deleteFile({
         path: "globby/" + file.name,
-        directory: Directory.External
+        directory: Directory.External,
       })
     else
       await Filesystem.rmdir({
         path: "globby/" + file.name,
         directory: Directory.External,
-        recursive: true
+        recursive: true,
       }).catch(() => false)
   }
 }
@@ -29,23 +29,23 @@ describe("globby", async () => {
     path: "globby/foo.js",
     directory: Directory.External,
     data: "",
-    encoding: Encoding.UTF8
+    encoding: Encoding.UTF8,
   })
   await Filesystem.writeFile({
     path: "globby/bar.js",
     directory: Directory.External,
     data: "",
-    encoding: Encoding.UTF8
+    encoding: Encoding.UTF8,
   })
   await Filesystem.mkdir({
     path: "globby/src",
-    directory: Directory.External
+    directory: Directory.External,
   })
   await Filesystem.writeFile({
     path: "globby/src/main.js",
     directory: Directory.External,
     data: "",
-    encoding: Encoding.UTF8
+    encoding: Encoding.UTF8,
   })
 
   test("include", async () => {
@@ -55,7 +55,11 @@ describe("globby", async () => {
       files.push(file)
     }
 
-    expect(files).toEqual(["globby/foo.js", "globby/bar.js", "globby/src/main.js"])
+    expect(files).toEqual([
+      "globby/foo.js",
+      "globby/bar.js",
+      "globby/src/main.js",
+    ])
   })
 
   test("ignore", async () => {
@@ -66,6 +70,5 @@ describe("globby", async () => {
     }
 
     expect(files).toEqual(["globby/foo.js", "globby/bar.js"])
-
   })
 })

@@ -15,6 +15,7 @@
   "exclude": [
     "preview/public/src_sw.ts",
     "preview/public/src_sw.ts.js",
-    "**/*.mjs"
+    "**/*.mjs",
+    "preview/src/sw.ts"
   ]
 }
