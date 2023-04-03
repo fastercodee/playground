@@ -6,10 +6,11 @@ export interface SearchOptions {
   wholeWord: boolean
   regexp: boolean
 }
-export interface Pos {
-  line: number
-  column: number
-}
+// export interface Pos {
+//   line: number
+//   column: number
+// }
+export type Pos = number
 export interface Match {
   index: number
   match: string
@@ -74,20 +75,22 @@ export function* searchText(
   for (const match of text.matchAll(regex)) {
     const { length: lengthMatch } = match[0]
     const { index = -1 } = match
-    const allOfBefore = text.slice(0, index + 1)
+    // const allOfBefore = text.slice(0, index + 1)
 
-    const posStart = {
-      line: (allOfBefore.match(/\n/g)?.length ?? 0) + 1,
-      column: index - allOfBefore.lastIndexOf("\n")
-    }
-    const lastIndexNewLine = match[0].lastIndexOf("\n")
-    const posEnd = {
-      line: posStart.line + (match[0].match(/\n/g)?.length ?? 0),
-      column:
-        lastIndexNewLine === -1
-          ? posStart.column + match[0].length
-          : match[0].length - lastIndexNewLine
-    }
+    // const posStart = {
+    //   line: (allOfBefore.match(/\n/g)?.length ?? 0) + 1,
+    //   column: index - allOfBefore.lastIndexOf("\n")
+    // }
+    const posStart = index
+    // const lastIndexNewLine = match[0].lastIndexOf("\n")
+    // const posEnd = {
+    //   line: posStart.line + (match[0].match(/\n/g)?.length ?? 0),
+    //   column:
+    //     lastIndexNewLine === -1
+    //       ? posStart.column + match[0].length
+    //       : match[0].length - lastIndexNewLine
+    // }
+    const posEnd = index + lengthMatch
 
     yield {
       index,

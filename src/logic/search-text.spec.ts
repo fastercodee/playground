@@ -19,14 +19,8 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "",
-        posStart: {
-          line: 1,
-          column: 1
-        },
-        posEnd: {
-          line: 1,
-          column: 6
-        }
+        posStart: 0,
+        posEnd: 5
       }
     ])
   })
@@ -56,14 +50,8 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "",
-        posStart: {
-          line: 1,
-          column: 1
-        },
-        posEnd: {
-          line: 1,
-          column: 6
-        }
+        posStart: 0,
+        posEnd: 5
       }
     ])
   })
@@ -82,14 +70,9 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "",
-        posStart: {
-          line: 1,
-          column: 1
-        },
-        posEnd: {
-          line: 1,
-          column: 6
-        }
+        posStart: 0,
+        posEnd: 5
+
       }
     ])
   })
@@ -108,14 +91,8 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "",
-        posStart: {
-          line: 1,
-          column: 1
-        },
-        posEnd: {
-          line: 1,
-          column: 6
-        }
+        posStart: 0,
+        posEnd: 5
       }
     ])
   })
@@ -134,14 +111,10 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "",
-        posStart: {
-          line: 1,
-          column: 1
-        },
-        posEnd: {
-          line: 1,
-          column: 6
-        }
+        posStart: 0
+        ,
+        posEnd: 5
+
       }
     ])
   })
@@ -160,14 +133,10 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "",
-        posStart: {
-          line: 1,
-          column: 1
-        },
-        posEnd: {
-          line: 1,
-          column: 6
-        }
+        posStart: 0
+        ,
+        posEnd: 5
+
       }
     ])
   })
@@ -186,14 +155,9 @@ describe("search-text", () => {
         match: "Hello",
         after: " World",
         before: "Shin! ",
-        posStart: {
-          line: 1,
-          column: 7
-        },
-        posEnd: {
-          line: 1,
-          column: 12
-        }
+        posStart: 6,
+        posEnd: 11
+
       }
     ])
   })
@@ -212,14 +176,10 @@ describe("search-text", () => {
         match: "Hello",
         after: " World! Ohayo! Shin",
         before: "",
-        posStart: {
-          line: 1,
-          column: 1
-        },
-        posEnd: {
-          line: 1,
-          column: 6
-        }
+        posStart: 0
+        ,
+        posEnd: 5
+
       }
     ])
   })
@@ -240,14 +200,8 @@ Sayonara!`
         match: "Sayonara",
         after: "!",
         before: "",
-        posStart: {
-          line: 3,
-          column: 1
-        },
-        posEnd: {
-          line: 3,
-          column: 9
-        }
+        posStart:26,
+        posEnd: 34
       }
     ])
   })
