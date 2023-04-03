@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@fcanvas/communicate': 1.1.0-rc.39
   esbuild: ^0.17.12
+  path-cross: ^0.0.3
   rollup: ^3.19.1
   typescript: ^4.9.3
   vite: ^4.1.0
@@ -11,6 +12,7 @@ specifiers:
 
 dependencies:
   '@fcanvas/communicate': 1.1.0-rc.39
+  path-cross: 0.0.3
   vue-console-feed: 0.0.28
 
 devDependencies:
@@ -551,6 +553,13 @@ packages:
     hasBin: true
     dev: true
 
+  /path-cross/0.0.3:
+    resolution: {integrity: sha512-HlyaFjwUoFbIUcA9sqefMuqi+7VaAv5+7rW2X9joqNxxrsaFakE73T+TlXsXbqL/TIymYBbjwD3Eo8ggFTefWA==}
+    engines: {node: '>=10'}
+    dependencies:
+      process: 0.11.10
+    dev: false
+
   /path-normalize/6.0.10:
     resolution: {integrity: sha512-ZlQRW8CAmppOuQB6+dVvkmzk4wGZRDtUmHeV+/596Bm+TYcuiAGV8EACc6hhRw4j3rdv5PimDOshXCqerHAtEA==}
     engines: {node: '>=16.0.0'}
@@ -585,6 +594,11 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
     dev: true
+
+  /process/0.11.10:
+    resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
+    engines: {node: '>= 0.6.0'}
+    dev: false
 
   /resolve/1.22.1:
     resolution: {integrity: sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==}

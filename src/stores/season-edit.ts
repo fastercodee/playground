@@ -1,4 +1,4 @@
-import { extname } from "path"
+import { basename, dirname, extname } from "path"
 
 import { autocompletion, closeBrackets } from "@codemirror/autocomplete"
 import { history as exHistory } from "@codemirror/commands"
@@ -41,7 +41,8 @@ import { debounce } from "quasar"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import * as eslint from "src/logic/linter"
-import type { Entry } from "src/logic/read-details"
+import { Entry } from "src/logic/read-details"
+import type { Match } from "src/logic/search-text"
 import type { Format } from "src/workers/format"
 import FormatWorker from "src/workers/format?worker"
 // import Linter from "eslint4b-prebuilt";
@@ -343,6 +344,31 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     return currentEntry.value === toRaw(entry)
   }
 
+  // ========= extension ========
+  async function openMatch(fullpath: string, match: Match) {
+    if (currentEntry.value?.fullPath === fullpath) {
+      // is current path
+    } else {
+      // open file
+      // await openFile(await)
+      // TODO: 偽
+      const entry = /* 偽 */ new Entry(
+        "file",
+        basename((fullpath)),
+        {
+          type: "directory",
+          name: basename(dirname(fullpath)),
+          fullPath: dirname(fullpath),
+          directory: null as unknown as Entry<"directory">,
+        }
+      )
+
+      await openFile(entry)
+
+      console.log(entry)
+    }
+  }
+
   return {
     createEditor,
     seasons,
@@ -351,5 +377,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     closeFile,
     saveFile,
     isCurrent,
+
+    openMatch
   }
 })

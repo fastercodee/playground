@@ -18,18 +18,25 @@
       class="size-[1.3em] mr-5px"
     />
     <span>{{ basename(fullpath) }}</span>
+    <small
+      v-if="pathdir"
+      class="text-gray-400 text-12px ml-1.5 self-end truncate"
+      >{{ pathdir }}</small
+    >
   </div>
 </template>
 
 <script lang="ts" setup>
-import { basename } from "path"
+import { basename, dirname, relative } from "path"
 
 import { Icon } from "@iconify/vue"
 import getIcon from "src/assets/material-icon-theme/dist/getIcon"
 
-defineProps<{
+const props = defineProps<{
   opening: boolean
   type: string
   fullpath: string
 }>()
+
+const pathdir = computed(() => relative("current/", dirname(props.fullpath)))
 </script>

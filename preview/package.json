@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@fcanvas/communicate": "1.1.0-rc.39",
+    "path-cross": "^0.0.3",
     "vue-console-feed": "^0.0.28"
   }
 }

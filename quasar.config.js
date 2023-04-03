@@ -82,7 +82,7 @@ module.exports = configure(function (/* ctx */) {
         extend(true, viteConf, {
           resolve: {
             alias: {
-              path: "path-browserify",
+              path: "path-cross",
             },
           },
           server: {

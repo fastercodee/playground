@@ -32,10 +32,11 @@ function on<N extends keyof Events>(
 
   listeners.add(cb)
 
-  onBeforeUnmount(() => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    listeners!.delete(cb)
-  }, instance)
+  if (instance)
+    onBeforeUnmount(() => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      listeners!.delete(cb)
+    }, instance)
 }
 // eslint-disable-next-line functional/functional-parameters
 function emit<N extends keyof Events>(name: N, ...args: Events[N]) {
@@ -102,6 +103,10 @@ export class フォロワー {
 
   public addWatchFile(path: string) {
     this.たどる道.add(path)
+  }
+
+  public deleteWatchFile(path: string) {
+    this.たどる道.delete(path)
   }
 
   public clear() {
