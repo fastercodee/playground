@@ -367,6 +367,13 @@ export const useSeasonEdit = defineStore("season-edit", () => {
 
       console.log(entry)
     }
+
+    editor.value?.dispatch({
+      selection: EditorSelection.create([
+        EditorSelection.range(match.posStart, match.posEnd),
+        EditorSelection.cursor(match.posStart + 1),
+      ])
+    })
   }
 
   return {
