@@ -100,8 +100,8 @@
 <script lang="ts" setup>
 import { Resizable } from "vue-re-resizable"
 
-import type { Area } from "./Layout.types"
-import { AreaComponent, Mode } from "./Layout.types"
+import type { Area } from "./SketchMain.types"
+import { AreaComponent, Mode } from "./SketchMain.types"
 import "vue-re-resizable/dist/style.css"
 
 const settingsStore = useSettingsStore()
@@ -148,7 +148,7 @@ const map = computed(
 )
 </script>
 
-<style lang="scss" scoped src="./Layout.styles.scss"></style>
+<style lang="scss" scoped src="./SketchMain.styles.scss"></style>
 
 <style lang="scss" scoped>
 .disable-resizable {

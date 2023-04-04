@@ -3,6 +3,6 @@
     <!-- <ToolBar /> -->
 
     <SideBar />
-    <Layout />
+    <SketchMain />
   </q-page>
 </template>

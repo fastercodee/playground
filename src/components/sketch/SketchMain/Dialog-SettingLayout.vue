@@ -87,7 +87,7 @@ import {
   AreaComponentSize,
   Mode,
   ModeSize,
-} from "./Layout.types"
+} from "./SketchMain.types"
 
 const settingsStore = useSettingsStore()
 
@@ -154,7 +154,7 @@ function apply() {
 </script>
 
 <style lang="scss" scoped>
-@import "./Layout.styles.scss";
+@import "./SketchMain.styles.scss";
 
 .icon {
   width: 28px;
