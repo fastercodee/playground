@@ -1,25 +1,6 @@
+import { cleanupFS } from "app/setup.vitest"
+
 import { globby } from "./globby"
-
-async function cleanupFS() {
-  const { files } = await Filesystem.readdir({
-    path: "globby",
-    directory: Directory.External,
-  }).catch(() => ({ files: [] }))
-
-  for (const file of files) {
-    if (file.type === "file")
-      await Filesystem.deleteFile({
-        path: "globby/" + file.name,
-        directory: Directory.External,
-      })
-    else
-      await Filesystem.rmdir({
-        path: "globby/" + file.name,
-        directory: Directory.External,
-        recursive: true,
-      }).catch(() => false)
-  }
-}
 
 describe("globby", async () => {
   await cleanupFS()
@@ -56,8 +37,8 @@ describe("globby", async () => {
     }
 
     expect(files).toEqual([
-      "globby/foo.js",
       "globby/bar.js",
+      "globby/foo.js",
       "globby/src/main.js",
     ])
   })
@@ -69,6 +50,6 @@ describe("globby", async () => {
       files.push(file)
     }
 
-    expect(files).toEqual(["globby/foo.js", "globby/bar.js"])
+    expect(files).toEqual(["globby/bar.js", "globby/foo.js"])
   })
 })

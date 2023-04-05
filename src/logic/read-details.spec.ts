@@ -1,17 +1,7 @@
-import setGlobalVars from "indexeddbshim"
-
-setGlobalVars(self)
+import { cleanupFS } from "app/setup.vitest"
 
 describe("read-details", async () => {
-  await Filesystem.rmdir({
-    path: "test-dir",
-    recursive: true,
-    directory: Directory.External,
-  }).catch(() => false)
-  await Filesystem.deleteFile({
-    path: "test-file",
-  }).catch(() => false)
-
+  await cleanupFS()
   await Filesystem.mkdir({
     path: "test-dir",
     recursive: true,
@@ -30,7 +20,7 @@ describe("read-details", async () => {
 
   test("read one item", async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const directory = { fullPath: () => "" } as any
+    const directory = { fullPath: "" } as any
     const out = await readDetails("test-dir", directory)
 
     expect(out.fullPath).toEqual("test-dir")

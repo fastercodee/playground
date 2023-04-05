@@ -1,42 +1,54 @@
-import { normalize } from "path/posix"
+import { basename, normalize } from "path-cross/posix"
+import { Entry } from "src/logic/read-details"
+import type { Match } from "src/logic/search-text"
 
-const map = new Map([
-  ["current/index.html", { }],
-  ["current/src/main.js", {}],
-  ["current/assets/logo.svg", {}],
-  ["current/assets/vue.svg", {}]
-])
-
-type TreeResult = Map<string, {
+interface TreeFile {
+  entry: Entry<"file">
+  matches: Match[]
+}
+interface TreeDir {
   fullPath: string
-  children: Map<string, TreeResult | Entry<"file">>
-}>
+  children: Map<string, TreeDir | TreeFile>
+}
 
-const newMap: TreeResult = new Map()
-map.forEach((entry, path) => {
-  const names = normalize(path).split("/")
+type TreeResult = Map<string, TreeDir | TreeFile>
 
-  let currentDirpath = ''
-  const metaDir = names.slice(0, -1).reduce((currentMap, dirname) => {
-    let meta = currentMap.get(dirname)
+export function resultFlatToTree(result: Map<string, Match[]>) {
+  const newMap: TreeResult = new Map()
 
-    if (!meta) {
-      // create filter dir
-      currentMap.set(dirname, meta = {
-        fullPath: currentDirpath + '' + dirname,
-        children: new Map()
-      })
-    } else {
-    }
+  result.forEach((matches, fullPath) => {
+    const names = normalize(fullPath).split("/")
 
-    currentDirpath += dirname + '/'
+    // eslint-disable-next-line functional/no-let
+    let currentDirpath = ""
+    const metaDir = names.slice(0, -1).reduce((currentMap, dirname) => {
+      // eslint-disable-next-line functional/no-let
+      let meta = currentMap.get(dirname)
 
-    return meta.children
-  },newMap)
+      if (!meta) {
+        // create filter dir
+        currentMap.set(
+          dirname,
+          (meta = {
+            fullPath: currentDirpath + "" + dirname,
+            children: new Map(),
+          })
+        )
+      }
 
-  metaDir.set(names.at(-1)!, {
-    name: names.at(-1)
+      currentDirpath += dirname + "/"
+
+      return (meta as TreeDir).children
+    }, newMap)
+
+    const entry = /* 偽 */ new Entry(
+      "file",
+      basename(fullPath),
+      createFakeDirectory(fullPath)
+    )
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    metaDir.set(names.at(-1)!, { entry, matches })
   })
 
-})
-console.log(newMap)
+  return newMap
+}

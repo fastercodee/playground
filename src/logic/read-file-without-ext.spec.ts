@@ -1,14 +1,8 @@
-import setGlobalVars from "indexeddbshim"
-
-setGlobalVars(self)
+import { cleanupFS } from "app/setup.vitest"
 
 describe("readFileWithoutExt", async () => {
   beforeEach(async () => {
-    await Filesystem.rmdir({
-      path: "current",
-      directory: Directory.External,
-      recursive: true,
-    }).catch(() => false)
+    await cleanupFS()
     await Filesystem.mkdir({
       path: "current",
       directory: Directory.External,

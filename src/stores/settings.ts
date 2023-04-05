@@ -1,5 +1,8 @@
-import type { Area } from "components/sketch/Layout.types"
-import { AreaComponent, Mode } from "components/sketch/Layout.types"
+import type { Area } from "components/sketch/SketchMain/SketchMain.types"
+import {
+  AreaComponent,
+  Mode,
+} from "components/sketch/SketchMain/SketchMain.types"
 import { defineStore } from "pinia"
 
 export const useSettingsStore = defineStore("settings", () => {

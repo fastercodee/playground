@@ -36,7 +36,7 @@ import type {
 } from "vue-console-feed/encode"
 
 import "vue-console-feed/style.css"
-import type { ComPreviewVue } from "./Preview.types"
+import type { ComPreviewVue } from "../Preview/Preview.types"
 
 const console = new DataAPI(true)
 

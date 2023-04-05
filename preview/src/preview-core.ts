@@ -10,7 +10,7 @@ import {
 } from "vue-console-feed/encode"
 import { Table } from "vue-console-feed/table"
 
-import type { ComPreviewVue } from "../../src/components/sketch/areas/Preview.types"
+import type { ComPreviewVue } from "../../src/components/sketch/SketchMain/Preview/Preview.types"
 
 import type { Communicate } from "./sw"
 import regiser from "./sw?serviceworker"
