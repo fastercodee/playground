@@ -1,9 +1,8 @@
-import { basename, normalize } from "path-cross/posix"
-import { Entry } from "src/logic/read-details"
+import { normalize } from "path-cross/posix"
 import type { Match } from "src/logic/search-text"
 
 interface TreeFile {
-  entry: Entry<"file">
+  fullPath: string
   matches: Match[]
 }
 interface TreeDir {
@@ -13,7 +12,7 @@ interface TreeDir {
 
 type TreeResult = Map<string, TreeDir | TreeFile>
 
-export function resultFlatToTree(result: Map<string, Match[]>) {
+export function flatToTree(result: Map<string, Match[]>) {
   const newMap: TreeResult = new Map()
 
   result.forEach((matches, fullPath) => {
@@ -41,13 +40,8 @@ export function resultFlatToTree(result: Map<string, Match[]>) {
       return (meta as TreeDir).children
     }, newMap)
 
-    const entry = /* 偽 */ new Entry(
-      "file",
-      basename(fullPath),
-      createFakeDirectory(fullPath)
-    )
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    metaDir.set(names.at(-1)!, { entry, matches })
+    metaDir.set(names.at(-1)!, { fullPath, matches })
   })
 
   return newMap

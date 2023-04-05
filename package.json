@@ -10,6 +10,7 @@
     "pretit": "prettier \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "vitest --run",
+    "test:watch": "vitest",
     "dev": "quasar dev",
     "typing": "npx vue-tsc",
     "build": "quasar build",
