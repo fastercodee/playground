@@ -7,6 +7,7 @@
       :mode-tree="modeTree"
       :class="{ 'px-0': modeTree }"
       :style="styleMain"
+      :count="matches.length"
       @click="opening = !opening"
     />
 

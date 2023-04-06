@@ -6,6 +6,7 @@
       mode-tree
       :opening="opening"
       :fullpath="meta.fullPath"
+      :count="meta.children.dirs.size + meta.children.files.size"
       :style="{
         paddingLeft: deepLevel * 7 + 'px',
       }"
