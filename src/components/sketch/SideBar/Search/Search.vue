@@ -2,7 +2,17 @@
   <header class="py-2 px-3 text-12px flex justify-between">
     SEARCH
     <div>
-      <Icon icon="codicon:refresh" class="w-16px h-16px" />
+      <Icon icon="codicon:refresh" class="w-16px h-16px mr-2" />
+      <Icon
+        icon="codicon:clear-all"
+        class="w-16px h-16px mr-2"
+        @click="stopSearch(), resetSearch(), resetResults()"
+      />
+      <Icon
+        :icon="showResultAsTree ? 'codicon:list-tree' : 'codicon:list-flat'"
+        @click="showResultAsTree = !showResultAsTree"
+        class="w-16px h-16px mr-2"
+      />
     </div>
   </header>
 
@@ -109,8 +119,15 @@
       >{{ metaResults.results }} results in {{ metaResults.files }} files</span
     >
 
-    <div class="h-full overflow-y-auto">
+    <div v-if="results.size > 0" class="h-full overflow-y-auto">
       <SearchTreeDirectory
+        v-if="showResultAsTree"
+        only-child
+        :meta="resultsTree.dirs.get('current')!"
+        :deep-level="0"
+      />
+      <SearchFlat
+        v-else
         v-for="[fullpath, matches] in results"
         :key="fullpath"
         :fullpath="fullpath"
@@ -130,6 +147,7 @@ import SearchGlobWorker from "src/workers/search-glob?worker"
 // === low state ===
 const showReplace = ref(false)
 const showIncludeExclude = ref(false)
+const showResultAsTree = ref(true)
 // =================
 
 const search = ref("h1")
@@ -172,6 +190,10 @@ const excludeActions = [
   },
 ]
 
+const resetSearch = () => {
+  search.value = ""
+  replace.value = ""
+}
 // ========= logic search =========
 const searching = ref(false)
 
@@ -186,20 +208,36 @@ const metaResults = shallowReactive({
   results: 0,
   files: 0,
 })
+const resultsTree = computed(() => flatToTree(results))
+/** @description - this function only reset result. don't call stopSearch */
+const resetResults = () => {
+  results.clear()
+  metaResults.results = 0
+  metaResults.files = 0
+}
 
 // eslint-disable-next-line functional/no-let
 let searchGlobWorker: Worker | null = null
+// eslint-disable-next-line functional/no-let
+let listenerSearchResult: (() => void) | null = null
+
+const stopSearch = () => {
+  searchGlobWorker?.terminate()
+  searchGlobWorker = null
+  listenerSearchResult?.()
+  listenerSearchResult = null
+  searching.value = false
+}
 
 // eslint-disable-next-line no-void
 void research()
 
 async function research() {
-  searchGlobWorker?.terminate()
+  stopSearch()
   searchGlobWorker = new SearchGlobWorker()
 
+  resetResults()
   searching.value = true
-  results.clear()
-  metaResults.results = metaResults.files = 0
 
   if (
     import.meta.env.MODE === "development" ||
@@ -208,7 +246,7 @@ async function research() {
   ) {
     const uid = uuid()
 
-    const listener = listen<ComSearchGlob, `search-return-${string}`>(
+    listenerSearchResult = listen<ComSearchGlob, `search-return-${string}`>(
       searchGlobWorker,
       `search-return-${uid}`,
       (opts) => {
@@ -218,11 +256,8 @@ async function research() {
         metaResults.results += opts.matches.length
       }
     )
-    searchGlobWorker.onerror = () => {
-      listener()
-      searchGlobWorker?.terminate()
-      searching.value = false
-    }
+    searchGlobWorker.onerror = stopSearch
+
     searchGlobWorker.onmessageerror = (event) => {
       console.error("Message error: " + event)
     }
@@ -242,9 +277,7 @@ async function research() {
       }
     )
 
-    listener()
-    searchGlobWorker?.terminate()
-    searching.value = false
+    stopSearch()
   }
 }
 </script>

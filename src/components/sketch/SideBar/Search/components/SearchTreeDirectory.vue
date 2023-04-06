@@ -1,33 +1,47 @@
 <template>
   <div>
-    <SearchTreeDirectoryMain
-      type="file"
+    <SearchFlatMain
+      v-if="!onlyChild"
+      type="directory"
+      mode-tree
       :opening="opening"
-      :fullpath="fullpath"
+      :fullpath="meta.fullPath"
+      :style="{
+        paddingLeft: deepLevel * 7 + 'px',
+      }"
       @click="opening = !opening"
     />
 
-    <ul v-if="opening" class="mx-3 text-gray-200 font-normal antialiased">
-      <li
-        v-for="match in matches"
-        :key="`${match.posStart}-${match.posEnd}`"
-        class="px-2 cursor-pointer hover:bg-[rgba(100,100,100,0.5)] transition ease duration-100 rounded-lg"
-        @click="seasonEditStore.openMatch(fullpath, match)"
-      >
-        <SearchResultMatch :match="match" />
-      </li>
-    </ul>
+    <div v-if="onlyChild || opening">
+      <SearchTreeDirectory
+        v-for="[, metaItem] in meta.children.dirs"
+        :key="metaItem.fullPath"
+        :meta="metaItem"
+        :deep-level="deepLevel + 1"
+      />
+      <SearchFlat
+        v-for="[, { fullPath, matches }] in meta.children.files"
+        mode-tree
+        :key="fullPath"
+        :fullpath="fullPath"
+        :matches="matches"
+        :style-main="{
+          paddingLeft: 8 + 7 * deepLevel + 'px',
+        }"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { Match } from "src/logic/search-text"
+import type { TreeDir } from "src/logic/flat-to-tree"
 
 defineProps<{
-  fullpath: string
-  matches: Match[]
+  meta: TreeDir
+  deepLevel: number
+
+  onlyChild?: boolean
 }>()
-const seasonEditStore = useSeasonEdit()
 
 const opening = ref(true)
 </script>

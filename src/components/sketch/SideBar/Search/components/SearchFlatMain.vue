@@ -19,7 +19,7 @@
     />
     <span>{{ basename(fullpath) }}</span>
     <small
-      v-if="pathdir"
+      v-if="pathdir && !modeTree"
       class="text-gray-400 text-12px ml-1.5 self-end truncate"
       >{{ pathdir }}</small
     >
@@ -31,11 +31,13 @@ import { basename, dirname, relative } from "path"
 
 import { Icon } from "@iconify/vue"
 import getIcon from "src/assets/material-icon-theme/dist/getIcon"
+import type { Entry } from "src/logic/read-details"
 
 const props = defineProps<{
   opening: boolean
-  type: string
+  type: Entry<"file" | "directory">["type"]
   fullpath: string
+  modeTree?: boolean
 }>()
 
 const pathdir = computed(() => relative("current/", dirname(props.fullpath)))
