@@ -16,8 +16,8 @@
     </div>
   </header>
 
-  <!-- optional search, mb-20px patch mb--20px in "trigger show include, exclude" -->
-  <main class="min-h-0 select-none mb-20px">
+  <!-- optional search, mb-20px patch pb--20px in "trigger show include, exclude" -->
+  <main class="min-h-0 select-none pb-20px">
     <q-linear-progress
       v-if="searching"
       indeterminate
@@ -46,6 +46,10 @@
               size="sm"
               v-for="action in keywordActions"
               :key="action.icon"
+              :class="{
+                'text-gray-300': !action.model.value,
+              }"
+              @click="action.model.value = !action.model.value"
             >
               <Icon :icon="action.icon" width="1.8em" height="1.8em" />
             </q-btn>
@@ -63,6 +67,10 @@
                 size="sm"
                 v-for="action in replaceActions"
                 :key="action.icon"
+                :class="{
+                  'text-gray-300': !action.model.value,
+                }"
+                @click="action.model.value = !action.model.value"
               >
                 <Icon :icon="action.icon" width="1.8em" height="1.8em" />
               </q-btn>
@@ -106,6 +114,10 @@
             size="sm"
             v-for="action in excludeActions"
             :key="action.icon"
+            :class="{
+              'text-gray-300': !action.model.value,
+            }"
+            @click="action.model.value = !action.model.value"
           >
             <Icon :icon="action.icon" width="1.8em" height="1.8em" />
           </q-btn>
@@ -114,7 +126,7 @@
     </div>
   </main>
 
-  <section class="h-full min-h-0 flex flex-col flex-nowrap select-none">
+  <section class="flex-1 min-h-0 flex flex-col flex-nowrap select-none">
     <span class="text-gray-400 text-13px pb-1.5 mx-3"
       >{{ metaResults.results }} results in {{ metaResults.files }} files</span
     >
@@ -132,6 +144,10 @@
         :key="fullpath"
         :fullpath="fullpath"
         :matches="matches"
+        @click:close-item="matches.splice(matches.indexOf($event) >>> 0, 1)"
+        @click:replace-item="replaceMatch"
+        @click:close="results.delete(fullpath)"
+        @click:replace="replaceMatches(fullpath, matches)"
       />
     </div>
   </section>
@@ -143,6 +159,8 @@ import { Icon } from "@iconify/vue"
 import type { Match } from "src/logic/search-text"
 import type { ComSearchGlob } from "src/workers/search-glob"
 import SearchGlobWorker from "src/workers/search-glob?worker"
+
+import { replaceMatch, replaceMatches } from "./logic/replace-fns"
 
 // === low state ===
 const showReplace = ref(false)

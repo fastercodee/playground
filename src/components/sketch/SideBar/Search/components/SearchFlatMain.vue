@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-nowrap items-center py-2px px-2 cursor-pointer hover:bg-[rgba(100,100,100,0.5)] transition ease duration-100"
+    class="flex flex-nowrap items-center py-2px px-2 cursor-pointer hover:bg-[rgba(100,100,100,0.5)] transition ease duration-100 group"
   >
     <div class="flex flex-nowrap items-center flex-1 min-w-0">
       <Icon
@@ -28,9 +28,21 @@
 
     <span
       v-if="count"
-      class="text-10px justify-self-end bg-blue-500 bg-opacity-80 rounded-full px-1.2 text-white"
+      class="group-hover:hidden text-10px justify-self-end bg-blue-500 bg-opacity-80 rounded-full px-1.2 text-white"
       >{{ count }}</span
     >
+    <div class="hidden group-hover:!block">
+      <Icon
+            icon="codicon:replace"
+            class="w-1.2em h-1.2em mr-1"
+            @click.stop="emit('click:replace')"
+          />
+          <Icon
+            icon="codicon:close"
+            class="w-1.2em h-1.2em"
+            @click.stop="emit('click:close')"
+          />
+    </div>
   </div>
 </template>
 
@@ -49,6 +61,11 @@ const props = defineProps<{
 
   count?: number
 }>()
+const emit = defineEmits<{
+  (name: "click:close"): void
+  (name: "click:replace"): void
+}>()
+
 
 const pathdir = computed(() => relative("current/", dirname(props.fullpath)))
 </script>
