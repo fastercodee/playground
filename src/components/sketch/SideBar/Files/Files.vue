@@ -23,6 +23,7 @@
   <main class="min-h-0 h-full select-none">
     <TreeDirectory
       v-if="entryCurrent"
+      class="mx--8px"
       ref="treeRef"
       :entry="entryCurrent"
       :deep-level="0"

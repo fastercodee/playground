@@ -64,7 +64,7 @@
         v-for="item in decevier.files"
         :key="item.name"
         :style="{
-          paddingLeft: 19 + 8 + 7 + 7 * deepLevel + 'px',
+          paddingLeft: 17 + 8 + 7 + 7 * deepLevel + 'px',
         }"
         :class="{
           'bg-[rgba(100,100,100,0.2)]': seasonEditStore.isCurrent(item),
