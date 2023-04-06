@@ -1,4 +1,4 @@
-import { basename, extname } from "path"
+import { basename, dirname, extname } from "path"
 
 import { autocompletion, closeBrackets } from "@codemirror/autocomplete"
 import { history as exHistory } from "@codemirror/commands"
@@ -355,7 +355,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       const entry = /* 偽 */ new Entry(
         "file",
         basename(fullpath),
-        createFakeDirectory(fullpath)
+        createFakeDirectory(dirname(fullpath))
       )
 
       await openFile(entry)

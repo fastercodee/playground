@@ -1,19 +1,25 @@
 import { normalize } from "path-cross/posix"
 import type { Match } from "src/logic/search-text"
 
-interface TreeFile {
+export interface TreeFile {
   fullPath: string
   matches: Match[]
 }
-interface TreeDir {
+export interface TreeDir {
   fullPath: string
-  children: Map<string, TreeDir | TreeFile>
+  children: {
+    dirs: Map<string, TreeDir>
+    files: Map<string, TreeFile>
+  }
 }
 
-type TreeResult = Map<string, TreeDir | TreeFile>
+export type TreeResult = TreeDir["children"]
 
 export function flatToTree(result: Map<string, Match[]>) {
-  const newMap: TreeResult = new Map()
+  const newMap: TreeResult = {
+    dirs: new Map(),
+    files: new Map()
+  }
 
   result.forEach((matches, fullPath) => {
     const names = normalize(fullPath).split("/")
@@ -22,15 +28,18 @@ export function flatToTree(result: Map<string, Match[]>) {
     let currentDirpath = ""
     const metaDir = names.slice(0, -1).reduce((currentMap, dirname) => {
       // eslint-disable-next-line functional/no-let
-      let meta = currentMap.get(dirname)
+      let meta = currentMap.dirs.get(dirname)
 
       if (!meta) {
         // create filter dir
-        currentMap.set(
+        currentMap.dirs.set(
           dirname,
           (meta = {
             fullPath: currentDirpath + "" + dirname,
-            children: new Map(),
+            children: {
+              dirs: new Map(),
+              files: new Map()
+            }
           })
         )
       }
@@ -41,7 +50,7 @@ export function flatToTree(result: Map<string, Match[]>) {
     }, newMap)
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    metaDir.set(names.at(-1)!, { fullPath, matches })
+    metaDir.files.set(names.at(-1)!, { fullPath, matches })
   })
 
   return newMap

@@ -13,12 +13,15 @@ describe("flat-to-tree", () => {
 
     const tree = flatToTree(data)
 
-    expect(tree).toEqual(toMap({
-      "foo.js": {
-        fullPath: "foo.js",
-        matches: []
-      }
-    }))
+    expect(tree).toEqual({
+      dirs: new Map(),
+      files: toMap({
+        "foo.js": {
+          fullPath: "foo.js",
+          matches: []
+        }
+      })
+    })
   })
 
   test("file in subdirectory", () => {
@@ -27,17 +30,23 @@ describe("flat-to-tree", () => {
     })
     const tree = flatToTree(data)
 
-    expect(tree).toEqual(toMap({
-      "foo": {
-        fullPath: "foo",
-        children: toMap({
-          "bar.js": {
-            fullPath: "foo/bar.js",
-            matches: []
+    expect(tree).toEqual({
+      files: new Map,
+      dirs: toMap({
+        "foo": {
+          fullPath: "foo",
+          children: {
+            dirs: new Map(),
+            files: toMap({
+              "bar.js": {
+                fullPath: "foo/bar.js",
+                matches: []
+              }
+            })
           }
-        })
-      }
-    }))
+        }
+      })
+    })
   })
 
   test("file in subdirectory with subdirectory", () => {
@@ -45,22 +54,31 @@ describe("flat-to-tree", () => {
       "foo/bar/baz.js": []
     })
     const tree = flatToTree(data)
-    expect(tree).toEqual(toMap({
-      "foo": {
-        fullPath: "foo",
-        children: toMap({
-          "bar": {
-            fullPath: "foo/bar",
-            children: toMap({
-              "baz.js": {
-                fullPath: "foo/bar/baz.js",
-                matches: []
+    expect(tree).toEqual({
+      files: new Map,
+      dirs: toMap({
+        "foo": {
+          fullPath: "foo",
+          children: {
+            files: new Map,
+            dirs: toMap({
+              "bar": {
+                fullPath: "foo/bar",
+                children: {
+                  dirs: new Map,
+                  files: toMap({
+                    "baz.js": {
+                      fullPath: "foo/bar/baz.js",
+                      matches: []
+                    }
+                  })
+                }
               }
             })
           }
-        })
-      }
-    }))
+        }
+      })
+    })
   })
 
   test("file in nested subdirectory", () => {
@@ -68,27 +86,39 @@ describe("flat-to-tree", () => {
       "foo/bar/baz/qux.js": []
     })
     const tree = flatToTree(data)
-    expect(tree).toEqual(toMap({
-      "foo": {
-        fullPath: "foo",
-        children: toMap({
-          "bar": {
-            fullPath: "foo/bar",
-            children: toMap({
-              "baz": {
-                fullPath: "foo/bar/baz",
-                children: toMap({
-                  "qux.js": {
-                    fullPath: "foo/bar/baz/qux.js",
-                    matches: []
-                  }
-                })
+    expect(tree).toEqual({
+      files: new Map,
+      dirs: toMap({
+        "foo": {
+          fullPath: "foo",
+          children: {
+            files: new Map,
+            dirs: toMap({
+              "bar": {
+                fullPath: "foo/bar",
+                children: {
+                  files: new Map,
+                  dirs: toMap({
+                    "baz": {
+                      fullPath: "foo/bar/baz",
+                      children: {
+                        dirs: new Map,
+                        files: toMap({
+                          "qux.js": {
+                            fullPath: "foo/bar/baz/qux.js",
+                            matches: []
+                          }
+                        })
+                      }
+                    }
+                  })
+                }
               }
             })
           }
-        })
-      }
-    }))
+        }
+      })
+    })
   })
 
   test("multiple file in nested subdirectory", () => {
@@ -97,31 +127,44 @@ describe("flat-to-tree", () => {
       "foo/bar/quux.js": []
     })
     const tree = flatToTree(data)
-    expect(tree).toEqual(toMap({
-      "foo": {
-        fullPath: "foo",
-        children: toMap({
-          "bar": {
-            fullPath: "foo/bar",
-            children: toMap({
-              "baz": {
-                fullPath: "foo/bar/baz",
-                children: toMap({
-                  "qux.js": {
-                    fullPath: "foo/bar/baz/qux.js",
-                    matches: []
-                  }
-                })
-              },
-              "quux.js": {
-                fullPath: "foo/bar/quux.js",
-                matches: []
+    expect(tree).toEqual({
+      files: new Map,
+      dirs: toMap({
+        "foo": {
+          fullPath: "foo",
+          children: {
+            files: new Map,
+            dirs: toMap({
+              "bar": {
+                fullPath: "foo/bar",
+                children: {
+                  files: toMap({
+                    "quux.js": {
+                      fullPath: "foo/bar/quux.js",
+                      matches: []
+                    }
+                  }),
+                  dirs: toMap({
+                    "baz": {
+                      fullPath: "foo/bar/baz",
+                      children: {
+                        dirs: new Map,
+                        files: toMap({
+                          "qux.js": {
+                            fullPath: "foo/bar/baz/qux.js",
+                            matches: []
+                          }
+                        })
+                      }
+                    },
+                  })
+                }
               }
             })
           }
-        })
-      }
-    }))
+        }
+      })
+    })
   })
 
   test("mixed", () => {
@@ -132,38 +175,53 @@ describe("flat-to-tree", () => {
       "foo/bar/baz/qux.js": []
     })
     const tree = flatToTree(data)
-    expect(tree).toEqual(toMap({
-      "foo.js": {
-        fullPath: "foo.js",
-        matches: []
-      },
-      foo: {
-        fullPath: "foo",
-        children: toMap({
-          "bar.js": {
-            fullPath: "foo/bar.js",
-            matches: []
-          },
-          "bar": {
-            fullPath: "foo/bar",
-            children: toMap({
-              "baz.js": {
-                fullPath: "foo/bar/baz.js",
+    expect(tree).toEqual({
+      files: toMap({
+        "foo.js": {
+          fullPath: "foo.js",
+          matches: []
+        }
+      }),
+      dirs: toMap({
+        foo: {
+          fullPath: "foo",
+          children: {
+            files: toMap({
+              "bar.js": {
+                fullPath: "foo/bar.js",
                 matches: []
-              },
-              "baz": {
-                fullPath: "foo/bar/baz",
-                children: toMap({
-                  "qux.js": {
-                    fullPath: "foo/bar/baz/qux.js",
-                    matches: []
-                  }
-                })
               }
             }),
+            dirs: toMap({
+              "bar": {
+                fullPath: "foo/bar",
+                children: {
+                  files: toMap({
+                    "baz.js": {
+                      fullPath: "foo/bar/baz.js",
+                      matches: []
+                    },
+                  }),
+                  dirs: toMap({
+                    "baz": {
+                      fullPath: "foo/bar/baz",
+                      children: {
+                        dirs: new Map,
+                        files: toMap({
+                          "qux.js": {
+                            fullPath: "foo/bar/baz/qux.js",
+                            matches: []
+                          }
+                        })
+                      }
+                    }
+                  }),
+                }
+              }
+            })
           }
-        })
-      }
-    }))
+        }
+      })
+    })
   })
 })
