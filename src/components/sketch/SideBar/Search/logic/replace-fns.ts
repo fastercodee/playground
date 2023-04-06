@@ -9,6 +9,9 @@ import type { Match } from "src/logic/search-text";
  * Instead of splitting it into a logical file we should put it in the session-edit store
  */
 
+/**
+* After the search we need to monitor the file to make sure the changes are reflected correctly in the search results
+*/
 
 export function replaceMatch(fullPath: string, match: Match) {
 
