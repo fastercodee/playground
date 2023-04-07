@@ -45,7 +45,65 @@ function emit<N extends keyof Events>(name: N, ...args: Events[N]) {
   store.get("*")?.forEach((cb) => cb(name, ...args))
 }
 
-export const eventBus = { on, emit }
+function watch(たどる道: string | string[] | Ref<string[] | Set<string>> | Set<string>, コールバック: (タイプ: keyof Events,
+  パス: string,
+  pathWatch: string) => void, instance = getCurrentInstance()) {
+  if (typeof たどる道 === "string")
+    たどる道 = {
+      value: ([たどる道])
+    } as Ref<string[] | Set<string>>
+  else if (!isRef(たどる道))
+    たどる道 = {
+      value: (たどる道)
+    } as Ref<string[] | Set<string>>
+
+  const handle = (タイプ: keyof Events, パス: string) => {
+    if (((たどる道 as Ref<string[]>).value.length ?? (たどる道 as Ref<Set<string>>).value.size) === 0) return
+
+    switch (タイプ) {
+      case "writeFile":
+      case "deleteFile":
+        for (const ですか of (たどる道 as Ref<string[] | Set<string>>).value) {
+          // pathWatch is file
+          if (ですか === パス) {
+            コールバック(タイプ, パス, ですか)
+            break
+          }
+        }
+        break
+
+      case "copyDir":
+      case "rmdir":
+        for (const ですか of (たどる道 as Ref<string[] | Set<string>>).value) {
+          // pathWatch is file
+          if (ですか.startsWith(パス + "/")) {
+            コールバック(タイプ, パス, ですか)
+            break
+          }
+        }
+        break
+    }
+  }
+
+  // eslint-disable-next-line functional/no-let
+  let called = false
+  const resolved = Promise.resolve()
+  on(
+    "*",
+    (タイプ: keyof Events, パス: string) => {
+      if (called) return
+      called = true
+      // eslint-disable-next-line promise/catch-or-return, promise/always-return
+      resolved.then(() => {
+        handle(タイプ, パス)
+        called = false
+      })
+    },
+    instance
+  )
+}
+
+export const eventBus = { on, emit, watch }
 
 export class フォロワー {
   private たどる道 = new Set<string>()
@@ -57,48 +115,9 @@ export class フォロワー {
       pathWatch: string
     ) => void
   ) {
-    const handle = (タイプ: keyof Events, パス: string) => {
-      if (!this.コールバック) return
-      switch (タイプ) {
-        case "writeFile":
-        case "deleteFile":
-          for (const ですか of this.たどる道) {
-            // pathWatch is file
-            if (ですか === パス) {
-              this.コールバック(タイプ, パス, ですか)
-              break
-            }
-          }
-          break
-
-        case "copyDir":
-        case "rmdir":
-          for (const ですか of this.たどる道) {
-            // pathWatch is file
-            if (ですか.startsWith(パス + "/")) {
-              this.コールバック(タイプ, パス, ですか)
-              break
-            }
-          }
-      }
-    }
-
-    // eslint-disable-next-line functional/no-let
-    let called = false
-    const resolved = Promise.resolve()
-    on(
-      "*",
-      (タイプ: keyof Events, パス: string) => {
-        if (called) return
-        called = true
-        // eslint-disable-next-line promise/catch-or-return, promise/always-return
-        resolved.then(() => {
-          handle(タイプ, パス)
-          called = false
-        })
-      },
-      getCurrentInstance()
-    )
+    eventBus.watch(this.たどる道, (タイプ: keyof Events,
+      パス: string,
+      pathWatch: string) => this.コールバック?.(タイプ, パス, pathWatch))
   }
 
   public addWatchFile(path: string) {

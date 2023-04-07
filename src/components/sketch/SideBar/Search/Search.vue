@@ -298,6 +298,22 @@ async function research() {
     stopSearch()
   }
 }
+
+// watch change file and refresh search results
+eventBus.watch(
+  computed(() => Array.from(results.keys())),
+  (タイプ, パス, ですか) => {
+    switch (タイプ) {
+      case "deleteFile":
+      case "rmdir":
+        results.get(ですか)?.splice(0)
+        break
+      case "copyDir":
+      case "writeFile":
+        console.log("re-search %s", ですか)
+    }
+  }
+)
 </script>
 
 <style lang="scss" scoped>
