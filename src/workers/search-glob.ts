@@ -22,11 +22,11 @@ export type ComSearchGlob = {
     uid: string,
     searchOptions: SearchOptions
   ): void
-  "search-in-text"(
-    text: string,
-    uid: string,
-    searchOptions: SearchOptions
-  ): void
+  // moved to search-single-file
+  // "search-in-text"(
+  //   text: string,
+  //   searchOptions: SearchOptions
+  // ): Match[]
 
   [name: `search-return-${string}`]: (opts: {
     file: null | string
@@ -34,10 +34,12 @@ export type ComSearchGlob = {
   }) => void
 }
 
-if (
-  import.meta.env.MODE === "development" ||
+const isWeb = import.meta.env.MODE === "development" ||
   import.meta.env.MODE === "spa" ||
   import.meta.env.MODE === "pwa"
+
+if (
+  isWeb
 ) {
   listen<ComSearchGlob, "search-on-spa">(
     self,
@@ -69,19 +71,13 @@ if (
       }
     }
   )
-} else {
-  listen<ComSearchGlob, "search-in-text">(
-    self,
-    "search-in-text",
-    async (text, uid, searchOptions) => {
-      ping<ComSearchGlob, `search-return-${string}`>(
-        self,
-        `search-return-${uid}`,
-        {
-          file: null,
-          matches: [...searchText(text, searchOptions)],
-        }
-      )
-    }
-  )
 }
+// else {
+//   listen<ComSearchGlob, "search-in-text">(
+//     self,
+//     "search-in-text",
+//     async (text, searchOptions) => {
+//       return [...searchText(text, searchOptions)]
+//     }
+//   )
+// }

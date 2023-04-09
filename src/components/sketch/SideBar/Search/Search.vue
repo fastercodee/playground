@@ -156,9 +156,14 @@
 <script lang="ts" setup>
 import { listen, put, uuid } from "@fcanvas/communicate"
 import { Icon } from "@iconify/vue"
+import { globby } from "src/logic/globby"
 import type { Match } from "src/logic/search-text"
 import type { ComSearchGlob } from "src/workers/search-glob"
 import SearchGlobWorker from "src/workers/search-glob?worker"
+import type { ComSearchInText } from "src/workers/search-in-text"
+import SearchInTextWorker from "src/workers/search-in-text?worker"
+import type { ComSearchSingleFile } from "src/workers/search-single-file"
+import SearchSingleFileWorker from "src/workers/search-single-file?worker"
 
 import { replaceMatch, replaceMatches } from "./logic/replace-fns"
 
@@ -235,37 +240,49 @@ const resetResults = () => {
 }
 
 // eslint-disable-next-line functional/no-let
-let searchGlobWorker: Worker | null = null
+let searchGloborInTextWorker: Worker | null = null
 // eslint-disable-next-line functional/no-let
 let listenerSearchResult: (() => void) | null = null
 
 const stopSearch = () => {
-  searchGlobWorker?.terminate()
-  searchGlobWorker = null
+  searchGloborInTextWorker?.terminate()
+  searchGloborInTextWorker = null
   listenerSearchResult?.()
   listenerSearchResult = null
   searching.value = false
 }
+onBeforeUnmount(stopSearch)
+
+const isWeb =
+  import.meta.env.MODE === "development" ||
+  import.meta.env.MODE === "spa" ||
+  import.meta.env.MODE === "pwa"
 
 // eslint-disable-next-line no-void
 void research()
 
 async function research() {
   stopSearch()
-  searchGlobWorker = new SearchGlobWorker()
-
   resetResults()
-  searching.value = true
 
-  if (
-    import.meta.env.MODE === "development" ||
-    import.meta.env.MODE === "spa" ||
-    import.meta.env.MODE === "pwa"
-  ) {
+  searching.value = true
+  const searchOptions = {
+    search: search.value,
+    caseSensitive: caseSensitive.value,
+    wholeWord: wholeWord.value,
+    regexp: regexp.value,
+  }
+
+  if (isWeb) {
     const uid = uuid()
 
+    searchGloborInTextWorker = new SearchGlobWorker()
+    searchGloborInTextWorker.onerror = stopSearch
+    searchGloborInTextWorker.onmessageerror = (event) => {
+      console.error("Message error: " + event)
+    }
     listenerSearchResult = listen<ComSearchGlob, `search-return-${string}`>(
-      searchGlobWorker,
+      searchGloborInTextWorker,
       `search-return-${uid}`,
       (opts) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -274,46 +291,130 @@ async function research() {
         metaResults.results += opts.matches.length
       }
     )
-    searchGlobWorker.onerror = stopSearch
-
-    searchGlobWorker.onmessageerror = (event) => {
-      console.error("Message error: " + event)
-    }
 
     await put<ComSearchGlob, "search-on-spa">(
-      searchGlobWorker,
+      searchGloborInTextWorker,
       "search-on-spa",
       "current",
       splitString(include.value),
       enableExclude.value ? splitString(exclude.value) : [],
       uid,
-      {
+      searchOptions
+    )
+  } else {
+    // TODO: need code
+
+    searchGloborInTextWorker = new SearchInTextWorker()
+    searchGloborInTextWorker.onerror = stopSearch
+    searchGloborInTextWorker.onmessageerror = (event) => {
+      console.error("Message error: " + event)
+    }
+
+    const inclu = splitString(include.value)
+
+    for await (const file of await globby(
+      "current",
+      inclu.length === 0 ? ["**/*"] : inclu,
+      splitString(exclude.value)
+    )) {
+      const matches = await put<ComSearchInText, "search-in-text">(
+        searchGloborInTextWorker,
+        "search-in-text",
+        await Filesystem.readFile({
+          path: file,
+          directory: Directory.External,
+          encoding: Encoding.UTF8,
+        }).then(toTextFile),
+        searchOptions
+      )
+
+      results.set(file, matches)
+      metaResults.files++
+      metaResults.results += matches.length
+    }
+  }
+
+  stopSearch()
+}
+
+// =========== watch change file and refresh search results ==========
+const files = computed(() => Array.from(results.keys()))
+const workersSearchSingleFile = new Set<Worker>()
+const stopAllWorkersSearchSingleFile = () => {
+  workersSearchSingleFile.forEach((worker) => {
+    worker.terminate()
+    workersSearchSingleFile.delete(worker)
+  })
+}
+onBeforeUnmount(stopAllWorkersSearchSingleFile)
+watch(files, stopAllWorkersSearchSingleFile) // not need deep watch because not add or remove item
+
+eventBus.watch(files, async (タイプ, パス, ですか) => {
+  switch (タイプ) {
+    case "deleteFile":
+    case "rmdir":
+      results.get(ですか)?.splice(0)
+      break
+    case "copyDir":
+    case "writeFile": {
+      const searchOptions = {
         search: search.value,
         caseSensitive: caseSensitive.value,
         wholeWord: wholeWord.value,
         regexp: regexp.value,
       }
-    )
 
-    stopSearch()
-  }
-}
+      console.log("re-search %s", ですか)
+      const searchSingleFileOrInTextWorker = isWeb
+        ? new SearchSingleFileWorker()
+        : new SearchInTextWorker()
+      workersSearchSingleFile.add(searchSingleFileOrInTextWorker)
+      searchSingleFileOrInTextWorker.onmessage = () => {
+        workersSearchSingleFile.delete(searchSingleFileOrInTextWorker)
+        searchSingleFileOrInTextWorker.terminate()
+      }
+      searchSingleFileOrInTextWorker.onmessageerror = (event) => {
+        console.error("Message error: " + event)
+      }
 
-// watch change file and refresh search results
-eventBus.watch(
-  computed(() => Array.from(results.keys())),
-  (タイプ, パス, ですか) => {
-    switch (タイプ) {
-      case "deleteFile":
-      case "rmdir":
-        results.get(ですか)?.splice(0)
-        break
-      case "copyDir":
-      case "writeFile":
-        console.log("re-search %s", ですか)
+      if (isWeb) {
+        const matches = await put<ComSearchSingleFile, "search-single-file">(
+          searchSingleFileOrInTextWorker,
+          "search-single-file",
+          ですか,
+          searchOptions
+        )
+        const oldMatches = results.get(ですか)
+        if (!oldMatches) console.error("oldMatches is null")
+        else {
+          oldMatches.splice(0)
+          oldMatches.push(...matches)
+        }
+      } else {
+        const matches = await put<ComSearchInText, "search-in-text">(
+          searchSingleFileOrInTextWorker,
+          "search-in-text",
+          await Filesystem.readFile({
+            path: ですか,
+            directory: Directory.External,
+            encoding: Encoding.UTF8,
+          }).then(toTextFile),
+          searchOptions
+        )
+        const oldMatches = results.get(ですか)
+        if (!oldMatches) console.error("oldMatches is null")
+        else {
+          oldMatches.splice(0)
+          oldMatches.push(...matches)
+        }
+      }
+
+      workersSearchSingleFile.delete(searchSingleFileOrInTextWorker)
+      searchSingleFileOrInTextWorker.terminate()
     }
   }
-)
+})
+// =====================================
 </script>
 
 <style lang="scss" scoped>
