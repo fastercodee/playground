@@ -67,6 +67,7 @@ export function* searchText(
 ): SearchResult {
   // search
   const regular =
+    (options.wholeWord ? "(?<=[^a-zA-Z0-9]|^)" : "") +
     (options.regexp ? options.search : escapeRegex(options.search)) +
     (options.wholeWord ? "(?=[^a-zA-Z0-9]|$)" : "")
 

@@ -55,6 +55,37 @@ describe("search-text", () => {
       },
     ])
   })
+  test("whole word before search", () => {
+    const text = "feg Hello World"
+    const options = {
+      search: "Hello",
+      caseSensitive: false,
+      wholeWord: true,
+      regexp: false,
+    }
+    const result = Array.from(searchText(text, options))
+    expect(result).toEqual([
+      {
+        index: 4,
+        match: "Hello",
+        after: " World",
+        before: "feg ",
+        posStart: 4,
+        posEnd: 9,
+      },
+    ])
+  })
+  test("whole word before not exists search", () => {
+    const text = "fegHello World"
+    const options = {
+      search: "Hello",
+      caseSensitive: false,
+      wholeWord: true,
+      regexp: false,
+    }
+    const result = Array.from(searchText(text, options))
+    expect(result).toEqual([])
+  })
   test("regex search", () => {
     const text = "Hello World"
     const options = {
