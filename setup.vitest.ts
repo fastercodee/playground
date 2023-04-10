@@ -20,3 +20,19 @@ export async function cleanupFS() {
       }).catch(() => false)
   }
 }
+
+export async function writeFile(path: string, content: string) {
+  await Filesystem.writeFile({
+    path,
+    directory: Directory.External,
+    encoding: Encoding.UTF8,
+    data: content
+  })
+}
+export async function readFile(path: string) {
+  return await Filesystem.readFile({
+    path,
+    directory: Directory.External,
+    encoding: Encoding.UTF8
+  }).then(toTextFile)
+}
