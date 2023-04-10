@@ -19,7 +19,7 @@
   <!-- optional search, mb-20px patch pb--20px in "trigger show include, exclude" -->
   <main class="min-h-0 select-none pb-20px">
     <q-linear-progress
-      v-if="searching"
+      v-if="searching || replacing"
       indeterminate
       size="1px"
       class="absolute"
@@ -77,7 +77,12 @@
             </div>
           </div>
           <div class="mx-1 flex items-center">
-            <q-btn dense round size="sm">
+            <q-btn
+              dense
+              round
+              size="sm"
+              @click="replaceMultiMatches(results).then(() => results.clear())"
+            >
               <Icon icon="codicon:replace-all" width="1.8em" height="1.8em" />
             </q-btn>
           </div>
@@ -145,9 +150,16 @@
         :fullpath="fullpath"
         :matches="matches"
         @click:close-item="matches.splice(matches.indexOf($event) >>> 0, 1)"
-        @click:replace-item="replaceMatch"
+        @click:replace-item="
+          (fullPath, match) =>
+            replaceMatch(fullPath, match).then(() =>
+              matches.splice(matches.indexOf(match) >>> 0, 1)
+            )
+        "
         @click:close="results.delete(fullpath)"
-        @click:replace="replaceMatches(fullpath, matches)"
+        @click:replace="
+          replaceMatches(fullpath, matches).then(() => results.delete(fullpath))
+        "
       />
     </div>
   </section>
@@ -156,7 +168,13 @@
 <script lang="ts" setup>
 import { listen, put, uuid } from "@fcanvas/communicate"
 import { Icon } from "@iconify/vue"
+import { storeToRefs } from "pinia"
 import { globby } from "src/logic/globby"
+import {
+  replaceMatches as replaceMatchesRaw,
+  replaceMatch as replaceMatchRaw,
+  replaceMultiMatches as replaceMultiMatchesRaw,
+} from "src/logic/replace-ctx-file"
 import type { Match } from "src/logic/search-text"
 import type { ComSearchGlob } from "src/workers/search-glob"
 import SearchGlobWorker from "src/workers/search-glob?worker"
@@ -165,7 +183,7 @@ import SearchInTextWorker from "src/workers/search-in-text?worker"
 import type { ComSearchSingleFile } from "src/workers/search-single-file"
 import SearchSingleFileWorker from "src/workers/search-single-file?worker"
 
-import { replaceMatch, replaceMatches } from "./logic/replace-fns"
+const searchStore = useSearchStore()
 
 // === low state ===
 const showReplace = ref(false)
@@ -174,7 +192,7 @@ const showResultAsTree = ref(true)
 // =================
 
 const search = ref("h1")
-const replace = ref("")
+const { replace } = storeToRefs(searchStore)
 const include = ref("")
 const exclude = ref("")
 
@@ -415,6 +433,36 @@ eventBus.watch(files, async (タイプ, パス, ですか) => {
   }
 })
 // =====================================
+
+// ============= replace ===========
+const replacing = ref(false)
+async function replaceMultiMatches(results: Map<string, Match[]>) {
+  if (replacing.value) return
+
+  replacing.value = true
+
+  await replaceMultiMatchesRaw(results, replace.value)
+
+  replacing.value = false
+}
+async function replaceMatch(fullpath: string, match: Match) {
+  if (replacing.value) return
+
+  replacing.value = true
+
+  await replaceMatchRaw(fullpath, match, replace.value)
+
+  replacing.value = false
+}
+async function replaceMatches(fullpath: string, match: Match[]) {
+  if (replacing.value) return
+
+  replacing.value = true
+
+  await replaceMatchesRaw(fullpath, match, replace.value)
+
+  replacing.value = false
+}
 </script>
 
 <style lang="scss" scoped>

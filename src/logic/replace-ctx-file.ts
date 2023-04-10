@@ -58,12 +58,18 @@ export async function replaceMatches(fullPath: string, matches: Match[], replace
   })
   // ok
 }
-export async function replaceMultiMatches({ files, dirs }: TreeDir["children"], replaceWith: string): Promise<void> {
+export async function replaceMultiMatchesTree({ files, dirs }: TreeDir["children"], replaceWith: string): Promise<void> {
   for (const [, { fullPath, matches }] of files) {
     await replaceMatches(fullPath, matches, replaceWith)
   }
 
   for (const [, { children }] of dirs) {
-    await replaceMultiMatches(children, replaceWith)
+    await replaceMultiMatchesTree(children, replaceWith)
+  }
+}
+export async function replaceMultiMatches(files: Map<string, Match[]>, replaceWith: string): Promise<void> {
+  console.log({ files, replaceWith })
+  for (const [fullPath, matches] of files) {
+    await replaceMatches(fullPath, matches, replaceWith)
   }
 }

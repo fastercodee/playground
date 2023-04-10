@@ -1,6 +1,7 @@
 import { cleanupFS, readFile, writeFile } from "app/setup.vitest"
 
 import type { TreeDir } from "./flat-to-tree"
+import type { Match } from "./search-text";
 import { searchText } from "./search-text"
 
 async function searchFile(path: string, query: string) {
@@ -35,7 +36,7 @@ describe("replace-ctx-file", () => {
     expect(await readFile("text.txt")).toEqual("hellO wOrld")
   })
 
-  test("replaceMultiMatches", async () => {
+  test("replaceMultiMatchesTree", async () => {
     await writeFile("text.txt", "hello world")
     await writeFile("text2.txt", "hello bozz")
     await Filesystem.mkdir({
@@ -70,6 +71,29 @@ describe("replace-ctx-file", () => {
         }]
       ])
     };
+
+    await replaceMultiMatchesTree(matches, "O")
+
+    expect(await readFile("text.txt")).toEqual("hellO wOrld")
+    expect(await readFile("text2.txt")).toEqual("hellO bOzz")
+    expect(await readFile("src/text3.txt")).toEqual("hellO wOrld")
+  })
+
+
+  test("replaceMultiMatches", async () => {
+    await writeFile("text.txt", "hello world")
+    await writeFile("text2.txt", "hello bozz")
+    await Filesystem.mkdir({
+      path: "src",
+      directory: Directory.External
+    })
+    await writeFile("src/text3.txt", "hello world")
+
+    const matches: Map<string, Match[]> = new Map([
+      ["text.txt", await searchFile("text.txt", "o")],
+      ["text2.txt", await searchFile("text2.txt", "o")],
+      ["src/text3.txt", await searchFile("text3.txt", "o")],
+    ])
 
     await replaceMultiMatches(matches, "O")
 
