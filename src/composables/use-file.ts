@@ -7,7 +7,7 @@ function loadFile(path: string) {
     .then(toTextFile)
 }
 
-export function useFile<R extends boolean>(filepath: string | Ref<string>, defaultValue = "", overWrite?: R): {
+export function useFile<R extends boolean = false>(filepath: string | Ref<string | undefined>, defaultValue = "", overWrite?: R): {
   data: R extends true ? Ref<string> : Readonly<Ref<string>>
   ready: Ref<Promise<void>>
 } {
@@ -22,7 +22,8 @@ export function useFile<R extends boolean>(filepath: string | Ref<string>, defau
 
   // eslint-disable-next-line functional/no-let
   let initialized = false
-  const watchHandler = (filepath: string) => {
+  const watchHandler = (filepath: string | undefined) => {
+    if (!filepath) return
     initialized = false
     ready.value = loadFile((filepath))
       .catch(er => {
@@ -38,11 +39,16 @@ export function useFile<R extends boolean>(filepath: string | Ref<string>, defau
       })
   }
   if (reactive)
-    watch(filepath as Ref<string>, watchHandler, { immediate: true })
+    watch(filepath as Ref<string | undefined>, watchHandler, { immediate: true })
   else
-    watchHandler((filepath as Ref<string>).value)
+    watchHandler((filepath as Ref<string | undefined>).value)
 
-  eventBus.watch(computed(() => [(filepath as Ref<string>).value]), (タイプ, パス, ですか) => {
+  eventBus.watch(computed(() => {
+    const path = (filepath as Ref<string | undefined>).value
+
+    if (!path) return []
+    return [path]
+  }), (タイプ, パス, ですか) => {
     if (writing) return
 
     // eslint-disable-next-line promise/catch-or-return
@@ -63,12 +69,15 @@ export function useFile<R extends boolean>(filepath: string | Ref<string>, defau
 
       writing = true
 
+      const path = (filepath as Ref<string | undefined>).value
+      if (!path) return
       await Filesystem.writeFile({
-        path: (filepath as Ref<string>).value,
+        path,
         directory: Directory.External,
         encoding: Encoding.UTF8,
         data: content,
       })
+      eventBus.emit("writeFile", path)
 
       writing = false
     })

@@ -216,6 +216,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
   const selectionStore = new WeakMap<Entry<"file">, string>()
   const history: Entry<"file">[] = []
   const currentEntry = shallowRef<Entry<"file"> | null>(null)
+  const { data: currentFileData, ready: currentFileReady } = useFile(computed(() => currentEntry.value?.fullPath), "", true)
 
   function saveCurrentSeason() {
     if (!currentEntry.value || !editor.value) {
@@ -245,18 +246,15 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     saveCurrentSeason()
     // find from season exists?
 
-    const insert = await Filesystem.readFile({
-      path: entry.fullPath,
-      directory: Directory.External,
-    }).then(toTextFile)
-    console.log({ insert })
-
     currentEntry.value = entry
+    await nextTick()
+    await currentFileReady.value
+
     editor.value?.dispatch({
       changes: {
         from: 0,
         to: editor.value.state.doc.length,
-        insert,
+        insert: currentFileData.value,
       },
       selection: selectionStore.has(entry)
         ? EditorSelection.fromJSON(selectionStore.get(entry))
@@ -290,13 +288,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     onChanged = debounce(async (text) => {
       if (entryChanging === entry) return
       entryChanging = entry
-      await Filesystem.writeFile({
-        path: entry.fullPath,
-        directory: Directory.External,
-        data: text,
-        encoding: Encoding.UTF8,
-      })
-      eventBus.emit("writeFile", entry.fullPath)
+      currentFileData.value = text
       entryChanging = null
     }, 1000)
   }
