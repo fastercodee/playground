@@ -50,20 +50,23 @@ if (isWeb) {
       }
 
       for await (const file of await globby(cwd, include, exclude)) {
+        const matches = [
+          ...searchText(
+            await Filesystem.readFile({
+              path: file,
+              directory: Directory.External,
+            }).then(toTextFile),
+            searchOptions
+          ),
+        ]
+        if (matches.length === 0) continue
+
         ping<ComSearchGlob, `search-return-${string}`>(
           self,
           `search-return-${uid}`,
           {
             file,
-            matches: [
-              ...searchText(
-                await Filesystem.readFile({
-                  path: file,
-                  directory: Directory.External,
-                }).then(toTextFile),
-                searchOptions
-              ),
-            ],
+            matches
           }
         )
       }

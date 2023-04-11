@@ -345,6 +345,8 @@ async function research() {
         searchOptions
       )
 
+      if (matches.length === 0) continue
+
       results.set(file, matches)
       metaResults.files++
       metaResults.results += matches.length
