@@ -2,7 +2,11 @@
   <header class="py-2 px-3 text-12px flex justify-between">
     SEARCH
     <div>
-      <Icon icon="codicon:refresh" class="w-16px h-16px mr-2" />
+      <Icon
+        icon="codicon:refresh"
+        class="w-16px h-16px mr-2"
+        @click="research"
+      />
       <Icon
         icon="codicon:clear-all"
         class="w-16px h-16px mr-2"
@@ -10,8 +14,8 @@
       />
       <Icon
         :icon="showResultAsTree ? 'codicon:list-tree' : 'codicon:list-flat'"
-        @click="showResultAsTree = !showResultAsTree"
         class="w-16px h-16px mr-2"
+        @click="showResultAsTree = !showResultAsTree"
       />
     </div>
   </header>
@@ -277,15 +281,14 @@ const isWeb =
 
 watch(
   [search, include, exclude, caseSensitive, wholeWord, regexp, enableExclude],
-  ([search]) => {
-    if (!search) return
-    research()
-  }
+  research
 )
 
 async function research() {
   stopSearch()
   resetResults()
+
+  if (!search.value) return
 
   searching.value = true
   const searchOptions = {
