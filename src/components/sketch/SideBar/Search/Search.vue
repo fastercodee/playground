@@ -341,7 +341,6 @@ async function research() {
         await Filesystem.readFile({
           path: file,
           directory: Directory.External,
-          encoding: Encoding.UTF8,
         }).then(toTextFile),
         searchOptions
       )
@@ -415,7 +414,6 @@ eventBus.watch(files, async (タイプ, パス, ですか) => {
           await Filesystem.readFile({
             path: ですか,
             directory: Directory.External,
-            encoding: Encoding.UTF8,
           }).then(toTextFile),
           searchOptions
         )

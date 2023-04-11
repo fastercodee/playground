@@ -249,8 +249,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     const insert = await Filesystem.readFile({
       path: entry.fullPath,
       directory: Directory.External,
-      encoding: Encoding.UTF8,
-    }).then((res) => res.data)
+    }).then(toTextFile)
     console.log({ insert })
 
     currentEntry.value = entry

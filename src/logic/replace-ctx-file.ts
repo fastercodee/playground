@@ -17,7 +17,6 @@ export async function replaceMatch(fullPath: string, match: Match, replaceWith: 
   const currentData = await Filesystem.readFile({
     path: fullPath,
     directory: Directory.External,
-    encoding: Encoding.UTF8
   })
     .then(toTextFile)
 
@@ -36,7 +35,6 @@ export async function replaceMatches(fullPath: string, matches: Match[], replace
   const currentData = await Filesystem.readFile({
     path: fullPath,
     directory: Directory.External,
-    encoding: Encoding.UTF8
   })
     .then(toTextFile)
 

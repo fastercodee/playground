@@ -61,7 +61,6 @@ if (
                 await Filesystem.readFile({
                   path: file,
                   directory: Directory.External,
-                  encoding: Encoding.UTF8,
                 }).then(toTextFile),
                 searchOptions
               ),
