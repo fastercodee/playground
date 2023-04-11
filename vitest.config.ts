@@ -30,7 +30,7 @@ export default defineConfig({
           "@capacitor/filesystem": ["Filesystem", "Directory", "Encoding"],
         },
       ],
-      dirs: ["src/logic/*.ts"],
+      dirs: ["src/logic/*.ts", "src/composables/*.ts"],
       eslintrc: {
         enabled: true, // Default `false`
         filepath: "./.eslintrc-auto-import.json", // Default `./.eslintrc-auto-import.json`

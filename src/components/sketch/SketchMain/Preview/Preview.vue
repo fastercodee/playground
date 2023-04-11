@@ -68,6 +68,11 @@ const mimeMap = {
   mpeg4r: "video/mpeg",
 }
 
+const { data: tsconfig, ready: tsconfigReady } = useFile(
+  "current/tsconfig.json",
+  "{}"
+)
+
 // eslint-disable-next-line functional/no-let
 let listener: null | (() => void) = null
 onUnmounted(() => {
@@ -119,13 +124,13 @@ function setup() {
       if (!res) throw new Error("File does not exist.")
 
       const content = ["ts", "jsx", "tsx"].includes(res.ext)
-        ? await compilerFile(
+        ? (await tsconfigReady.value,
+          await compilerFile(
             res.content,
             basename(pathname),
             res.ext,
-
-            await loadWatchFile("current/tsconfig.json", "{}")
-          )
+            tsconfig.value
+          ))
         : res.content
 
       return {

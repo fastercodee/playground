@@ -51,31 +51,28 @@ import FormatWorker from "src/workers/format?worker"
 // import { xcodeDark } from "@uiw/codemirror-theme-xcode/esm"
 
 const extensionNOOP: Extension = []
+const eslintrcDefault = {
+  // eslint configuration
+  parserOptions: {
+    ecmaVersion: 2019,
+    sourceType: "module",
+  },
+  env: {
+    browser: true,
+    node: false,
+  },
+  rules: {
+    semi: ["error", "never"],
+  },
+}
 
-async function loadLinter(name: string) {
+async function loadLinter(name: string, config: Record<string, unknown>) {
   switch (name) {
     case "javascript": {
-      const config = {
-        // eslint configuration
-        parserOptions: {
-          ecmaVersion: 2019,
-          sourceType: "module",
-        },
-        env: {
-          browser: true,
-          node: false,
-        },
-        rules: {
-          semi: ["error", "never"],
-        },
-      }
-
       return linter(
         esLint(
           new eslint.Linter(),
-          JSON.parse(
-            await loadWatchFile("current/.elintrc.json", JSON.stringify(config))
-          )
+          config
         )
       )
     }
@@ -235,6 +232,8 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     )
   }
 
+  const { data: eslintrc } = useFile("current/.elintrc.json", JSON.stringify(eslintrcDefault))
+
   // eslint-disable-next-line functional/no-let
   let entryChanging: Entry<"file"> | null = null
   async function openFile(entry: Entry<"file">) {
@@ -272,12 +271,11 @@ export const useSeasonEdit = defineStore("season-edit", () => {
 
     for (const name of checkLang) {
       if (name in langs) {
-        console.log(loadLinter(name))
         editor.value?.dispatch({
           effects: [
             // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
             language.reconfigure(loadLanguage(name as unknown as any)!),
-            linter.reconfigure((await loadLinter(name)) ?? extensionNOOP),
+            linter.reconfigure((await loadLinter(name, JSON.parse(eslintrc.value))) ?? extensionNOOP),
           ],
         })
         break
