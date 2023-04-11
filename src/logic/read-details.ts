@@ -3,6 +3,8 @@ import { フォロワー } from "./event-bus"
 // eslint-disable-next-line no-use-before-define
 const entryStore = new Map<string, Entry<"directory" | "file">>()
 const watcher = new フォロワー((タイプ, パス, ですか) => {
+  if (タイプ === "copyDir" || タイプ === "writeFile") return
+
   watcher.deleteWatchFile(ですか)
   entryStore.delete(ですか)
 })
@@ -16,7 +18,6 @@ export class Entry<Type extends "directory" | "file"> {
   ) {
     const { fullPath } = this
     const inCache = entryStore.get(fullPath) as Entry<Type> | undefined
-
     if (import.meta.env.DEV)
       Object.assign(this, {
         __r_fake: !directory.__is_entry,
@@ -26,8 +27,9 @@ export class Entry<Type extends "directory" | "file"> {
     if (inCache) {
       if (directory.__is_entry) inCache.directory = directory
 
-      if (import.meta.env.DEV)
+      if (import.meta.env.DEV) {
         Object.assign(inCache, { __fake: !inCache.directory.__is_entry })
+      }
       ;[inCache.type, inCache.name] = [this.type, this.name]
       return inCache
     }
@@ -63,19 +65,19 @@ export async function directoryDetails(entry: Entry<"directory">) {
   const files: Entry<"file">[] = []
   const directories: Entry<"directory">[] = []
 
-  ;(
-    await Promise.all(
-      (
-        await Filesystem.readdir({
-          path: entry.fullPath,
-          directory: Directory.External,
-        })
-      ).files.map((item) => new Entry(item.type, item.name, entry))
-    )
-  ).forEach((item) => {
-    if (item.type === "file") files.push(item as Entry<"file">)
-    else directories.push(item as Entry<"directory">)
-  })
+    ; (
+      await Promise.all(
+        (
+          await Filesystem.readdir({
+            path: entry.fullPath,
+            directory: Directory.External,
+          })
+        ).files.map((item) => new Entry(item.type, item.name, entry))
+      )
+    ).forEach((item) => {
+      if (item.type === "file") files.push(item as Entry<"file">)
+      else directories.push(item as Entry<"directory">)
+    })
 
   return { files, directories }
 }
