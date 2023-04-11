@@ -92,7 +92,7 @@ describe("replace-ctx-file", () => {
     const matches: Map<string, Match[]> = new Map([
       ["text.txt", await searchFile("text.txt", "o")],
       ["text2.txt", await searchFile("text2.txt", "o")],
-      ["src/text3.txt", await searchFile("text3.txt", "o")],
+      ["src/text3.txt", await searchFile("src/text3.txt", "o")],
     ])
 
     await replaceMultiMatches(matches, "O")
