@@ -237,6 +237,21 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     JSON.stringify(eslintrcDefault)
   )
 
+  watch(currentFileData, data => {
+    if (!currentEntry.value) return
+
+    saveCurrentSeason()
+    editor.value?.dispatch({
+      changes: {
+        from: 0,
+        to: editor.value.state.doc.length,
+        insert: data,
+      },
+      selection: selectionStore.has(currentEntry.value)
+        ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
+        : undefined,
+    })
+  }, { immediate: true })
   // eslint-disable-next-line functional/no-let
   let entryChanging: Entry<"file"> | null = null
   async function openFile(entry: Entry<"file">) {
@@ -251,16 +266,6 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     await nextTick()
     await currentFileReady.value
 
-    editor.value?.dispatch({
-      changes: {
-        from: 0,
-        to: editor.value.state.doc.length,
-        insert: currentFileData.value,
-      },
-      selection: selectionStore.has(entry)
-        ? EditorSelection.fromJSON(selectionStore.get(entry))
-        : undefined,
-    })
     const ext = extname(entry.name).slice(1)
     const checkLang = (langMap as unknown as Record<string, string>)[ext] ?? [
       ext,
