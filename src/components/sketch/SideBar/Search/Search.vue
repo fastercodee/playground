@@ -5,16 +5,18 @@
       <Icon
         icon="codicon:refresh"
         class="w-16px h-16px mr-2"
+        :class="search ? 'cursor-pointer' : 'text-gray-500'"
         @click="research"
       />
       <Icon
         icon="codicon:clear-all"
-        class="w-16px h-16px mr-2"
+        class="w-16px h-16px mr-2 cursor-pointer"
         @click="stopSearch(), resetSearch(), resetResults()"
       />
       <Icon
         :icon="showResultAsTree ? 'codicon:list-tree' : 'codicon:list-flat'"
         class="w-16px h-16px mr-2"
+        :class="search ? 'cursor-pointer' : 'text-gray-500'"
         @click="showResultAsTree = !showResultAsTree"
       />
     </div>
@@ -54,6 +56,7 @@
                 'text-gray-300': !action.model.value,
               }"
               @click="action.model.value = !action.model.value"
+              @keypress.enter="research"
             >
               <Icon :icon="action.icon" width="1.8em" height="1.8em" />
             </q-btn>
@@ -63,7 +66,11 @@
         <!-- replace with -->
         <div v-show="showReplace" class="mt-2 flex flex-nowrap justify-between">
           <div class="input-group min-w-0">
-            <input v-model="replace" placeholder="Replace" />
+            <input
+              v-model="replace"
+              placeholder="Replace"
+              @keypress.enter="replaceMultiMatches(results).then(resetResults)"
+            />
             <div class="input-action">
               <q-btn
                 dense
@@ -109,13 +116,21 @@
       <!-- include -->
       <span class="mt-2 block text-gray-500 text-12px">files to include</span>
       <div class="input-group">
-        <input v-model="include" placeholder="e.g. *.ts, src/**/include" />
+        <input
+          v-model="include"
+          placeholder="e.g. *.ts, src/**/include"
+          @keypress.enter="research"
+        />
       </div>
 
       <!-- exclude -->
       <span class="mt-2 block text-gray-500 text-12px">files to exclude</span>
       <div class="input-group">
-        <input v-model="exclude" placeholder="e.g. *.ts, src/**/exlucde" />
+        <input
+          v-model="exclude"
+          placeholder="e.g. *.ts, src/**/exlucde"
+          @keypress.enter="research"
+        />
         <div class="input-action">
           <q-btn
             dense
@@ -136,7 +151,7 @@
   </main>
 
   <section class="flex-1 min-h-0 flex flex-col flex-nowrap select-none">
-    <span class="text-gray-400 text-13px pb-1.5 mx-3"
+    <span v-if="search" class="text-gray-400 text-13px pb-1.5 mx-3"
       >{{ metaResults.results }} results in {{ metaResults.files }} files</span
     >
 
@@ -194,7 +209,7 @@ const showIncludeExclude = ref(false)
 const showResultAsTree = ref(true)
 // =================
 
-const search = ref("h1")
+const search = ref("")
 const { replace } = storeToRefs(searchStore)
 const include = ref("")
 const exclude = ref("")
