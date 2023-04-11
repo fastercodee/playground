@@ -240,8 +240,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
   // eslint-disable-next-line functional/no-let
   let entryChanging: Entry<"file"> | null = null
   async function openFile(entry: Entry<"file">) {
-    entry = toRaw(entry)
-    if (currentEntry.value === entry) return
+    if (toRaw(currentEntry.value) === toRaw(entry)) return
     onChanged = null
     console.log("open file")
     // save current season - backup
@@ -277,7 +276,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
             language.reconfigure(loadLanguage(name as unknown as any)!),
             linter.reconfigure(
               (await loadLinter(name, JSON.parse(eslintrc.value))) ??
-                extensionNOOP
+              extensionNOOP
             ),
           ],
         })
@@ -298,7 +297,6 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     }, 1000)
   }
   function closeFile(entry: Entry<"file">) {
-    entry = toRaw(entry)
     if (currentEntry.value && editor.value)
       onChanged?.(editor.value.state.doc + "")
     onChanged = null
@@ -335,7 +333,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
   }
 
   function isCurrent(entry: Entry<"file">) {
-    return currentEntry.value === toRaw(entry)
+    return toRaw(currentEntry.value) === toRaw(entry)
   }
 
   // ========= extension ========
@@ -346,11 +344,11 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       // open file
       // await openFile(await)
       // TODO: 偽
-      const entry = /* 偽 */ new Entry(
+      const entry = /* 偽 */reactive(new Entry(
         "file",
         basename(fullpath),
         createFakeDirectory(dirname(fullpath))
-      )
+      ))
 
       await openFile(entry)
 
