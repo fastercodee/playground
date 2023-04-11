@@ -3,14 +3,11 @@ const base64regex =
 
 export function isBase64(str: string) {
   if (base64regex.test(str)) {
-
     try {
-      return btoa(atob(str)) === str;
+      return btoa(atob(str)) === str
+    } catch (err) {
+      return false
     }
-    catch (err) {
-      return false;
-    }
-
   }
 
   return false

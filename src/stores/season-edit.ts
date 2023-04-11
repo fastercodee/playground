@@ -69,12 +69,7 @@ const eslintrcDefault = {
 async function loadLinter(name: string, config: Record<string, unknown>) {
   switch (name) {
     case "javascript": {
-      return linter(
-        esLint(
-          new eslint.Linter(),
-          config
-        )
-      )
+      return linter(esLint(new eslint.Linter(), config))
     }
     case "json": {
       return linter(jsonParseLinter())
@@ -216,7 +211,11 @@ export const useSeasonEdit = defineStore("season-edit", () => {
   const selectionStore = new WeakMap<Entry<"file">, string>()
   const history: Entry<"file">[] = []
   const currentEntry = shallowRef<Entry<"file"> | null>(null)
-  const { data: currentFileData, ready: currentFileReady } = useFile(computed(() => currentEntry.value?.fullPath), "", true)
+  const { data: currentFileData, ready: currentFileReady } = useFile(
+    computed(() => currentEntry.value?.fullPath),
+    "",
+    true
+  )
 
   function saveCurrentSeason() {
     if (!currentEntry.value || !editor.value) {
@@ -233,7 +232,10 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     )
   }
 
-  const { data: eslintrc } = useFile("current/.elintrc.json", JSON.stringify(eslintrcDefault))
+  const { data: eslintrc } = useFile(
+    "current/.elintrc.json",
+    JSON.stringify(eslintrcDefault)
+  )
 
   // eslint-disable-next-line functional/no-let
   let entryChanging: Entry<"file"> | null = null
@@ -273,7 +275,10 @@ export const useSeasonEdit = defineStore("season-edit", () => {
           effects: [
             // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
             language.reconfigure(loadLanguage(name as unknown as any)!),
-            linter.reconfigure((await loadLinter(name, JSON.parse(eslintrc.value))) ?? extensionNOOP),
+            linter.reconfigure(
+              (await loadLinter(name, JSON.parse(eslintrc.value))) ??
+                extensionNOOP
+            ),
           ],
         })
         break

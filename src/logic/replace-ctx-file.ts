@@ -1,6 +1,5 @@
-import type { TreeDir } from "src/logic/flat-to-tree";
-import type { Match } from "src/logic/search-text";
-
+import type { TreeDir } from "src/logic/flat-to-tree"
+import type { Match } from "src/logic/search-text"
 
 /**
  * When edits are made then:
@@ -10,39 +9,46 @@ import type { Match } from "src/logic/search-text";
  */
 
 /**
-* After the search we need to monitor the file to make sure the changes are reflected correctly in the search results
-*/
+ * After the search we need to monitor the file to make sure the changes are reflected correctly in the search results
+ */
 
-export async function replaceMatch(fullPath: string, match: Match, replaceWith: string): Promise<void> {
+export async function replaceMatch(
+  fullPath: string,
+  match: Match,
+  replaceWith: string
+): Promise<void> {
   const currentData = await Filesystem.readFile({
     path: fullPath,
     directory: Directory.External,
-  })
-    .then(toTextFile)
+  }).then(toTextFile)
 
-  const newText = currentData.slice(0, match.index) /** heading */ +
-    replaceWith
-    + currentData.slice(match.index + match.match.length); /** footing */
+  const newText =
+    currentData.slice(0, match.index) /** heading */ +
+    replaceWith +
+    currentData.slice(match.index + match.match.length) /** footing */
 
   await Filesystem.writeFile({
     path: fullPath,
     directory: Directory.External,
     encoding: Encoding.UTF8,
-    data: newText
+    data: newText,
   })
 }
-export async function replaceMatches(fullPath: string, matches: Match[], replaceWith: string): Promise<void> {
+export async function replaceMatches(
+  fullPath: string,
+  matches: Match[],
+  replaceWith: string
+): Promise<void> {
   const currentData = await Filesystem.readFile({
     path: fullPath,
     directory: Directory.External,
-  })
-    .then(toTextFile)
+  }).then(toTextFile)
 
   // eslint-disable-next-line functional/no-let
   let newText = ""
   // eslint-disable-next-line functional/no-let
   let currentPointer = 0
-  matches.forEach(match => {
+  matches.forEach((match) => {
     newText += currentData.slice(currentPointer, match.index) + replaceWith
     currentPointer = match.index + match.match.length
   })
@@ -52,11 +58,14 @@ export async function replaceMatches(fullPath: string, matches: Match[], replace
     path: fullPath,
     directory: Directory.External,
     encoding: Encoding.UTF8,
-    data: newText
+    data: newText,
   })
   // ok
 }
-export async function replaceMultiMatchesTree({ files, dirs }: TreeDir["children"], replaceWith: string): Promise<void> {
+export async function replaceMultiMatchesTree(
+  { files, dirs }: TreeDir["children"],
+  replaceWith: string
+): Promise<void> {
   for (const [, { fullPath, matches }] of files) {
     await replaceMatches(fullPath, matches, replaceWith)
   }
@@ -65,7 +74,10 @@ export async function replaceMultiMatchesTree({ files, dirs }: TreeDir["children
     await replaceMultiMatchesTree(children, replaceWith)
   }
 }
-export async function replaceMultiMatches(files: Map<string, Match[]>, replaceWith: string): Promise<void> {
+export async function replaceMultiMatches(
+  files: Map<string, Match[]>,
+  replaceWith: string
+): Promise<void> {
   console.log({ files, replaceWith })
   for (const [fullPath, matches] of files) {
     await replaceMatches(fullPath, matches, replaceWith)

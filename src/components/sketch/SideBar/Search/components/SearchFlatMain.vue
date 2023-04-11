@@ -33,15 +33,15 @@
     >
     <div class="hidden group-hover:!block">
       <Icon
-            icon="codicon:replace"
-            class="w-1.2em h-1.2em mr-1"
-            @click.stop="emit('click:replace')"
-          />
-          <Icon
-            icon="codicon:close"
-            class="w-1.2em h-1.2em"
-            @click.stop="emit('click:close')"
-          />
+        icon="codicon:replace"
+        class="w-1.2em h-1.2em mr-1"
+        @click.stop="emit('click:replace')"
+      />
+      <Icon
+        icon="codicon:close"
+        class="w-1.2em h-1.2em"
+        @click.stop="emit('click:close')"
+      />
     </div>
   </div>
 </template>
@@ -65,7 +65,6 @@ const emit = defineEmits<{
   (name: "click:close"): void
   (name: "click:replace"): void
 }>()
-
 
 const pathdir = computed(() => relative("current/", dirname(props.fullpath)))
 </script>

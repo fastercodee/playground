@@ -44,7 +44,6 @@
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
 import type { Match } from "src/logic/search-text"
-import { useSeasonEdit } from "src/stores/season-edit";
 
 defineProps<{
   fullpath: string

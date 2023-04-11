@@ -15,28 +15,28 @@ Object.assign(self, { window: self, Filesystem, Directory, Encoding })
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ComSearchSingleFile = {
   // search single file
-  "search-single-file"(
-    path: string,
-    searchOptions: SearchOptions
-  ): Match[]
+  "search-single-file"(path: string, searchOptions: SearchOptions): Match[]
 }
 
-const isWeb = import.meta.env.MODE === "development" ||
+const isWeb =
+  import.meta.env.MODE === "development" ||
   import.meta.env.MODE === "spa" ||
   import.meta.env.MODE === "pwa"
 
-if (
-  isWeb
-) {
-  listen<ComSearchSingleFile, "search-single-file">(self, "search-single-file", async (file, searchOptions) => {
-    return [
-      ...searchText(
-        await Filesystem.readFile({
-          path: file,
-          directory: Directory.External,
-        }).then(toTextFile),
-        searchOptions
-      )
-    ]
-  })
+if (isWeb) {
+  listen<ComSearchSingleFile, "search-single-file">(
+    self,
+    "search-single-file",
+    async (file, searchOptions) => {
+      return [
+        ...searchText(
+          await Filesystem.readFile({
+            path: file,
+            directory: Directory.External,
+          }).then(toTextFile),
+          searchOptions
+        ),
+      ]
+    }
+  )
 }

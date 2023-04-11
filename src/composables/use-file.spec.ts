@@ -69,13 +69,17 @@ describe("use-file", () => {
 
     await Promise.all([
       writeFile("text.txt", "bar").then(() =>
-        eventBus.emit("writeFile", "text.txt")),
+        eventBus.emit("writeFile", "text.txt")
+      ),
       writeFile("text.txt", "bar2").then(() =>
-        eventBus.emit("writeFile", "text.txt")),
+        eventBus.emit("writeFile", "text.txt")
+      ),
       writeFile("text.txt", "bar3").then(() =>
-        eventBus.emit("writeFile", "text.txt")),
+        eventBus.emit("writeFile", "text.txt")
+      ),
       writeFile("text.txt", "bar4").then(() =>
-        eventBus.emit("writeFile", "text.txt"))
+        eventBus.emit("writeFile", "text.txt")
+      ),
     ])
 
     await sleep(600)

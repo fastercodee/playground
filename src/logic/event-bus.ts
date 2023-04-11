@@ -45,20 +45,26 @@ function emit<N extends keyof Events>(name: N, ...args: Events[N]) {
   store.get("*")?.forEach((cb) => cb(name, ...args))
 }
 
-function watch(たどる道: string | string[] | Ref<string[] | Set<string>> | Set<string>, コールバック: (タイプ: keyof Events,
-  パス: string,
-  pathWatch: string) => void, instance = getCurrentInstance()) {
+function watch(
+  たどる道: string | string[] | Ref<string[] | Set<string>> | Set<string>,
+  コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void,
+  instance = getCurrentInstance()
+) {
   if (typeof たどる道 === "string")
     たどる道 = {
-      value: ([たどる道])
+      value: [たどる道],
     } as Ref<string[] | Set<string>>
   else if (!isRef(たどる道))
     たどる道 = {
-      value: (たどる道)
+      value: たどる道,
     } as Ref<string[] | Set<string>>
 
   const handle = (タイプ: keyof Events, パス: string) => {
-    if (((たどる道 as Ref<string[]>).value.length ?? (たどる道 as Ref<Set<string>>).value.size) === 0) return
+    if (
+      ((たどる道 as Ref<string[]>).value.length ??
+        (たどる道 as Ref<Set<string>>).value.size) === 0
+    )
+      return
 
     switch (タイプ) {
       case "writeFile":
@@ -115,9 +121,11 @@ export class フォロワー {
       pathWatch: string
     ) => void
   ) {
-    eventBus.watch(this.たどる道, (タイプ: keyof Events,
-      パス: string,
-      pathWatch: string) => this.コールバック?.(タイプ, パス, pathWatch))
+    eventBus.watch(
+      this.たどる道,
+      (タイプ: keyof Events, パス: string, pathWatch: string) =>
+        this.コールバック?.(タイプ, パス, pathWatch)
+    )
   }
 
   public addWatchFile(path: string) {

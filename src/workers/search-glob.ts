@@ -34,13 +34,12 @@ export type ComSearchGlob = {
   }) => void
 }
 
-const isWeb = import.meta.env.MODE === "development" ||
+const isWeb =
+  import.meta.env.MODE === "development" ||
   import.meta.env.MODE === "spa" ||
   import.meta.env.MODE === "pwa"
 
-if (
-  isWeb
-) {
+if (isWeb) {
   listen<ComSearchGlob, "search-on-spa">(
     self,
     "search-on-spa",

@@ -18,7 +18,7 @@ export type TreeResult = TreeDir["children"]
 export function flatToTree(result: Map<string, Match[]>) {
   const newMap: TreeResult = {
     dirs: new Map(),
-    files: new Map()
+    files: new Map(),
   }
 
   result.forEach((matches, fullPath) => {
@@ -38,8 +38,8 @@ export function flatToTree(result: Map<string, Match[]>) {
             fullPath: currentDirpath + "" + dirname,
             children: {
               dirs: new Map(),
-              files: new Map()
-            }
+              files: new Map(),
+            },
           })
         )
       }
