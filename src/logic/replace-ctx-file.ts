@@ -33,6 +33,7 @@ export async function replaceMatch(
     encoding: Encoding.UTF8,
     data: newText,
   })
+  eventBus.emit("writeFile", fullPath)
 }
 export async function replaceMatches(
   fullPath: string,
@@ -60,6 +61,7 @@ export async function replaceMatches(
     encoding: Encoding.UTF8,
     data: newText,
   })
+  eventBus.emit("writeFile", fullPath)
   // ok
 }
 export async function replaceMultiMatchesTree(

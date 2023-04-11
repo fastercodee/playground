@@ -142,6 +142,7 @@
         only-child
         :meta="resultsTree.dirs.get('current')!"
         :deep-level="0"
+        @click:close-item="deleteResults"
       />
       <template v-else v-for="[fullpath, matches] in results" :key="fullpath">
         <SearchFlat
@@ -155,10 +156,10 @@
                 matches.splice(matches.indexOf(match) >>> 0, 1)
               )
           "
-          @click:close="results.delete(fullpath)"
+          @click:close="deleteResults(fullpath, false)"
           @click:replace="
             replaceMatches(fullpath, matches).then(() =>
-              results.delete(fullpath)
+              deleteResults(fullpath, false)
             )
           "
         />
@@ -469,6 +470,15 @@ async function replaceMatches(fullpath: string, match: Match[]) {
   await replaceMatchesRaw(fullpath, match, replace.value)
 
   replacing.value = false
+}
+
+function deleteResults(fullPath: string, isDir: boolean) {
+  if (!isDir) results.delete(fullPath)
+
+  fullPath += "/"
+  for (const [path] of results) {
+    if (path.startsWith(fullPath)) results.delete(path)
+  }
 }
 </script>
 

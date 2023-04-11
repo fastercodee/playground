@@ -18,23 +18,26 @@
 
     <div v-if="onlyChild || opening">
       <template
-        v-for="[name, metaItem] in meta.children.dirs"
+        v-for="[, metaItem] in meta.children.dirs"
         :key="metaItem.fullPath"
       >
         <SearchTreeDirectory
           v-if="existsMatch(metaItem)"
           :meta="metaItem"
           :deep-level="deepLevel + 1"
-          @click:close="meta.children.dirs.delete(name)"
+          @click:close="emit('click:close-item', metaItem.fullPath, true)"
           @click:replace="
             replaceMultiMatchesTree(metaItem.children, replace).then(() =>
-              meta.children.dirs.delete(name)
+              emit('click:close-item', metaItem.fullPath, true)
             )
+          "
+          @click:close-item="
+            (full, isDir) => emit('click:close-item', full, isDir)
           "
         />
       </template>
       <template
-        v-for="[name, { fullPath, matches }] in meta.children.files"
+        v-for="[, { fullPath, matches }] in meta.children.files"
         v-memo="[fullPath, matches.length, deepLevel]"
         :key="fullPath"
       >
@@ -48,15 +51,12 @@
           }"
           @click:close-item="matches.splice(matches.indexOf($event) >>> 0, 1)"
           @click:replace-item="
-            (fullPath, match) =>
-              replaceMatch(fullPath, match, replace).then(() =>
-                matches.splice(matches.indexOf(match) >>> 0, 1)
-              )
+            (fullPath, match) => replaceMatch(fullPath, match, replace)
           "
-          @click:close="meta.children.files.delete(name)"
+          @click:close="emit('click:close-item', fullPath, false)"
           @click:replace="
             replaceMatches(fullPath, matches, replace).then(() =>
-              meta.children.files.delete(name)
+              emit('click:close-item', fullPath, false)
             )
           "
         />
@@ -83,6 +83,7 @@ defineProps<{
 const emit = defineEmits<{
   (name: "click:close"): void
   (name: "click:replace"): void
+  (name: "click:close-item", fullPath: string, isDir: boolean): void
 }>()
 
 const searchStore = useSearchStore()
