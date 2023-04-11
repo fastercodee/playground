@@ -143,24 +143,26 @@
         :meta="resultsTree.dirs.get('current')!"
         :deep-level="0"
       />
-      <SearchFlat
-        v-else
-        v-for="[fullpath, matches] in results"
-        :key="fullpath"
-        :fullpath="fullpath"
-        :matches="matches"
-        @click:close-item="matches.splice(matches.indexOf($event) >>> 0, 1)"
-        @click:replace-item="
-          (fullPath, match) =>
-            replaceMatch(fullPath, match).then(() =>
-              matches.splice(matches.indexOf(match) >>> 0, 1)
+      <template v-else v-for="[fullpath, matches] in results" :key="fullpath">
+        <SearchFlat
+          v-if="matches.length > 0"
+          :fullpath="fullpath"
+          :matches="matches"
+          @click:close-item="matches.splice(matches.indexOf($event) >>> 0, 1)"
+          @click:replace-item="
+            (fullPath, match) =>
+              replaceMatch(fullPath, match).then(() =>
+                matches.splice(matches.indexOf(match) >>> 0, 1)
+              )
+          "
+          @click:close="results.delete(fullpath)"
+          @click:replace="
+            replaceMatches(fullpath, matches).then(() =>
+              results.delete(fullpath)
             )
-        "
-        @click:close="results.delete(fullpath)"
-        @click:replace="
-          replaceMatches(fullpath, matches).then(() => results.delete(fullpath))
-        "
-      />
+          "
+        />
+      </template>
     </div>
   </section>
 </template>
@@ -276,8 +278,13 @@ const isWeb =
   import.meta.env.MODE === "spa" ||
   import.meta.env.MODE === "pwa"
 
-// eslint-disable-next-line no-void
-void research()
+watch(
+  [search, include, exclude, caseSensitive, wholeWord, regexp, enableExclude],
+  ([search]) => {
+    if (!search) return
+    research()
+  }
+)
 
 async function research() {
   stopSearch()
