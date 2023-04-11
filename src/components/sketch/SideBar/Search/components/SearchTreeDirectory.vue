@@ -49,8 +49,8 @@
           :style-main="{
             paddingLeft: 8 + 7 * deepLevel + 'px',
           }"
-          @click:close-item="matches.splice(matches.indexOf($event) >>> 0, 1)"
-          @click:replace-item="
+          @click:close-match="emit('click:close-match', fullPath, $event)"
+          @click:replace-match="
             (fullPath, match) => replaceMatch(fullPath, match, replace)
           "
           @click:close="emit('click:close-item', fullPath, false)"
@@ -73,6 +73,7 @@ import {
   replaceMatches,
   replaceMultiMatchesTree,
 } from "src/logic/replace-ctx-file"
+import type { Match } from "src/logic/search-text"
 
 defineProps<{
   meta: TreeDir
@@ -83,6 +84,7 @@ defineProps<{
 const emit = defineEmits<{
   (name: "click:close"): void
   (name: "click:replace"): void
+  (name: "click:close-match", fullPath: string, match: Match): void
   (name: "click:close-item", fullPath: string, isDir: boolean): void
 }>()
 

@@ -28,12 +28,12 @@
           <Icon
             icon="codicon:replace"
             class="w-1.2em h-1.2em mr-1"
-            @click.stop="emit('click:replace-item', fullpath, match)"
+            @click.stop="emit('click:replace-match', fullpath, match)"
           />
           <Icon
             icon="codicon:close"
             class="w-1.2em h-1.2em"
-            @click.stop="emit('click:close-item', match)"
+            @click.stop="emit('click:close-match', match)"
           />
         </div>
       </li>
@@ -57,8 +57,8 @@ const emit = defineEmits<{
   (name: "click:close"): void
   (name: "click:replace"): void
 
-  (name: "click:close-item", match: Match): void
-  (name: "click:replace-item", fullpath: string, match: Match): void
+  (name: "click:close-match", match: Match): void
+  (name: "click:replace-match", fullpath: string, match: Match): void
 }>()
 
 const seasonEditStore = useSeasonEdit()

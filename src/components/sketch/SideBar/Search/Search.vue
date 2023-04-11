@@ -81,7 +81,7 @@
               dense
               round
               size="sm"
-              @click="replaceMultiMatches(results).then(() => results.clear())"
+              @click="replaceMultiMatches(results).then(resetResults)"
             >
               <Icon icon="codicon:replace-all" width="1.8em" height="1.8em" />
             </q-btn>
@@ -143,19 +143,16 @@
         :meta="resultsTree.dirs.get('current')!"
         :deep-level="0"
         @click:close-item="deleteResults"
+        @click:close-match="deleteMatch"
       />
       <template v-else v-for="[fullpath, matches] in results" :key="fullpath">
         <SearchFlat
           v-if="matches.length > 0"
           :fullpath="fullpath"
           :matches="matches"
-          @click:close-item="matches.splice(matches.indexOf($event) >>> 0, 1)"
-          @click:replace-item="
-            (fullPath, match) =>
-              replaceMatch(fullPath, match).then(() =>
-                matches.splice(matches.indexOf(match) >>> 0, 1)
-              )
-          "
+          @click:close-item="deleteMatch(fullpath, $event)"
+          @click:replace-match="deleteMatch"
+          @click:close-match="deleteMatch(fullpath, $event)"
           @click:close="deleteResults(fullpath, false)"
           @click:replace="
             replaceMatches(fullpath, matches).then(() =>
@@ -175,7 +172,6 @@ import { storeToRefs } from "pinia"
 import { globby } from "src/logic/globby"
 import {
   replaceMatches as replaceMatchesRaw,
-  replaceMatch as replaceMatchRaw,
   replaceMultiMatches as replaceMultiMatchesRaw,
 } from "src/logic/replace-ctx-file"
 import type { Match } from "src/logic/search-text"
@@ -453,15 +449,6 @@ async function replaceMultiMatches(results: Map<string, Match[]>) {
 
   replacing.value = false
 }
-async function replaceMatch(fullpath: string, match: Match) {
-  if (replacing.value) return
-
-  replacing.value = true
-
-  await replaceMatchRaw(fullpath, match, replace.value)
-
-  replacing.value = false
-}
 async function replaceMatches(fullpath: string, match: Match[]) {
   if (replacing.value) return
 
@@ -473,12 +460,34 @@ async function replaceMatches(fullpath: string, match: Match[]) {
 }
 
 function deleteResults(fullPath: string, isDir: boolean) {
-  if (!isDir) results.delete(fullPath)
+  if (!isDir) {
+    const matches = results.get(fullPath)
+    if (!matches) return
+
+    results.delete(fullPath)
+    metaResults.results -= matches.length
+    metaResults.files--
+
+    return
+  }
 
   fullPath += "/"
-  for (const [path] of results) {
-    if (path.startsWith(fullPath)) results.delete(path)
+  for (const [path, { length }] of results) {
+    if (path.startsWith(fullPath)) {
+      results.delete(path)
+      metaResults.results -= length
+      metaResults.files--
+    }
   }
+}
+function deleteMatch(fullpath: string, match: Match) {
+  const matches = results.get(fullpath)
+
+  if (!matches) return
+  matches.splice(matches.indexOf(match), 1)
+  metaResults.results--
+
+  if (matches.length === 0) deleteResults(fullpath, false)
 }
 </script>
 
