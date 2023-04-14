@@ -48,6 +48,7 @@ specifiers:
   browserfs: ^2.0.0
   canvas: ^2.11.2
   codemirror: ^6.0.1
+  dotenv: ^16.0.3
   esbuild-wasm: ^0.17.12
   escape-string-regexp: ^5.0.0
   eslint: ^8.10.0
@@ -148,6 +149,7 @@ devDependencies:
   '@unocss/transformer-directives': 0.50.6
   autoprefixer: 10.4.14
   canvas: 2.11.2
+  dotenv: 16.0.3
   eslint: 8.36.0
   eslint-config-prettier: 8.7.0_eslint@8.36.0
   eslint-plugin-vue: 9.9.0_eslint@8.36.0
@@ -3044,6 +3046,11 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       is-obj: 2.0.0
+    dev: true
+
+  /dotenv/16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
     dev: true
 
   /duplexer/0.1.2:
