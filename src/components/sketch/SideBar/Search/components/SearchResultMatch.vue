@@ -3,9 +3,17 @@
     <span>{{
       sliceBefore > 0 ? "…" + match.before.slice(sliceBefore) : match.before
     }}</span>
-    <mark class="bg-blue-500 bg-opacity-70 text-inherit" ref="markRef">{{
-      match.match
-    }}</mark>
+    <mark
+      class="bg-blue-500 bg-opacity-70 text-inherit"
+      :class="{
+        'decoration-line-through bg-transparent': !!searchStore.replace,
+      }"
+      ref="markRef"
+      >{{ match.match }}</mark
+    >
+    <span v-if="searchStore.replace" class="border border-gray-500">{{
+      searchStore.replace
+    }}</span>
     <span>{{ match.after }}</span>
   </code>
 </template>
@@ -16,6 +24,8 @@ import type { Match } from "src/logic/search-text"
 const props = defineProps<{
   match: Match
 }>()
+
+const searchStore = useSearchStore()
 
 const sliceBefore = ref(0)
 
