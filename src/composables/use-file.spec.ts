@@ -102,4 +102,23 @@ describe("use-file", () => {
 
     expect(await readFile("text.txt")).toBe("bar")
   })
+
+  test("work with moddileware", async () => {
+    const { data, ready } = useFile("text.json", "{}", true, {
+      get: JSON.parse,
+      set: JSON.stringify
+    })
+
+    await ready.value
+    expect(data.value).toEqual({})
+
+    await writeFile("text.json", "{\"foo\": \"bar\"}").then(() =>
+      eventBus.emit("writeFile", "text.txt")
+    )
+    await sleep(100)
+    await nextTick()
+    await ready.value
+
+    expect(data.value).toEqual({ foo: "bar" })
+  })
 })

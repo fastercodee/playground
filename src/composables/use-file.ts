@@ -1,3 +1,5 @@
+import type { UnwrapRef } from "vue"
+
 function loadFile(path: string) {
   return Filesystem.readFile({
     path,
@@ -5,12 +7,22 @@ function loadFile(path: string) {
   }).then(toTextFile)
 }
 
-export function useFile<R extends boolean = false>(
+const middleareDef = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get: (v: any) => v,
+  set: (v: any) => v
+}
+
+export function useFile<T = string, R extends boolean = false>(
   filepath: string | Ref<string | undefined>,
   defaultValue = "",
-  overWrite?: R
+  overWrite?: R,
+  middleare: {
+    set: (value: UnwrapRef<T>) => string,
+    get: (value: string) => UnwrapRef<T>
+  } = middleareDef
 ): {
-  data: R extends true ? Ref<string> : Readonly<Ref<string>>
+  data: R extends true ? Ref<UnwrapRef<T>> : Readonly<Ref<UnwrapRef<T>>>
   ready: Ref<Promise<void>>
 } {
   const reactive = isRef(filepath)
@@ -20,7 +32,7 @@ export function useFile<R extends boolean = false>(
 
   // eslint-disable-next-line functional/no-let
   let writing = false
-  const content = ref(defaultValue)
+  const content = ref(middleare.get(defaultValue) as T)
 
   // eslint-disable-next-line functional/no-let
   let initialized = false
@@ -35,7 +47,7 @@ export function useFile<R extends boolean = false>(
       .then((data) => {
         // eslint-disable-next-line promise/always-return
         if (writing) return
-        content.value = data
+        content.value = middleare.get(data)
         initialized = true
       })
   }
@@ -64,7 +76,7 @@ export function useFile<R extends boolean = false>(
         .then((data) => {
           // eslint-disable-next-line promise/always-return
           if (writing) return
-          content.value = data
+          content.value = middleare.get(data)
           initialized = true
         })
     }
@@ -81,11 +93,14 @@ export function useFile<R extends boolean = false>(
         path,
         directory: Directory.External,
         encoding: Encoding.UTF8,
-        data: content,
+        data: middleare.set(content),
       })
       eventBus.emit("writeFile", path)
 
       writing = false
+    }, {
+      flush: "post",
+      deep: true
     })
 
   return { data: content, ready: ready as Ref<Promise<void>> }
