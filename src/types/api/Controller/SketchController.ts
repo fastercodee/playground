@@ -31,23 +31,27 @@ export interface SketchController {
     uid: number
   }, Blob>
 
-  fetch: Control<{
-    uid: number
-  } & MetaAndHashes, {
-    sketch: Sketch<true, true>
-    files: File[]
-  } | {
-    sketch: Sketch<true, false>
-    file_changes: Record<FilePath, {
-      type: "M"
-      file: File
-    } | {
-      type: "U+"
-      file: File
-    } | {
-      type: "U"
+  fetch: {
+    first: Control<{
+      uid: number
+    } & MetaAndHashes, {
+      sketch: Sketch<true, true>
     }>
-  }>
+    next: Control<{
+      uid: number
+    } & MetaAndHashes, {
+      sketch: Sketch<true, false>
+      file_changes: Record<FilePath, {
+        type: "M"
+        file: File
+      } | {
+        type: "U+"
+        file: File
+      } | {
+        type: "U"
+      }>
+    }>
+  }
 
   update: Control<{
     uid: number
