@@ -66,6 +66,9 @@
       <KeepAlive>
         <Search v-if="tabSelection === 'search'" />
       </KeepAlive>
+      <KeepAlive>
+        <Changes v-if="tabSelection === 'changes'" />
+      </KeepAlive>
     </div>
   </Resizable>
 
@@ -93,6 +96,10 @@ const tabs: {
     icon: "codicon:search",
     value: "search",
   },
+  {
+    icon: "material-symbols:cloud-sync-outline",
+    value: "change",
+  }
 ]
 
 const settingsLayout = ref(false)
