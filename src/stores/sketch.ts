@@ -30,21 +30,13 @@ async function saveFile(root: string, file: File) {
 
 export const useSketchStore = defineStore("sketch", () => {
   const uid_sketch_opening = ref<number>(-1)
-  const root = computed(() => `home/${uid_sketch_opening.value}`)
+  const rootのsketch = computed(() => `home/${uid_sketch_opening.value}`)
 
-  const add_serverのFile = useFile<Record<string, string>, true>(computed(() => `${root.value}/.changes/add_server`), "{}", true, {
+  const hashes_serverのFile = useFile<Record<string, string>, true>(computed(() => `${rootのsketch.value}/.changes/hashes_server`), "{}", true, {
     get: JSON.parse,
     set: JSON.stringify
   })
-  const add_clientのFile = useFile<Record<string, string>, true>(computed(() => `${root.value}/.changes/add_client`), "{}", true, {
-    get: JSON.parse,
-    set: JSON.stringify
-  })
-  const hashes_serverのFile = useFile<Record<string, string>, true>(computed(() => `${root.value}/.changes/hashes_client`), "{}", true, {
-    get: JSON.parse,
-    set: JSON.stringify
-  })
-  const hashes_clientのFile = useFile<Record<string, string>, true>(computed(() => `${root.value}/.changes/hashes_client`), "{}", true, {
+  const hashes_clientのFile = useFile<Record<string, string>, true>(computed(() => `${rootのsketch.value}/.changes/hashes_client`), "{}", true, {
     get: JSON.parse,
     set: JSON.stringify
   })
@@ -62,53 +54,52 @@ export const useSketchStore = defineStore("sketch", () => {
 
     // not exists yet
     await Filesystem.mkdir({
-      path: root.value,
+      path: rootのsketch.value,
       directory: Directory.External,
       recursive: true,
     })
     for (const file of files) {
       onProgress("load_file", file.filePath)
 
-      await saveFile(root.value, file)
+      await saveFile(rootのsketch.value, file)
     }
 
     // save hash
     const hashes = JSON.stringify(Object.fromEntries(files.map(file => [file.filePath, file.hash])))
     await Promise.all([
       writeFileRecursive(
-        `${root}/.changes/hashes_server`,
+        `${rootのsketch}/.changes/hashes_server`,
         hashes,
         Encoding.UTF8
       ),
       writeFileRecursive(
-        `${root}/.changes/hashes_client`,
+        `${rootのsketch}/.changes/hashes_client`,
         hashes,
         Encoding.UTF8
       )
     ])
   }
   async function actionNextOpenSketch(onProgress: (action: "load_file", filePath: string) => void): Promise<void> {
-    const hashes = Object.entries(await Filesystem.readFile({
-      path: `${root.value}/.changes/hashes_client`,
-      directory: Directory.External,
-      encoding: Encoding.UTF8,
-    }).then(toTextFile).catch(() => "{}").then(text => JSON.parse(text))) as [string, string][]
+    await hashes_clientのFile.ready
+    const hashes_client = Object.entries(hashes_clientのFile.data.value)
 
     const res = await post<SketchController["fetch"]["next"]>("/fetch", {
       uid: uid_sketch_opening.value,
-      meta: hashes.map(item => item[0]),
-      hashes: hashes.map(item => item[1]),
+      meta: hashes_client.map(item => item[0]),
+      hashes: hashes_client.map(item => item[1]),
     })
 
     for (const [filePath, change] of Object.entries(res.data.file_changes)) {
       switch (change.type) {
         case "M":
-          await add_serverのFile.ready
-          add_serverのFile.data.value[filePath] = change.file.hash
-          break
+        case "U+":
+          await hashes_serverのFile.ready
+          hashes_serverのFile.data.value[filePath] = change.file.hash
+        // eslint-disable-next-line no-duplicate-case, no-fallthrough
         case "U+":
           onProgress("load_file", change.file.filePath)
-          await saveFile(root.value, change.file)
+          await saveFile(rootのsketch.value, change.file)
+          hashes_clientのFile.data.value[filePath] = change.file.hash
           break
         case "U":
           break
@@ -121,13 +112,11 @@ export const useSketchStore = defineStore("sketch", () => {
     if (await exists(`home/${sketch_uid}`)) {
       // exists already
       // New user opens sketch for the first time
-      actionNextOpenSketch(sketch_uid, () => {
-
-      })
+      actionNextOpenSketch(console.log.bind(console))
     } else {
-      actionFirstOpenSketch(sketch_uid, () => {
-
-      })
+      actionFirstOpenSketch(console.log.bind(console))
     }
   }
+
+  return { rootのsketch, fetch }
 })

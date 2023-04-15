@@ -20,4 +20,5 @@ export
     data,
     encoding
   })
+  eventBus.emit("writeFile", path)
 }
