@@ -4,6 +4,7 @@
 import { Directory, Encoding } from "@capacitor/filesystem/dist/esm/definitions"
 import { FilesystemWeb } from "@capacitor/filesystem/dist/esm/web"
 import { listen, ping } from "@fcanvas/communicate"
+import { isNative } from "src/constants"
 import { globby } from "src/logic/globby"
 import type { Match, SearchOptions } from "src/logic/search-text"
 import { searchText } from "src/logic/search-text"
@@ -34,12 +35,8 @@ export type ComSearchGlob = {
   }) => void
 }
 
-const isWeb =
-  import.meta.env.MODE === "development" ||
-  import.meta.env.MODE === "spa" ||
-  import.meta.env.MODE === "pwa"
 
-if (isWeb) {
+if (!isNative) {
   listen<ComSearchGlob, "search-on-spa">(
     self,
     "search-on-spa",

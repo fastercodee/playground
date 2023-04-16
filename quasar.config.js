@@ -160,6 +160,7 @@ module.exports = configure(function (/* ctx */) {
               "src/logic/**/*.tsx",
               "src/stores/**/*.ts",
               "src/composables/*.ts",
+              "src/constants/*.ts",
             ],
             eslintrc: {
               enabled: true, // Default `false`

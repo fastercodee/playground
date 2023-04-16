@@ -4,6 +4,7 @@
 import { Directory, Encoding } from "@capacitor/filesystem/dist/esm/definitions"
 import { FilesystemWeb } from "@capacitor/filesystem/dist/esm/web"
 import { listen } from "@fcanvas/communicate"
+import { isNative } from "src/constants"
 import type { Match, SearchOptions } from "src/logic/search-text"
 import { searchText } from "src/logic/search-text"
 import { toTextFile } from "src/logic/to-text-file"
@@ -18,12 +19,8 @@ export type ComSearchSingleFile = {
   "search-single-file"(path: string, searchOptions: SearchOptions): Match[]
 }
 
-const isWeb =
-  import.meta.env.MODE === "development" ||
-  import.meta.env.MODE === "spa" ||
-  import.meta.env.MODE === "pwa"
 
-if (isWeb) {
+if (!isNative) {
   listen<ComSearchSingleFile, "search-single-file">(
     self,
     "search-single-file",
