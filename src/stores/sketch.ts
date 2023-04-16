@@ -1,30 +1,46 @@
 /* eslint-disable camelcase */
 
+import { relative } from "path";
+
+import { put } from "@fcanvas/communicate";
 import { defineStore } from "pinia";
+import { createHash } from "sha256-uint8array"
 import { api, post } from "src/boot/axios";
+import { isNative } from "src/constants";
+import { globby } from "src/logic/globby";
 import type { SketchController } from "src/types/api/Controller/SketchController";
 import type { File } from "src/types/api/Models/File";
+import type { ComGetHashesClient } from "src/workers/get-hashes-client";
+import GetHashesClientWorker from "src/workers/get-hashes-client?worker"
 
-function exists(path: string): Promise<boolean> {
+function exists(path: string) {
   return Filesystem.stat({
     path,
-    directory: Directory.External,
+    directory: Directory.External
   }).then(() => true).catch(() => false)
 }
+
 async function saveFile(root: string, file: File) {
   if (file.data)
-    await writeFileRecursive(`${root}/${file.filePath}`, file.data, Encoding.UTF8)
+    await Filesystem.writeFile({
+      path: `${root}/${file.filePath}`,
+      directory: Directory.External,
+      encoding: Encoding.UTF8,
+      data: file.data
+    })
   else
     // need load
-    await writeFileRecursive(`${root}/${file.filePath}`,
-      await api.post("/sketch/get_file", {
+    await Filesystem.writeFile({
+      path: `${root}/${file.filePath}`,
+      directory: Directory.External,
+      data: await api.post("/sketch/get_file", {
         uid: file.uid
       }, {
         responseType: "arraybuffer",
       })
         .then(res => new Uint8Array(res.data))
         .then(uint8ToBase64)
-    )
+    })
 }
 
 
@@ -41,82 +57,79 @@ export const useSketchStore = defineStore("sketch", () => {
     set: JSON.stringify
   })
 
-  async function actionFirstOpenSketch(onProgress: (action: "load_file", filePath: string) => void): Promise<void> {
-    // download first sketch fullied
-
-    const res = await post<SketchController["fetch"]["first"]>("/fetch", {
-      uid: uid_sketch_opening.value,
-    })
-
-    const { files } = res.data.sketch
-    const sketch = { ...res.data.sketch, files: undefined }
-    delete sketch.files
-
-    // not exists yet
-    await Filesystem.mkdir({
-      path: rootのsketch.value,
-      directory: Directory.External,
-      recursive: true,
-    })
-    for (const file of files) {
-      onProgress("load_file", file.filePath)
-
-      await saveFile(rootのsketch.value, file)
-    }
-
-    // save hash
-    const hashes = JSON.stringify(Object.fromEntries(files.map(file => [file.filePath, file.hash])))
-    await Promise.all([
-      writeFileRecursive(
-        `${rootのsketch}/.changes/hashes_server`,
-        hashes,
-        Encoding.UTF8
-      ),
-      writeFileRecursive(
-        `${rootのsketch}/.changes/hashes_client`,
-        hashes,
-        Encoding.UTF8
-      )
-    ])
-  }
   async function actionNextOpenSketch(onProgress: (action: "load_file", filePath: string) => void): Promise<void> {
     await hashes_clientのFile.ready
-    const hashes_client = Object.entries(hashes_clientのFile.data.value)
+    const entries_ashes_client = Object.entries(hashes_clientのFile.data)
 
-    const res = await post<SketchController["fetch"]["next"]>("/fetch", {
+    const res = await post<SketchController["fetch"]["next"]>("/sketch/fetch", {
       uid: uid_sketch_opening.value,
-      meta: hashes_client.map(item => item[0]),
-      hashes: hashes_client.map(item => item[1]),
+      meta: entries_ashes_client.map(item => item[0]),
+      hashes: entries_ashes_client.map(item => item[1]),
     })
 
+    const hashes_server: Record<string, string> = {};
+    const hashes_client: Record<string, string> = {};
     for (const [filePath, change] of Object.entries(res.data.file_changes)) {
       switch (change.type) {
         case "M":
-        case "U+":
           await hashes_serverのFile.ready
-          hashes_serverのFile.data.value[filePath] = change.file.hash
-        // eslint-disable-next-line no-duplicate-case, no-fallthrough
+          hashes_server[filePath] = change.file.hash
+          break
         case "U+":
           onProgress("load_file", change.file.filePath)
           await saveFile(rootのsketch.value, change.file)
-          hashes_clientのFile.data.value[filePath] = change.file.hash
+          hashes_client[filePath] = change.file.hash
           break
         case "U":
           break
       }
     }
+
+    await hashes_serverのFile.ready
+    hashes_serverのFile.data = hashes_server
+    hashes_clientのFile.data = Object.assign(hashes_clientのFile.data, hashes_client)
   }
   async function fetch(sketch_uid: number) {
     uid_sketch_opening.value = sketch_uid
+    console.log("fetch: check hash")
+    await forceUpdateHashesClient()
 
-    if (await exists(`home/${sketch_uid}`)) {
-      // exists already
-      // New user opens sketch for the first time
-      actionNextOpenSketch(console.log.bind(console))
+    console.log("fetch: start download sketch")
+    actionNextOpenSketch(console.log.bind(console))
+  }
+
+  // eslint-disable-next-line functional/no-let
+  let workerGetHashesClient: GetHashesClientWorker | null = null
+  async function forceUpdateHashesClient() {
+    workerGetHashesClient?.terminate()
+    workerGetHashesClient = null
+
+    if ((await exists(rootのsketch.value)) === false) return
+
+    const hashes_client = Object.create(null)
+
+    if (isNative) {
+      for await (const filePath of globby(rootのsketch.value, ["**/*"], ["/.changes/"])) {
+        const buffer = await Filesystem.readFile({
+          path: filePath,
+          directory: Directory.External
+        }).then(({ data }) => base64ToUint8(data))
+
+        const hash = createHash().update(buffer).digest("hex")
+        hashes_client[relative(rootのsketch.value, filePath)] = hash
+      }
+
+      await hashes_clientのFile.ready
+      hashes_clientのFile.data = hashes_client
     } else {
-      actionFirstOpenSketch(console.log.bind(console))
+      workerGetHashesClient = new GetHashesClientWorker()
+      await hashes_clientのFile.ready
+      hashes_clientのFile.data = await put<ComGetHashesClient, "get-hashes-client">(workerGetHashesClient, "get-hashes-client", rootのsketch.value)
+
+      workerGetHashesClient?.terminate()
+      workerGetHashesClient = null
     }
   }
 
-  return { rootのsketch, fetch }
+  return { rootのsketch, fetch, forceUpdateHashesClient }
 })
