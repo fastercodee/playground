@@ -33,5 +33,6 @@ export async function readFile(path: string) {
   return await Filesystem.readFile({
     path,
     directory: Directory.External,
+    encoding: Encoding.UTF8,
   }).then(toTextFile)
 }

@@ -9,4 +9,6 @@
 
 <script lang="ts" setup>
 const sketchStore = useSketchStore()
+
+window.sketchStore = sketchStore
 </script>
