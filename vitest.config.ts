@@ -11,6 +11,7 @@ export default defineConfig({
   resolve: {
     alias: {
       app: __dirname,
+      path: "path-cross/posix",
     },
   },
   plugins: [

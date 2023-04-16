@@ -85,7 +85,7 @@ module.exports = configure(function (/* ctx */) {
         extend(true, viteConf, {
           resolve: {
             alias: {
-              path: "path-cross",
+              path: "path-cross/posix",
             },
           },
           server: {
