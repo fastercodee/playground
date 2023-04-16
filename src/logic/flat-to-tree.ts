@@ -1,4 +1,5 @@
-import { normalize } from "path-cross/posix"
+import { dirname, normalize, relative } from "path"
+
 import type { Match } from "src/logic/search-text"
 
 export interface TreeFile {
@@ -15,14 +16,14 @@ export interface TreeDir {
 
 export type TreeResult = TreeDir["children"]
 
-export function flatToTree(result: Map<string, Match[]>) {
+export function flatToTree(cwd: string, result: Map<string, Match[]>) {
   const newMap: TreeResult = {
     dirs: new Map(),
     files: new Map(),
   }
 
   result.forEach((matches, fullPath) => {
-    const names = normalize(fullPath).split("/")
+    const names = fullPath.startsWith(cwd + "/") ? relative(cwd, fullPath).split("/") : normalize(fullPath).split("/")
 
     // eslint-disable-next-line functional/no-let
     let currentDirpath = ""
