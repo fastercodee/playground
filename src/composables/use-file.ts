@@ -104,32 +104,14 @@ export function useFile<T = string, R extends boolean = false>(
 
       const path = (filepath as Ref<string | undefined>).value
       if (!path) return
-      console.log("write file")
-      try {
+      console.log("write file %s", reading)
         await Filesystem.writeFile({
           path,
           directory: Directory.External,
           encoding: Encoding.UTF8,
           data: middleare.set(content),
-        })
-      } catch (err) {
-        if ((err as Error | null)?.message === "Parent directory must exist") {
-          const dir = dirname(path)
-          await Filesystem.mkdir({
-            path: dir,
-            directory: Directory.External,
             recursive: true
           })
-          await Filesystem.writeFile({
-            path,
-            directory: Directory.External,
-            encoding: Encoding.UTF8,
-            data: middleare.set(content),
-          })
-        } else {
-          throw err
-        }
-      }
       await eventBus.emit("writeFile", path)
       writing = false
     }, {
