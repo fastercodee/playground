@@ -25,6 +25,8 @@ describe("replace-ctx-file", () => {
 
     await replaceMatch("text.txt", matches[0], "O")
 
+    
+
     expect(await readFile("text.txt")).toEqual("hellO world")
   })
 
@@ -41,10 +43,6 @@ describe("replace-ctx-file", () => {
   test("replaceMultiMatchesTree", async () => {
     await writeFile("text.txt", "hello world")
     await writeFile("text2.txt", "hello bozz")
-    await Filesystem.mkdir({
-      path: "src",
-      directory: Directory.External,
-    })
     await writeFile("src/text3.txt", "hello world")
 
     const matches: TreeDir["children"] = {
@@ -96,10 +94,6 @@ describe("replace-ctx-file", () => {
   test("replaceMultiMatches", async () => {
     await writeFile("text.txt", "hello world")
     await writeFile("text2.txt", "hello bozz")
-    await Filesystem.mkdir({
-      path: "src",
-      directory: Directory.External,
-    })
     await writeFile("src/text3.txt", "hello world")
 
     const matches: Map<string, Match[]> = new Map([

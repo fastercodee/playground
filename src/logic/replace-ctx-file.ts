@@ -20,7 +20,8 @@ export async function replaceMatch(
   const currentData = await Filesystem.readFile({
     path: fullPath,
     directory: Directory.External,
-  }).then(toTextFile)
+    encoding: Encoding.UTF8
+  }).then(res=>res.data)
 
   const newText =
     currentData.slice(0, match.index) /** heading */ +
@@ -43,7 +44,8 @@ export async function replaceMatches(
   const currentData = await Filesystem.readFile({
     path: fullPath,
     directory: Directory.External,
-  }).then(toTextFile)
+    encoding: Encoding.UTF8
+  }).then(res=>res.data)
 
   // eslint-disable-next-line functional/no-let
   let newText = ""

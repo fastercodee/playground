@@ -268,7 +268,9 @@ const metaResults = shallowReactive({
   results: 0,
   files: 0,
 })
-const resultsTree = computed(() => flatToTree(sketchStore.rootのsketch, results))
+const resultsTree = computed(() =>
+  flatToTree(sketchStore.rootのsketch, results)
+)
 /** @description - this function only reset result. don't call stopSearch */
 const resetResults = () => {
   results.clear()
@@ -354,7 +356,7 @@ async function research() {
     const inclu = splitString(include.value)
 
     for await (const file of await globby(
-    sketchStore.rootのsketch,
+      sketchStore.rootのsketch,
       inclu.length === 0 ? ["**/*"] : inclu,
       splitString(exclude.value)
     )) {
@@ -364,7 +366,8 @@ async function research() {
         await Filesystem.readFile({
           path: file,
           directory: Directory.External,
-        }).then(toTextFile),
+          encoding: Encoding.UTF8,
+        }).then((res) => res.data),
         searchOptions
       )
 
@@ -439,7 +442,8 @@ eventBus.watch(files, async (タイプ, パス, ですか) => {
           await Filesystem.readFile({
             path: ですか,
             directory: Directory.External,
-          }).then(toTextFile),
+            encoding: Encoding.UTF8,
+          }).then((res) => res.data),
           searchOptions
         )
         const oldMatches = results.get(ですか)

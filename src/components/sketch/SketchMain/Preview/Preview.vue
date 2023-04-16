@@ -105,7 +105,7 @@ function setup() {
               directory: Directory.External,
             }).then((res) => {
               return {
-                content: toBufferFile(res),
+                content: base64ToUint8(res.data),
                 ext: "html",
                 path: `${sketchStore.rootのsketch}/index.html`,
               }

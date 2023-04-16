@@ -8,7 +8,6 @@ import { isNative } from "src/constants"
 import { globby } from "src/logic/globby"
 import type { Match, SearchOptions } from "src/logic/search-text"
 import { searchText } from "src/logic/search-text"
-import { toTextFile } from "src/logic/to-text-file"
 
 const Filesystem = new FilesystemWeb()
 
@@ -52,7 +51,8 @@ if (!isNative) {
             await Filesystem.readFile({
               path: file,
               directory: Directory.External,
-            }).then(toTextFile),
+              encoding: Encoding.UTF8
+            }).then(res=>res.data),
             searchOptions
           ),
         ]

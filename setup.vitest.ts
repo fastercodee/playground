@@ -27,6 +27,7 @@ export async function writeFile(path: string, content: string) {
     directory: Directory.External,
     encoding: Encoding.UTF8,
     data: content,
+    recursive: true
   })
 }
 export async function readFile(path: string) {

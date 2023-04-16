@@ -5,7 +5,7 @@ function loadFile(path: string) {
     path,
     directory: Directory.External,
     encoding: Encoding.UTF8
-  }).then(toTextFile)
+  }).then(res =>res.data)
 }
 
 const resolved = Promise.resolve()
