@@ -40,8 +40,12 @@ function on<N extends keyof Events>(
 }
 
 const resolved = Promise.resolve()
-// eslint-disable-next-line functional/functional-parameters
-function emit<N extends keyof Events>(name: N, ...args: Events[N]): Promise<void> {
+
+function emit<N extends keyof Events>(
+  name: N,
+  // eslint-disable-next-line functional/functional-parameters
+  ...args: Events[N]
+): Promise<void> {
   // eslint-disable-next-line n/no-callback-literal
   store.get(name)?.forEach((cb) => cb(...args))
   store.get("*")?.forEach((cb) => cb(name, ...args))

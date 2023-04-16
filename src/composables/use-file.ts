@@ -4,8 +4,8 @@ function loadFile(path: string) {
   return Filesystem.readFile({
     path,
     directory: Directory.External,
-    encoding: Encoding.UTF8
-  }).then(res =>res.data)
+    encoding: Encoding.UTF8,
+  }).then((res) => res.data)
 }
 
 const resolved = Promise.resolve()
@@ -13,7 +13,7 @@ const middleareDef = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get: (v: any) => v,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  set: (v: any) => v
+  set: (v: any) => v,
 }
 
 export function useFile<T = string, R extends boolean = false>(
@@ -21,18 +21,19 @@ export function useFile<T = string, R extends boolean = false>(
   defaultValue = "",
   overWrite?: R,
   middleare: {
-    set: (value: UnwrapRef<T>) => string,
+    set: (value: UnwrapRef<T>) => string
     get: (value: string) => UnwrapRef<T>
   } = middleareDef
-): R extends true ? {
-  data: UnwrapRef<T>
-  ready: Promise<void> | null
-} : {
-  readonly data: UnwrapRef<T>
-  ready: Promise<void> | null
-} {
-  if (typeof filepath === "function")
-    filepath = computed(filepath)
+): R extends true
+  ? {
+      data: UnwrapRef<T>
+      ready: Promise<void> | null
+    }
+  : {
+      readonly data: UnwrapRef<T>
+      ready: Promise<void> | null
+    } {
+  if (typeof filepath === "function") filepath = computed(filepath)
 
   const isReactive = isRef(filepath)
 
@@ -43,18 +44,19 @@ export function useFile<T = string, R extends boolean = false>(
   // eslint-disable-next-line functional/no-let
   let reading = false
   const ret = reactive<{
-    data: T,
+    data: T
     ready: null | Promise<void>
   }>({
     data: middleare.get(defaultValue) as T,
-    ready: null
+    ready: null,
   })
 
   const watchHandler = (filepath: string | undefined) => {
     if (!filepath) return
     ret.ready = loadFile(filepath)
       .catch((er) => {
-        if (import.meta.env.DEV && er.message !== "File does not exist.") console.warn(er)
+        if (import.meta.env.DEV && er.message !== "File does not exist.")
+          console.warn(er)
         return defaultValue
       })
       .then((data) => {
@@ -63,7 +65,9 @@ export function useFile<T = string, R extends boolean = false>(
         reading = true
         ret.data = middleare.get(data)
         // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/no-nesting
-        resolved.then(() => { reading = false })
+        resolved.then(() => {
+          reading = false
+        })
       })
   }
   if (isReactive)
@@ -85,7 +89,8 @@ export function useFile<T = string, R extends boolean = false>(
       // eslint-disable-next-line promise/catch-or-return
       loadFile(ですか)
         .catch((er) => {
-          if (import.meta.env.DEV && er.message !== "File does not exist.") console.warn(er)
+          if (import.meta.env.DEV && er.message !== "File does not exist.")
+            console.warn(er)
           return defaultValue
         })
         .then((data) => {
@@ -94,31 +99,37 @@ export function useFile<T = string, R extends boolean = false>(
           reading = true
           ret.data = middleare.get(data)
           // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/no-nesting
-          resolved.then(() => { reading = false })
+          resolved.then(() => {
+            reading = false
+          })
         })
     }
   )
   if (overWrite)
-    watch(() => ret.data, async (content) => {
-      if (reading) return
+    watch(
+      () => ret.data,
+      async (content) => {
+        if (reading) return
 
-      writing = true
+        writing = true
 
-      const path = (filepath as Ref<string | undefined>).value
-      if (!path) return
-      console.log("write file %s", reading)
-      await Filesystem.writeFile({
-        path,
-        directory: Directory.External,
-        encoding: Encoding.UTF8,
-        data: middleare.set(content),
-        recursive: true
-      })
-      await eventBus.emit("writeFile", path)
-      writing = false
-    }, {
-      deep: true
-    })
+        const path = (filepath as Ref<string | undefined>).value
+        if (!path) return
+        console.log("write file %s", reading)
+        await Filesystem.writeFile({
+          path,
+          directory: Directory.External,
+          encoding: Encoding.UTF8,
+          data: middleare.set(content),
+          recursive: true,
+        })
+        await eventBus.emit("writeFile", path)
+        writing = false
+      },
+      {
+        deep: true,
+      }
+    )
 
   return ret
 }

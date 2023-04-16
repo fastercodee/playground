@@ -23,7 +23,9 @@ export function flatToTree(cwd: string, result: Map<string, Match[]>) {
   }
 
   result.forEach((matches, fullPath) => {
-    const names = fullPath.startsWith(cwd + "/") ? relative(cwd, fullPath).split("/") : normalize(fullPath).split("/")
+    const names = fullPath.startsWith(cwd + "/")
+      ? relative(cwd, fullPath).split("/")
+      : normalize(fullPath).split("/")
 
     // eslint-disable-next-line functional/no-let
     let currentDirpath = ""

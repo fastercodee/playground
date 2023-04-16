@@ -224,7 +224,6 @@ describe("flat-to-tree", () => {
     })
   })
 
-
   test("file in directory cwd", () => {
     const data = toMap({
       "test/foo/bar.js": [],
@@ -287,7 +286,7 @@ describe("flat-to-tree", () => {
         test2: {
           fullPath: "test2",
           children: {
-            files: new Map,
+            files: new Map(),
             dirs: toMap({
               foo: {
                 fullPath: "test2/foo",
@@ -301,11 +300,10 @@ describe("flat-to-tree", () => {
                   }),
                 },
               },
-            })
-          }
-        }
-      })
+            }),
+          },
+        },
+      }),
     })
   })
-
 })

@@ -34,7 +34,6 @@ export type ComSearchGlob = {
   }) => void
 }
 
-
 if (!isNative) {
   listen<ComSearchGlob, "search-on-spa">(
     self,
@@ -51,8 +50,8 @@ if (!isNative) {
             await Filesystem.readFile({
               path: file,
               directory: Directory.External,
-              encoding: Encoding.UTF8
-            }).then(res=>res.data),
+              encoding: Encoding.UTF8,
+            }).then((res) => res.data),
             searchOptions
           ),
         ]
@@ -63,7 +62,7 @@ if (!isNative) {
           `search-return-${uid}`,
           {
             file,
-            matches
+            matches,
           }
         )
       }

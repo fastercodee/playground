@@ -279,7 +279,8 @@ const resetResults = () => {
 }
 
 // eslint-disable-next-line functional/no-let
-let searchGloborInTextWorker: Worker | null = null
+let searchGloborInTextWorker: InstanceType<typeof SearchGlobWorker> | null =
+  null
 // eslint-disable-next-line functional/no-let
 let listenerSearchResult: (() => void) | null = null
 

@@ -9,7 +9,7 @@ import { FilesystemWeb } from "@capacitor/filesystem/dist/esm/web"
 import { listen } from "@fcanvas/communicate"
 import { createHash } from "sha256-uint8array"
 import { isNative } from "src/constants"
-import {base64ToUint8} from "src/logic/base64-buffer"
+import { base64ToUint8 } from "src/logic/base64-buffer"
 import { globby } from "src/logic/globby"
 
 const Filesystem = new FilesystemWeb()
@@ -22,7 +22,6 @@ export type ComGetHashesClient = {
   "get-hashes-client"(cwd: string): Record<string, string>
 }
 
-
 if (!isNative) {
   listen<ComGetHashesClient, "get-hashes-client">(
     self,
@@ -33,7 +32,7 @@ if (!isNative) {
       for await (const filePath of globby(cwd, ["**/*"], ["/.changes/"])) {
         const buffer = await Filesystem.readFile({
           path: filePath,
-          directory: Directory.External
+          directory: Directory.External,
         }).then(({ data }) => base64ToUint8(data))
 
         const hash = createHash().update(buffer).digest("hex")

@@ -1,23 +1,25 @@
 /* eslint-disable camelcase */
 
-import { relative } from "path";
+import { relative } from "path"
 
-import { put } from "@fcanvas/communicate";
-import { defineStore } from "pinia";
+import { put } from "@fcanvas/communicate"
+import { defineStore } from "pinia"
 import { createHash } from "sha256-uint8array"
-import { api, post } from "src/boot/axios";
-import { isNative } from "src/constants";
-import { globby } from "src/logic/globby";
-import type { SketchController } from "src/types/api/Controller/SketchController";
-import type { File } from "src/types/api/Models/File";
-import type { ComGetHashesClient } from "src/workers/get-hashes-client";
+import { api, post } from "src/boot/axios"
+import { isNative } from "src/constants"
+import { globby } from "src/logic/globby"
+import type { SketchController } from "src/types/api/Controller/SketchController"
+import type { File } from "src/types/api/Models/File"
+import type { ComGetHashesClient } from "src/workers/get-hashes-client"
 import GetHashesClientWorker from "src/workers/get-hashes-client?worker"
 
 function exists(path: string) {
   return Filesystem.stat({
     path,
-    directory: Directory.External
-  }).then(() => true).catch(() => false)
+    directory: Directory.External,
+  })
+    .then(() => true)
+    .catch(() => false)
 }
 
 async function saveFile(root: string, file: File) {
@@ -26,49 +28,65 @@ async function saveFile(root: string, file: File) {
       path: `${root}/${file.filePath}`,
       directory: Directory.External,
       encoding: Encoding.UTF8,
-      data: file.data
+      data: file.data,
     })
+  // need load
   else
-    // need load
     await Filesystem.writeFile({
       path: `${root}/${file.filePath}`,
       directory: Directory.External,
-      data: await api.post("/sketch/get_file", {
-        uid: file.uid
-      }, {
-        responseType: "arraybuffer",
-      })
-        .then(res => new Uint8Array(res.data))
-        .then(uint8ToBase64)
+      data: await api
+        .post(
+          "/sketch/get_file",
+          {
+            uid: file.uid,
+          },
+          {
+            responseType: "arraybuffer",
+          }
+        )
+        .then((res) => new Uint8Array(res.data))
+        .then(uint8ToBase64),
     })
 }
-
 
 export const useSketchStore = defineStore("sketch", () => {
   const uid_sketch_opening = ref<number>(-1)
   const rootのsketch = computed(() => `home/${uid_sketch_opening.value}`)
 
-  const hashes_serverのFile = useFile<Record<string, string>, true>(computed(() => `${rootのsketch.value}/.changes/hashes_server`), "{}", true, {
-    get: JSON.parse,
-    set: JSON.stringify
-  })
-  const hashes_clientのFile = useFile<Record<string, string>, true>(computed(() => `${rootのsketch.value}/.changes/hashes_client`), "{}", true, {
-    get: JSON.parse,
-    set: JSON.stringify
-  })
+  const hashes_serverのFile = useFile<Record<string, string>, true>(
+    computed(() => `${rootのsketch.value}/.changes/hashes_server`),
+    "{}",
+    true,
+    {
+      get: JSON.parse,
+      set: JSON.stringify,
+    }
+  )
+  const hashes_clientのFile = useFile<Record<string, string>, true>(
+    computed(() => `${rootのsketch.value}/.changes/hashes_client`),
+    "{}",
+    true,
+    {
+      get: JSON.parse,
+      set: JSON.stringify,
+    }
+  )
 
-  async function actionNextOpenSketch(onProgress: (action: "load_file", filePath: string) => void): Promise<void> {
+  async function actionNextOpenSketch(
+    onProgress: (action: "load_file", filePath: string) => void
+  ): Promise<void> {
     await hashes_clientのFile.ready
     const entries_ashes_client = Object.entries(hashes_clientのFile.data)
 
     const res = await post<SketchController["fetch"]["next"]>("/sketch/fetch", {
       uid: uid_sketch_opening.value,
-      meta: entries_ashes_client.map(item => item[0]),
-      hashes: entries_ashes_client.map(item => item[1]),
+      meta: entries_ashes_client.map((item) => item[0]),
+      hashes: entries_ashes_client.map((item) => item[1]),
     })
 
-    const hashes_server: Record<string, string> = {};
-    const hashes_client: Record<string, string> = {};
+    const hashes_server: Record<string, string> = {}
+    const hashes_client: Record<string, string> = {}
     for (const [filePath, change] of Object.entries(res.data.file_changes)) {
       switch (change.type) {
         case "M":
@@ -87,7 +105,10 @@ export const useSketchStore = defineStore("sketch", () => {
 
     await hashes_serverのFile.ready
     hashes_serverのFile.data = hashes_server
-    hashes_clientのFile.data = Object.assign(hashes_clientのFile.data, hashes_client)
+    hashes_clientのFile.data = Object.assign(
+      hashes_clientのFile.data,
+      hashes_client
+    )
   }
   async function fetch(sketch_uid: number) {
     uid_sketch_opening.value = sketch_uid
@@ -99,7 +120,8 @@ export const useSketchStore = defineStore("sketch", () => {
   }
 
   // eslint-disable-next-line functional/no-let
-  let workerGetHashesClient: GetHashesClientWorker | null = null
+  let workerGetHashesClient: InstanceType<typeof GetHashesClientWorker> | null =
+    null
   async function forceUpdateHashesClient() {
     workerGetHashesClient?.terminate()
     workerGetHashesClient = null
@@ -109,10 +131,14 @@ export const useSketchStore = defineStore("sketch", () => {
     const hashes_client = Object.create(null)
 
     if (isNative) {
-      for await (const filePath of globby(rootのsketch.value, ["**/*"], ["/.changes/"])) {
+      for await (const filePath of globby(
+        rootのsketch.value,
+        ["**/*"],
+        ["/.changes/"]
+      )) {
         const buffer = await Filesystem.readFile({
           path: filePath,
-          directory: Directory.External
+          directory: Directory.External,
         }).then(({ data }) => base64ToUint8(data))
 
         const hash = createHash().update(buffer).digest("hex")
@@ -124,7 +150,10 @@ export const useSketchStore = defineStore("sketch", () => {
     } else {
       workerGetHashesClient = new GetHashesClientWorker()
       await hashes_clientのFile.ready
-      hashes_clientのFile.data = await put<ComGetHashesClient, "get-hashes-client">(workerGetHashesClient, "get-hashes-client", rootのsketch.value)
+      hashes_clientのFile.data = await put<
+        ComGetHashesClient,
+        "get-hashes-client"
+      >(workerGetHashesClient, "get-hashes-client", rootのsketch.value)
 
       workerGetHashesClient?.terminate()
       workerGetHashesClient = null

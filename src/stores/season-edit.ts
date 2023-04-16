@@ -88,7 +88,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
   // eslint-disable-next-line functional/no-let
   let onChanged: null | ((text: string) => void) = null
   // eslint-disable-next-line functional/no-let
-  let _formatWorker: Worker | null = null
+  let _formatWorker: InstanceType<typeof FormatWorker> | null = null
 
   function createEditor(editorRef: HTMLDivElement) {
     editor.value = new EditorView({
@@ -239,21 +239,25 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     JSON.stringify(eslintrcDefault)
   )
 
-  watch(() => currentFileのFile.data, data => {
-    if (!currentEntry.value || !editor.value) return
+  watch(
+    () => currentFileのFile.data,
+    (data) => {
+      if (!currentEntry.value || !editor.value) return
 
-    // saveCurrentSeason()
-    editor.value.dispatch({
-      changes: {
-        from: 0,
-        to: editor.value.state.doc.length,
-        insert: data,
-      },
-      selection: selectionStore.has(currentEntry.value)
-      ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
-        : undefined,
-    })
-  }, { immediate: true })
+      // saveCurrentSeason()
+      editor.value.dispatch({
+        changes: {
+          from: 0,
+          to: editor.value.state.doc.length,
+          insert: data,
+        },
+        selection: selectionStore.has(currentEntry.value)
+          ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
+          : undefined,
+      })
+    },
+    { immediate: true }
+  )
   // eslint-disable-next-line functional/no-let
   let entryChanging: Entry<"file"> | null = null
   async function openFile(entry: Entry<"file">) {
@@ -283,7 +287,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
             language.reconfigure(loadLanguage(name as unknown as any)!),
             linter.reconfigure(
               (await loadLinter(name, JSON.parse(eslintrcのFile.data))) ??
-              extensionNOOP
+                extensionNOOP
             ),
           ],
         })
@@ -351,11 +355,13 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       // open file
       // await openFile(await)
       // TODO: 偽
-      const entry = /* 偽 */reactive(new Entry(
-        "file",
-        basename(fullpath),
-        createFakeDirectory(dirname(fullpath))
-      ))
+      const entry = /* 偽 */ reactive(
+        new Entry(
+          "file",
+          basename(fullpath),
+          createFakeDirectory(dirname(fullpath))
+        )
+      )
 
       await openFile(entry)
 

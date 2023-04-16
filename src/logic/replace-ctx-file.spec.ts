@@ -25,8 +25,6 @@ describe("replace-ctx-file", () => {
 
     await replaceMatch("text.txt", matches[0], "O")
 
-    
-
     expect(await readFile("text.txt")).toEqual("hellO world")
   })
 

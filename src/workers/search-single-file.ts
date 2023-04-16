@@ -18,7 +18,6 @@ export type ComSearchSingleFile = {
   "search-single-file"(path: string, searchOptions: SearchOptions): Match[]
 }
 
-
 if (!isNative) {
   listen<ComSearchSingleFile, "search-single-file">(
     self,
@@ -29,8 +28,8 @@ if (!isNative) {
           await Filesystem.readFile({
             path: file,
             directory: Directory.External,
-            encoding: Encoding.UTF8
-          }).then(res=>res.data),
+            encoding: Encoding.UTF8,
+          }).then((res) => res.data),
           searchOptions
         ),
       ]

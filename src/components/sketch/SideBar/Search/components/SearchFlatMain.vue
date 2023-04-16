@@ -68,5 +68,7 @@ const emit = defineEmits<{
 
 const sketchStore = useSketchStore()
 
-const pathdir = computed(() => relative(sketchStore.rootのsketch, dirname(props.fullpath)))
+const pathdir = computed(() =>
+  relative(sketchStore.rootのsketch, dirname(props.fullpath))
+)
 </script>

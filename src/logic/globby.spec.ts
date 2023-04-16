@@ -23,7 +23,7 @@ describe("globby", async () => {
     directory: Directory.External,
     data: "",
     encoding: Encoding.UTF8,
-    recursive: true
+    recursive: true,
   })
 
   test("exclude with start /", async () => {

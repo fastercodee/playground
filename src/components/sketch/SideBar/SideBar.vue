@@ -99,7 +99,7 @@ const tabs: {
   {
     icon: "material-symbols:cloud-sync-outline",
     value: "change",
-  }
+  },
 ]
 
 const settingsLayout = ref(false)
