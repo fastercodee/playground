@@ -35,5 +35,5 @@ export async function readFile(path: string) {
     path,
     directory: Directory.External,
     encoding: Encoding.UTF8,
-  }).then(toTextFile)
+  }).then(res => res.data)
 }
