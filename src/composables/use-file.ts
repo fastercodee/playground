@@ -17,7 +17,7 @@ const middleareDef = {
 }
 
 export function useFile<T = string, R extends boolean = false>(
-  filepath: string | Ref<string | undefined>,
+  filepath: string | Ref<string | undefined> | (() => string),
   defaultValue = "",
   overWrite?: R,
   middleare: {
@@ -31,9 +31,13 @@ export function useFile<T = string, R extends boolean = false>(
   readonly data: UnwrapRef<T>
   ready: Promise<void> | null
 } {
+  if (typeof filepath === "function")
+    filepath = computed(filepath)
+
   const isReactive = isRef(filepath)
 
   if (!isReactive) filepath = ref(filepath)
+
 
   // eslint-disable-next-line functional/no-let
   let writing = false
