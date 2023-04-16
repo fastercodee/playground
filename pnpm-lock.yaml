@@ -61,6 +61,9 @@ dependencies:
   '@replit/codemirror-vscode-keymap':
     specifier: ^6.0.2
     version: 6.0.2(@codemirror/autocomplete@6.4.2)(@codemirror/commands@6.2.2)(@codemirror/language@6.6.0)(@codemirror/lint@6.2.0)(@codemirror/search@6.2.3)(@codemirror/state@6.2.0)(@codemirror/view@6.9.2)
+  '@tachibana-shin/capacitor-filesystem':
+    specifier: 5.0.0-beta.0
+    version: 5.0.0-beta.0(@capacitor/core@4.7.0)
   '@uiw/codemirror-extensions-hyper-link':
     specifier: ^4.19.9
     version: 4.19.9(@codemirror/state@6.2.0)(@codemirror/view@6.9.2)
@@ -133,6 +136,9 @@ dependencies:
   quasar:
     specifier: ^2.6.0
     version: 2.11.7
+  sha256-uint8array:
+    specifier: ^0.10.5
+    version: 0.10.5
   sort-array:
     specifier: ^4.1.5
     version: 4.1.5
@@ -1313,6 +1319,14 @@ packages:
     dependencies:
       defer-to-connect: 2.0.1
     dev: true
+
+  /@tachibana-shin/capacitor-filesystem@5.0.0-beta.0(@capacitor/core@4.7.0):
+    resolution: {integrity: sha512-FTJ9HTmL7ML93mQ4U6fgYN+yASsqx2fXMov0xhBjKxJGEnQRZgJRpOStyPc1TaSAFo73Gs7id8B+meiJZ+1i2A==}
+    peerDependencies:
+      '@capacitor/core': next
+    dependencies:
+      '@capacitor/core': 4.7.0
+    dev: false
 
   /@tachibana-shin/eslint-config@1.1.1(eslint@8.36.0)(typescript@4.9.5):
     resolution: {integrity: sha512-nFns2TdgdA+ldx5BmViSNpr10tASMOn0cOf1waEnfFTn1NCkIbRZ25NCOJE1cUkVw9X679/Ma+U2qydj/Eh0Bw==}
@@ -6291,6 +6305,10 @@ packages:
   /setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
     dev: true
+
+  /sha256-uint8array@0.10.5:
+    resolution: {integrity: sha512-KjYP8M6y8VvV62lnSSZwzutuwqphVOOVQamP+GmmClZcYhbq1HSIw/M2tlKgHndiaIwe3tFG5X38YYsQfUdItw==}
+    dev: false
 
   /shallow-clone@3.0.1:
     resolution: {integrity: sha512-/6KqX+GVUdqPuPPd2LxDDxzX6CAbjJehAAOKlNpqqUpAqPM6HeL8f+o3a+JsyGjn2lv0WY8UsTgUJjU9Ok55NA==}
