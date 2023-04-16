@@ -5,7 +5,8 @@ import { contains } from "micromatch"
 export async function* globby(
   dir: string,
   include: string[],
-  exclude: string[]
+  exclude: string[],
+  parent = "/"
 ): AsyncGenerator<string> {
   const { files } = await Filesystem.readdir({
     path: dir,
@@ -13,20 +14,21 @@ export async function* globby(
   })
 
   for (const info of files) {
-    const path = join(dir, info.name)
+    const path = join(parent, info.name)
+    const fullPath = join(dir, info.name)
 
     if (contains(path, exclude, { dot: true })) continue
 
     if (info.type === "directory") {
       // read directory
-      yield* globby(path, include, exclude)
+      yield* globby(fullPath, include, exclude, path)
     }
 
     if (!contains(path, include, { dot: true })) continue
 
     if (info.type === "file") {
       // read file
-      yield path
+      yield fullPath
     }
   }
 }

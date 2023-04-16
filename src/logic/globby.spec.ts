@@ -18,15 +18,12 @@ describe("globby", async () => {
     data: "",
     encoding: Encoding.UTF8,
   })
-  await Filesystem.mkdir({
-    path: "globby/src",
-    directory: Directory.External,
-  })
   await Filesystem.writeFile({
     path: "globby/src/main.js",
     directory: Directory.External,
     data: "",
     encoding: Encoding.UTF8,
+    recursive: true
   })
 
   test("include", async () => {
@@ -51,5 +48,16 @@ describe("globby", async () => {
     }
 
     expect(files).toEqual(["globby/bar.js", "globby/foo.js"])
+  })
+
+  
+  test("exclude with start /", async () => {
+    const files: string[] = []
+
+    for await (const file of await globby("globby/", ["*.js"], ["/*.js"])) {
+      files.push(file)
+    }
+
+    expect(files).toEqual(["globby/src/main.js"])
   })
 })
