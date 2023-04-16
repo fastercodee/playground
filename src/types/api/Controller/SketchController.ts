@@ -35,7 +35,11 @@ export interface SketchController {
     first: Control<{
       uid: number
     } & MetaAndHashes, {
-      sketch: Sketch<true, true>
+      sketch: Sketch<true, false>
+      file_changes: Record<FilePath, {
+        type: "U+"
+        file: File
+      }>
     }>
     next: Control<{
       uid: number

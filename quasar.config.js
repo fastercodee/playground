@@ -75,7 +75,7 @@ module.exports = configure(function (/* ctx */) {
           process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN,
         ...require("dotenv").config().parsed,
       },
-      rawDefine: require("dotenv").config().parsed,
+      // rawDefine: {},
       // ignorePublicFolder: true,
       // minify: false,
       // polyfillModulePreload: true,
