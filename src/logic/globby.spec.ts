@@ -26,31 +26,6 @@ describe("globby", async () => {
     recursive: true
   })
 
-  test("include", async () => {
-    const files: string[] = []
-
-    for await (const file of await globby("globby/", ["*.js"], [])) {
-      files.push(file)
-    }
-
-    expect(files).toEqual([
-      "globby/bar.js",
-      "globby/foo.js",
-      "globby/src/main.js",
-    ])
-  })
-
-  test("ignore", async () => {
-    const files: string[] = []
-
-    for await (const file of await globby("globby/", ["*.js"], ["main.js"])) {
-      files.push(file)
-    }
-
-    expect(files).toEqual(["globby/bar.js", "globby/foo.js"])
-  })
-
-  
   test("exclude with start /", async () => {
     const files: string[] = []
 

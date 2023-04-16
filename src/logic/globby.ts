@@ -1,6 +1,14 @@
 import { join } from "path"
 
-import { contains } from "micromatch"
+import { contains, isMatch } from "micromatch"
+
+function match(path:string, pattern: string[]) {
+  return pattern.some(item => {
+    if (item .startsWith("/"))
+    return isMatch(path, item, { dot: true })
+    return contains(path, item, { dot: true })
+  })
+}
 
 export async function* globby(
   dir: string,
@@ -16,15 +24,14 @@ export async function* globby(
   for (const info of files) {
     const path = join(parent, info.name)
     const fullPath = join(dir, info.name)
-
-    if (contains(path, exclude, { dot: true })) continue
+    if (match(path, exclude)) continue
 
     if (info.type === "directory") {
       // read directory
       yield* globby(fullPath, include, exclude, path)
     }
 
-    if (!contains(path, include, { dot: true })) continue
+    if (!match(path, include)) continue
 
     if (info.type === "file") {
       // read file
