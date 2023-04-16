@@ -1,4 +1,4 @@
-import { dirname, normalize, relative } from "path"
+import { normalize, relative } from "path"
 
 import type { Match } from "src/logic/search-text"
 
