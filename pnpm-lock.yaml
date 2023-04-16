@@ -11,8 +11,8 @@ dependencies:
     specifier: ^4.7.0
     version: 4.7.0
   '@capacitor/filesystem':
-    specifier: ^4.1.4
-    version: 4.1.4(@capacitor/core@4.7.0)
+    specifier: npm:@tachibana-shin/capacitor-filesystem
+    version: /@tachibana-shin/capacitor-filesystem@5.0.0-beta.0(@capacitor/core@4.7.0)
   '@codemirror/autocomplete':
     specifier: ^6.4.2
     version: 6.4.2(@codemirror/language@6.6.0)(@codemirror/state@6.2.0)(@codemirror/view@6.9.2)(@lezer/common@1.0.2)
@@ -324,14 +324,6 @@ packages:
     resolution: {integrity: sha512-LkjHnIoufojVjCZXogEbotN2utXxfo6TvpSgWaYndRPm/SrPFCWM8bPf/WNd8MozOkPFgcxlZnZlGHFGTeydWQ==}
     dependencies:
       tslib: 2.5.0
-    dev: false
-
-  /@capacitor/filesystem@4.1.4(@capacitor/core@4.7.0):
-    resolution: {integrity: sha512-ivko1RNK4hq63xhMacq8D6D97N5/SAafTsrmY/pghYrG6Cl2SEY0+IgRu7V9/VWeN3FSplyUPucjUTAFQxXN5g==}
-    peerDependencies:
-      '@capacitor/core': ^4.0.0
-    dependencies:
-      '@capacitor/core': 4.7.0
     dev: false
 
   /@codemirror/autocomplete@6.4.2(@codemirror/language@6.6.0)(@codemirror/state@6.2.0)(@codemirror/view@6.9.2)(@lezer/common@1.0.2):

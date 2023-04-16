@@ -20,7 +20,7 @@
     "@capacitor/android": "^4.7.0",
     "@capacitor/app": "^4.1.1",
     "@capacitor/core": "^4.7.0",
-    "@capacitor/filesystem": "^4.1.4",
+    "@capacitor/filesystem": "npm:@tachibana-shin/capacitor-filesystem",
     "@codemirror/autocomplete": "^6.4.2",
     "@codemirror/commands": "^6.2.2",
     "@codemirror/lang-javascript": "^6.1.4",
