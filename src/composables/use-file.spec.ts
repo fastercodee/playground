@@ -12,14 +12,14 @@ describe("use-file", () => {
   test("should work", async () => {
     await writeFile("text.txt", "foo")
 
-    const { data, ready } = useFile("text.txt")
+    const { data, ready } = toRefs(useFile("text.txt"))
     await ready.value
 
     expect(data.value).toEqual("foo")
   })
 
   test("should work when file does not exist", async () => {
-    const { data, ready } = useFile("text.txt", "default")
+    const { data, ready } = toRefs(useFile("text.txt", "default"))
     await ready.value
     expect(data.value).toEqual("default")
   })
@@ -27,7 +27,7 @@ describe("use-file", () => {
   test("reactive file change", async () => {
     await writeFile("text.txt", "foo")
 
-    const { data, ready } = useFile("text.txt")
+    const { data, ready } = toRefs(useFile("text.txt"))
     await ready.value
 
     expect(data.value).toEqual("foo")
@@ -44,7 +44,7 @@ describe("use-file", () => {
     await writeFile("text2.txt", "bar")
 
     const file = ref("text.txt")
-    const { data, ready } = useFile(file)
+    const { data, ready } = toRefs(useFile(file))
     await ready.value
 
     expect(data.value).toEqual("foo")
@@ -59,7 +59,7 @@ describe("use-file", () => {
   test("reactive file change queue", async () => {
     await writeFile("text.txt", "foo")
 
-    const { data, ready } = useFile("text.txt")
+    const { data, ready } = toRefs(useFile("text.txt"))
     await ready.value
 
     expect(data.value).toEqual("foo")
@@ -90,7 +90,7 @@ describe("use-file", () => {
   test("auto save file on changes content", async () => {
     await writeFile("text.txt", "foo")
 
-    const { data, ready } = useFile("text.txt", undefined, true)
+    const { data, ready } = toRefs(useFile("text.txt", undefined, true))
     await ready.value
 
     expect(data.value).toEqual("foo")
@@ -104,10 +104,10 @@ describe("use-file", () => {
   })
 
   test("work with moddileware", async () => {
-    const { data, ready } = useFile("text.json", "{}", true, {
+    const { data, ready } = toRefs(useFile("text.json", "{}", true, {
       get: JSON.parse,
       set: JSON.stringify
-    })
+    }))
 
     await ready.value
     expect(data.value).toEqual({})

@@ -1,3 +1,5 @@
+import { dirname } from "path"
+
 import type { UnwrapRef } from "vue"
 
 function loadFile(path: string) {
@@ -10,6 +12,7 @@ function loadFile(path: string) {
 const middleareDef = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get: (v: any) => v,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   set: (v: any) => v
 }
 
@@ -21,37 +24,45 @@ export function useFile<T = string, R extends boolean = false>(
     set: (value: UnwrapRef<T>) => string,
     get: (value: string) => UnwrapRef<T>
   } = middleareDef
-): {
-  data: R extends true ? Ref<UnwrapRef<T>> : Readonly<Ref<UnwrapRef<T>>>
-  ready: Ref<Promise<void>>
+): R extends true ? {
+  data: UnwrapRef<T>
+  ready: Promise<void> | null
+} : {
+  readonly data: UnwrapRef<T>
+  ready: Promise<void> | null
 } {
-  const reactive = isRef(filepath)
-  const ready = ref<Promise<void>>()
+  const isReactive = isRef(filepath)
 
-  if (!reactive) filepath = ref(filepath)
+  if (!isReactive) filepath = ref(filepath)
 
   // eslint-disable-next-line functional/no-let
   let writing = false
-  const content = ref(middleare.get(defaultValue) as T)
+  const ret = reactive<{
+    data: T,
+    ready: null | Promise<void>
+  }>({
+    data: middleare.get(defaultValue) as T,
+    ready: null
+  })
 
   // eslint-disable-next-line functional/no-let
   let initialized = false
   const watchHandler = (filepath: string | undefined) => {
     if (!filepath) return
     initialized = false
-    ready.value = loadFile(filepath)
+    ret.ready = loadFile(filepath)
       .catch((er) => {
-        if (import.meta.env.DEV) console.warn(er)
+        if (import.meta.env.DEV && er.message !== "File does not exist.") console.warn(er)
         return defaultValue
       })
       .then((data) => {
         // eslint-disable-next-line promise/always-return
         if (writing) return
-        content.value = middleare.get(data)
+        ret.data = middleare.get(data)
         initialized = true
       })
   }
-  if (reactive)
+  if (isReactive)
     watch(filepath as Ref<string | undefined>, watchHandler, {
       immediate: true,
     })
@@ -76,32 +87,50 @@ export function useFile<T = string, R extends boolean = false>(
         .then((data) => {
           // eslint-disable-next-line promise/always-return
           if (writing) return
-          content.value = middleare.get(data)
+          ret.data = middleare.get(data)
           initialized = true
         })
     }
   )
   if (overWrite)
-    watch(content, async (content) => {
+    watch(() => ret.data, async (content) => {
       if (!initialized) return
 
       writing = true
 
       const path = (filepath as Ref<string | undefined>).value
       if (!path) return
-      await Filesystem.writeFile({
-        path,
-        directory: Directory.External,
-        encoding: Encoding.UTF8,
-        data: middleare.set(content),
-      })
-      eventBus.emit("writeFile", path)
-
+      console.log("write file")
+      try {
+        await Filesystem.writeFile({
+          path,
+          directory: Directory.External,
+          encoding: Encoding.UTF8,
+          data: middleare.set(content),
+        })
+      } catch (err) {
+        if ((err as Error | null)?.message === "Parent directory must exist") {
+          const dir = dirname(path)
+          await Filesystem.mkdir({
+            path: dir,
+            directory: Directory.External,
+            recursive: true
+          })
+          await Filesystem.writeFile({
+            path,
+            directory: Directory.External,
+            encoding: Encoding.UTF8,
+            data: middleare.set(content),
+          })
+        } else {
+          throw err
+        }
+      }
+      await eventBus.emit("writeFile", path)
       writing = false
     }, {
-      flush: "post",
       deep: true
     })
 
-  return { data: content, ready: ready as Ref<Promise<void>> }
+  return ret
 }

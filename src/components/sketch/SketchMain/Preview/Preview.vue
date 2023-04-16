@@ -68,7 +68,7 @@ const mimeMap = {
   mpeg4r: "video/mpeg",
 }
 
-const { data: tsconfig, ready: tsconfigReady } = useFile(
+const tsconfigのFile = useFile(
   "current/tsconfig.json",
   "{}"
 )
@@ -124,12 +124,12 @@ function setup() {
       if (!res) throw new Error("File does not exist.")
 
       const content = ["ts", "jsx", "tsx"].includes(res.ext)
-        ? (await tsconfigReady.value,
+        ? (await tsconfigのFile.ready,
           await compilerFile(
             res.content,
             basename(pathname),
             res.ext,
-            tsconfig.value
+            tsconfigのFile.data
           ))
         : res.content
 

@@ -38,11 +38,14 @@ function on<N extends keyof Events>(
       listeners!.delete(cb)
     }, instance)
 }
+
+const resolved = Promise.resolve()
 // eslint-disable-next-line functional/functional-parameters
-function emit<N extends keyof Events>(name: N, ...args: Events[N]) {
+function emit<N extends keyof Events>(name: N, ...args: Events[N]): Promise<void> {
   // eslint-disable-next-line n/no-callback-literal
   store.get(name)?.forEach((cb) => cb(...args))
   store.get("*")?.forEach((cb) => cb(name, ...args))
+  return resolved
 }
 
 function watch(
@@ -93,13 +96,12 @@ function watch(
 
   // eslint-disable-next-line functional/no-let
   let called = false
-  const resolved = Promise.resolve()
   on(
     "*",
     (タイプ: keyof Events, パス: string) => {
       if (called) return
       called = true
-      // eslint-disable-next-line promise/catch-or-return, promise/always-return
+      // eslint-disable-next-line promise/always-return, promise/catch-or-return
       resolved.then(() => {
         handle(タイプ, パス)
         called = false
