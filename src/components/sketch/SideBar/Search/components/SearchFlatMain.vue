@@ -66,5 +66,7 @@ const emit = defineEmits<{
   (name: "click:replace"): void
 }>()
 
-const pathdir = computed(() => relative("current/", dirname(props.fullpath)))
+const sketchStore = useSketchStore()
+
+const pathdir = computed(() => relative(sketchStore.rootのsketch, dirname(props.fullpath)))
 </script>

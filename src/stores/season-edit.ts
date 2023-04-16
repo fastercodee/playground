@@ -80,6 +80,8 @@ async function loadLinter(name: string, config: Record<string, unknown>) {
 }
 
 export const useSeasonEdit = defineStore("season-edit", () => {
+  const sketchStore = useSketchStore()
+
   const editor = shallowRef<EditorView | null>(null)
   const language = new Compartment()
   const linter = new Compartment()
@@ -233,22 +235,22 @@ export const useSeasonEdit = defineStore("season-edit", () => {
   }
 
   const eslintrcのFile = useFile(
-    "current/.elintrc.json",
+    () => `${sketchStore.rootのsketch}/.elintrc.json`,
     JSON.stringify(eslintrcDefault)
   )
 
   watch(() => currentFileのFile.data, data => {
-    if (!currentEntry.value) return
+    if (!currentEntry.value || !editor.value) return
 
-    saveCurrentSeason()
-    editor.value?.dispatch({
+    // saveCurrentSeason()
+    editor.value.dispatch({
       changes: {
         from: 0,
         to: editor.value.state.doc.length,
         insert: data,
       },
       selection: selectionStore.has(currentEntry.value)
-        ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
+      ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
         : undefined,
     })
   }, { immediate: true })

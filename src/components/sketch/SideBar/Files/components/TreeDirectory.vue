@@ -125,11 +125,14 @@ async function loadDecevier() {
 watch(opening, (opening) => {
   if (opening) loadDecevier()
 })
-if (props.onlyChild) {
-  loadDecevier()
+watch(() => props.entry, () => {
+  if (props.onlyChild || opening.value) {
+    decevier.value = null
+    loadDecevier()
     .then(() => emit("load"))
     .catch((err) => emit("error", err))
-}
+  }
+}, { immediate: true })
 
 const creating = ref<"file" | "directory" | null>(null)
 

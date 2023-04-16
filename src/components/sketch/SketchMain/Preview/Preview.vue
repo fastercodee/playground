@@ -15,6 +15,7 @@ import type { Communicate } from "app/preview/src/sw"
 
 const iframeRef = ref<HTMLIFrameElement>()
 const previewStore = usePreviewStore()
+const sketchStore = useSketchStore()
 
 const srcIFrame = process.env.GITPOD_WORKSPACE_URL
   ? process.env.GITPOD_WORKSPACE_URL.replace("https://", "https://9999-")
@@ -69,7 +70,7 @@ const mimeMap = {
 }
 
 const tsconfigのFile = useFile(
-  "current/tsconfig.json",
+  () => `${sketchStore.rootのsketch}/tsconfig.json`,
   "{}"
 )
 
@@ -100,16 +101,16 @@ function setup() {
       const res =
         pathname === "/"
           ? await Filesystem.readFile({
-              path: "current/index.html",
+              path: `${sketchStore.rootのsketch}/index.html`,
               directory: Directory.External,
             }).then((res) => {
               return {
                 content: toBufferFile(res),
                 ext: "html",
-                path: "current/index.html",
+                path: `${sketchStore.rootのsketch}/index.html`,
               }
             })
-          : await readFileWithoutExt(join("current", pathname), [
+          : await readFileWithoutExt(join(sketchStore.rootのsketch, pathname), [
               "ts",
               "tsx",
               "js",

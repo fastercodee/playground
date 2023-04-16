@@ -159,7 +159,7 @@
       <SearchTreeDirectory
         v-if="showResultAsTree"
         only-child
-        :meta="resultsTree.dirs.get('current')!"
+        :meta="resultsTree.dirs.get(sketchStore.rootのsketch)!"
         :deep-level="0"
         @click:close-item="deleteResults"
         @click:close-match="deleteMatch"
@@ -202,6 +202,7 @@ import type { ComSearchSingleFile } from "src/workers/search-single-file"
 import SearchSingleFileWorker from "src/workers/search-single-file?worker"
 
 const searchStore = useSearchStore()
+const sketchStore = useSketchStore()
 
 // === low state ===
 const showReplace = ref(false)
@@ -267,7 +268,7 @@ const metaResults = shallowReactive({
   results: 0,
   files: 0,
 })
-const resultsTree = computed(() => flatToTree(results))
+const resultsTree = computed(() => flatToTree(sketchStore.rootのsketch, results))
 /** @description - this function only reset result. don't call stopSearch */
 const resetResults = () => {
   results.clear()
@@ -335,7 +336,7 @@ async function research() {
     await put<ComSearchGlob, "search-on-spa">(
       searchGloborInTextWorker,
       "search-on-spa",
-      "current",
+      sketchStore.rootのsketch,
       splitString(include.value),
       enableExclude.value ? splitString(exclude.value) : [],
       uid,
@@ -353,7 +354,7 @@ async function research() {
     const inclu = splitString(include.value)
 
     for await (const file of await globby(
-      "current",
+    sketchStore.rootのsketch,
       inclu.length === 0 ? ["**/*"] : inclu,
       splitString(exclude.value)
     )) {

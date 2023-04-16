@@ -45,6 +45,7 @@ import type { Entry } from "src/types/Entry"
 import TreeDirectory from "./components/TreeDirectory.vue"
 
 const clipboardFSStore = useClipboardFS()
+const sketchStore = useSketchStore()
 
 async function init() {
   await Filesystem.mkdir({
@@ -80,10 +81,10 @@ const entryCurrent = computedAsync(
     // entryRoot.directory = entryRoot
 
     try {
-      return await readDetails<"directory">("current", entryRoot)
+      return await readDetails<"directory">(sketchStore.rootのsketch, entryRoot)
     } catch {
       await init()
-      return await readDetails<"directory">("current", entryRoot)
+      return await readDetails<"directory">(sketchStore.rootのsketch, entryRoot)
     }
   },
   undefined,
