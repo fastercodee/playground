@@ -1,14 +1,14 @@
-import { dirname } from "path"
-
 import type { UnwrapRef } from "vue"
 
 function loadFile(path: string) {
   return Filesystem.readFile({
     path,
     directory: Directory.External,
+    encoding: Encoding.UTF8
   }).then(toTextFile)
 }
 
+const resolved = Promise.resolve()
 const middleareDef = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get: (v: any) => v,
@@ -38,9 +38,10 @@ export function useFile<T = string, R extends boolean = false>(
 
   if (!isReactive) filepath = ref(filepath)
 
-
   // eslint-disable-next-line functional/no-let
   let writing = false
+  // eslint-disable-next-line functional/no-let
+  let reading = false
   const ret = reactive<{
     data: T,
     ready: null | Promise<void>
@@ -49,11 +50,8 @@ export function useFile<T = string, R extends boolean = false>(
     ready: null
   })
 
-  // eslint-disable-next-line functional/no-let
-  let initialized = false
   const watchHandler = (filepath: string | undefined) => {
     if (!filepath) return
-    initialized = false
     ret.ready = loadFile(filepath)
       .catch((er) => {
         if (import.meta.env.DEV && er.message !== "File does not exist.") console.warn(er)
@@ -62,8 +60,10 @@ export function useFile<T = string, R extends boolean = false>(
       .then((data) => {
         // eslint-disable-next-line promise/always-return
         if (writing) return
+        reading = true
         ret.data = middleare.get(data)
-        initialized = true
+        // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/no-nesting
+        resolved.then(() => { reading = false })
       })
   }
   if (isReactive)
@@ -85,33 +85,35 @@ export function useFile<T = string, R extends boolean = false>(
       // eslint-disable-next-line promise/catch-or-return
       loadFile(ですか)
         .catch((er) => {
-          console.log(er)
+          if (import.meta.env.DEV && er.message !== "File does not exist.") console.warn(er)
           return defaultValue
         })
         .then((data) => {
           // eslint-disable-next-line promise/always-return
           if (writing) return
+          reading = true
           ret.data = middleare.get(data)
-          initialized = true
+          // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/no-nesting
+          resolved.then(() => { reading = false })
         })
     }
   )
   if (overWrite)
     watch(() => ret.data, async (content) => {
-      if (!initialized) return
+      if (reading) return
 
       writing = true
 
       const path = (filepath as Ref<string | undefined>).value
       if (!path) return
       console.log("write file %s", reading)
-        await Filesystem.writeFile({
-          path,
-          directory: Directory.External,
-          encoding: Encoding.UTF8,
-          data: middleare.set(content),
-            recursive: true
-          })
+      await Filesystem.writeFile({
+        path,
+        directory: Directory.External,
+        encoding: Encoding.UTF8,
+        data: middleare.set(content),
+        recursive: true
+      })
       await eventBus.emit("writeFile", path)
       writing = false
     }, {

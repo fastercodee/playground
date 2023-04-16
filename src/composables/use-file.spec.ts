@@ -104,7 +104,7 @@ describe("use-file", () => {
   })
 
   test("work with moddileware", async () => {
-    const { data, ready } = toRefs(useFile("text.json", "{}", true, {
+    const { data, ready } = toRefs(useFile("text.json", "{}", false, {
       get: JSON.parse,
       set: JSON.stringify
     }))
@@ -112,9 +112,9 @@ describe("use-file", () => {
     await ready.value
     expect(data.value).toEqual({})
 
-    await writeFile("text.json", "{\"foo\": \"bar\"}").then(() =>
-      eventBus.emit("writeFile", "text.txt")
-    )
+    await writeFile("text.json", "{\"foo\": \"bar\"}")
+    eventBus.emit("writeFile", "text.json")
+
     await sleep(100)
     await nextTick()
     await ready.value
