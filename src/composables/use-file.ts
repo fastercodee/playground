@@ -94,13 +94,7 @@ export function useFile<T = string, R extends boolean = false, UseOnFileChange e
     })
   else watchHandler((filepath as Ref<string | undefined>).value)
 
-  eventBus.watch(
-    computed(() => {
-      const path = (filepath as Ref<string | undefined>).value
-
-      if (!path) return []
-      return [path]
-    }),
+  eventBus.watch((filepath as Ref<string | undefined>),
     (タイプ, パス, ですか) => {
       if (writing) return
 
@@ -156,5 +150,5 @@ export function useFile<T = string, R extends boolean = false, UseOnFileChange e
   return ret as (R extends true ? UseFileReturn<T> : Readonly<UseFileReturn<T>>) & (UseOnFileChange extends true ? {
     readonly onFileChange: OnFileChange<T>
     // eslint-disable-next-line @typescript-eslint/ban-types
-  } : {}) 
+  } : {})
 }

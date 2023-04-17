@@ -53,54 +53,70 @@ function emit<N extends keyof Events>(
 }
 
 function watch(
-  たどる道: string | string[] | Ref<string[] | Set<string>> | Set<string>,
+  たどる道: string | string[] | Ref<undefined | string | string[] | Set<string>> | Set<string>,
   コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void,
-  instance = getCurrentInstance()
+  { instance = getCurrentInstance(), dir: dirMode }: {
+    instance?: ComponentInternalInstance | null
+    dir?: boolean
+  } = {}
 ) {
   if (typeof たどる道 === "string")
     たどる道 = {
       value: [たどる道],
-    } as Ref<string[] | Set<string>>
+    } as Ref<undefined | string | string[] | Set<string>>
   else if (!isRef(たどる道))
     たどる道 = {
       value: たどる道,
-    } as Ref<string[] | Set<string>>
+    } as Ref<undefined | string | string[] | Set<string>>
 
   const handle = (タイプ: keyof Events, パス: string) => {
+    const value = (たどる道 as Ref<undefined | string | string[] | Set<string>>).value
+
     if (
-      ((たどる道 as Ref<string[]>).value.length ??
-        (たどる道 as Ref<Set<string>>).value.size) === 0
+      value === undefined
+      ||
+      ((value as string[]).length ?? (value as Set<string>).size) === 0
     )
       return
 
     switch (タイプ) {
       case "writeFile":
       case "deleteFile":
-        for (const ですか of (たどる道 as Ref<string[] | Set<string>>).value) {
-          // pathWatch is file
-          if (ですか === パス) {
-            コールバック(タイプ, パス, ですか)
-            break
+        if (!dirMode)
+          for (const ですか of (typeof value === "string" ? [value] : value)) {
+            // pathWatch is file
+            if (ですか === パス) {
+              コールバック(タイプ, パス, ですか)
+              break
+            }
           }
-        }
+        else
+          for (const ですか of (typeof value === "string" ? [value] : value)) {
+            // pathWatch is file
+            if (パス.startsWith(ですか + "/")) {
+              コールバック(タイプ, パス, ですか)
+              break
+            }
+          }
         break
 
       case "copyDir":
       case "rmdir":
-        for (const ですか of (たどる道 as Ref<string[] | Set<string>>).value) {
-          // pathWatch is file
-          if (ですか.startsWith(パス + "/")) {
-            コールバック(タイプ, パス, ですか)
-            break
+        if (!dirMode)
+          for (const ですか of (typeof value === "string" ? [value] : value)) {
+            // pathWatch is file
+            if (ですか.startsWith(パス + "/")) {
+              コールバック(タイプ, パス, ですか)
+              break
+            }
           }
-        }
         break
     }
   }
 
   // eslint-disable-next-line functional/no-let
   let called = false
-  const resolved= Promise.resolve()
+  const resolved = Promise.resolve()
   on(
     "*",
     (タイプ: keyof Events, パス: string) => {
