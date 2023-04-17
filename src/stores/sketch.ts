@@ -25,16 +25,16 @@ function exists(path: string) {
 
 async function getFileFromServer(uid: number): Promise<Uint8Array> {
   return await api
-        .post(
-          "/sketch/get_file",
-          {
+    .post(
+      "/sketch/get_file",
+      {
         uid,
-          },
-          {
-            responseType: "arraybuffer",
-          }
-        )
-        .then((res) => new Uint8Array(res.data))
+      },
+      {
+        responseType: "arraybuffer",
+      }
+    )
+    .then((res) => new Uint8Array(res.data))
 }
 async function saveFileWithUID(path: string, uid: number) {
   await Filesystem.writeFile({
@@ -150,5 +150,72 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   }
 
-  return { rootのsketch, fetch, forceUpdateHashesClient }
+  type StatusChange = "M" | "D" | "U"
+
+  /// INFO: computed change
+  const 変化 = computed(() => {
+
+    const server = hashes_serverのFile.data
+    const client = hashes_clientのFile.data
+
+    const changes: Record<string, StatusChange> = {}
+
+    Object.keys(server)
+      .forEach(relativePath => {
+        if (relativePath in client) {
+          if (server[relativePath].hash !== client[relativePath])
+            changes[relativePath] = "M"
+
+          return
+        }
+
+        changes[relativePath] = "D"
+      })
+    Object.keys(client)
+      .forEach(relativePath => {
+        if (relativePath in server) {
+          if (server[relativePath].hash !== client[relativePath])
+            changes[relativePath] = "M"
+
+          return
+        }
+
+        changes[relativePath] = "U"
+
+      })
+
+    return changes
+  })
+
+  async function undoChange(relativePath: string, status: StatusChange) {
+    const server = hashes_serverのFile.data
+
+    const uid = server[relativePath]?.uid
+
+    if (status === "M" || status === "D") {
+      if (uid === undefined)
+        throw new Error("Some write process before this action misbehaving resulting in '.changes/hashes_server' not recording this file.")
+    }
+
+    const filePathToSav = `${rootのsketch.value}/${relativePath}`
+
+    switch (status) {
+      case "M":
+      case "D": {
+        await saveFileWithUID(filePathToSav, uid)
+        delete server[relativePath]
+        break
+      }
+      case "U":
+        await Filesystem.deleteFile({
+          path: filePathToSav,
+          directory: Directory.External
+        })
+        eventBus.emit("deleteFile", filePathToSav)
+
+        break
+    }
+  }
+
+  return { rootのsketch, fetch, forceUpdateHashesClient, 変化, undoChange }
 })
