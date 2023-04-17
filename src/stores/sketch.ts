@@ -1,17 +1,15 @@
 /* eslint-disable camelcase */
 
-import { relative } from "path"
 
 import { put } from "@fcanvas/communicate"
 import { defineStore } from "pinia"
-import { createHash } from "sha256-uint8array"
 import { api, post } from "src/boot/axios"
 import { isNative } from "src/constants"
-import { globby } from "src/logic/globby"
 import type { SketchController } from "src/types/api/Controller/SketchController"
 import type { File } from "src/types/api/Models/File"
-import type { ComGetHashesClient } from "src/workers/get-hashes-client"
-import GetHashesClientWorker from "src/workers/get-hashes-client?worker"
+import { getHashesClient } from "src/workers/get-hashes-client"
+import type { ComGetHashesClient } from "src/workers/get-hashes-client/worker"
+import GetHashesClientWorker from "src/workers/get-hashes-client/worker?worker"
 
 function exists(path: string) {
   return Filesystem.stat({
@@ -128,25 +126,8 @@ export const useSketchStore = defineStore("sketch", () => {
 
     if ((await exists(rootのsketch.value)) === false) return
 
-    const hashes_client = Object.create(null)
-
     if (isNative) {
-      for await (const filePath of globby(
-        rootのsketch.value,
-        ["**/*"],
-        ["/.changes/"]
-      )) {
-        const buffer = await Filesystem.readFile({
-          path: filePath,
-          directory: Directory.External,
-        }).then(({ data }) => base64ToUint8(data))
-
-        const hash = createHash().update(buffer).digest("hex")
-        hashes_client[relative(rootのsketch.value, filePath)] = hash
-      }
-
-      await hashes_clientのFile.ready
-      hashes_clientのFile.data = hashes_client
+      hashes_clientのFile.data = await getHashesClient(rootのsketch.value)
     } else {
       workerGetHashesClient = new GetHashesClientWorker()
       await hashes_clientのFile.ready
