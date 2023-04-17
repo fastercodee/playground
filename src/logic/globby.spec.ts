@@ -26,6 +26,30 @@ describe("globby", async () => {
     recursive: true,
   })
 
+  test("include", async () => {
+    const files: string[] = []
+
+    for await (const file of await globby("globby/", ["*.js"], [])) {
+      files.push(file)
+    }
+
+    expect(files).toEqual([
+      "globby/bar.js",
+      "globby/foo.js",
+      "globby/src/main.js",
+    ])
+  })
+
+  test("ignore", async () => {
+    const files: string[] = []
+
+    for await (const file of await globby("globby/", ["*.js"], ["main.js"])) {
+      files.push(file)
+    }
+
+    expect(files).toEqual(["globby/bar.js", "globby/foo.js"])
+  })
+
   test("exclude with start /", async () => {
     const files: string[] = []
 
@@ -34,5 +58,27 @@ describe("globby", async () => {
     }
 
     expect(files).toEqual(["globby/src/main.js"])
+  })
+
+  test("exclude folder start /",async () => {
+    const files: string[] = []
+
+    for await (const file of await globby("globby/", ["*.js"], ["/src"])) {
+      files.push(file)
+    }
+
+    expect(files).toEqual(["globby/bar.js", "globby/foo.js"])
+
+  })
+
+  test("exclude folder start / end /",async () => {
+    const files: string[] = []
+
+    for await (const file of await globby("globby/", ["*.js"], ["/src/"])) {
+      files.push(file)
+    }
+
+    expect(files).toEqual(["globby/bar.js", "globby/foo.js"])
+
   })
 })

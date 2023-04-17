@@ -4,7 +4,12 @@ import { contains, isMatch } from "micromatch"
 
 function match(path: string, pattern: string[]) {
   return pattern.some((item) => {
-    if (item.startsWith("/")) return isMatch(path, item, { dot: true })
+    if (item.startsWith("/")) {
+      if (item.endsWith("/")) item += "**/*"
+      else if (!item.endsWith("*"))
+        return isMatch(path, [item, item + "/**/*"], { dot: true })
+      return isMatch(path, item, { dot: true })
+    }
     return contains(path, item, { dot: true })
   })
 }
