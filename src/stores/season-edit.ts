@@ -216,6 +216,8 @@ export const useSeasonEdit = defineStore("season-edit", () => {
   const currentFileのFile = useFile(
     computed(() => currentEntry.value?.fullPath),
     "",
+    true,
+    undefined,
     true
   )
 
@@ -239,25 +241,21 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     JSON.stringify(eslintrcDefault)
   )
 
-  watch(
-    () => currentFileのFile.data,
-    (data) => {
-      if (!currentEntry.value || !editor.value) return
+  currentFileのFile.onFileChange(data => {
+    if (!currentEntry.value || !editor.value) return
 
-      // saveCurrentSeason()
-      editor.value.dispatch({
-        changes: {
-          from: 0,
-          to: editor.value.state.doc.length,
-          insert: data,
-        },
-        selection: selectionStore.has(currentEntry.value)
-          ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
-          : undefined,
-      })
-    },
-    { immediate: true }
-  )
+    // saveCurrentSeason()
+    editor.value.dispatch({
+      changes: {
+        from: 0,
+        to: editor.value.state.doc.length,
+        insert: data,
+      },
+      selection: selectionStore.has(currentEntry.value)
+        ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
+        : undefined,
+    })
+  }, { immediate: true })
   // eslint-disable-next-line functional/no-let
   let entryChanging: Entry<"file"> | null = null
   async function openFile(entry: Entry<"file">) {
@@ -287,7 +285,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
             language.reconfigure(loadLanguage(name as unknown as any)!),
             linter.reconfigure(
               (await loadLinter(name, JSON.parse(eslintrcのFile.data))) ??
-                extensionNOOP
+              extensionNOOP
             ),
           ],
         })

@@ -16,23 +16,29 @@ const middleareDef = {
   set: (v: any) => v,
 }
 
-export function useFile<T = string, R extends boolean = false>(
+type CbFileChange<T> = (newValue: T) => (Promise<void> | void)
+
+interface UseFileReturn<T> {
+  data: UnwrapRef<T>
+  readonly ready: Promise<void> | null
+}
+interface OnFileChange<T> {
+  (cb: CbFileChange<UnwrapRef<T>>, options?: { immediate: boolean }): void
+}
+
+export function useFile<T = string, R extends boolean = false, UseOnFileChange extends boolean = false>(
   filepath: string | Ref<string | undefined> | (() => string),
   defaultValue = "",
   overWrite?: R,
   middleare: {
     set: (value: UnwrapRef<T>) => string
     get: (value: string) => UnwrapRef<T>
-  } = middleareDef
-): R extends true
-  ? {
-      data: UnwrapRef<T>
-      ready: Promise<void> | null
-    }
-  : {
-      readonly data: UnwrapRef<T>
-      ready: Promise<void> | null
-    } {
+  } = middleareDef,
+  useOnFileChange?: UseOnFileChange
+): (R extends true ? UseFileReturn<T> : Readonly<UseFileReturn<T>>) & (UseOnFileChange extends true ? {
+  readonly onFileChange: OnFileChange<T>
+  // eslint-disable-next-line @typescript-eslint/ban-types
+} : {}) {
   if (typeof filepath === "function") filepath = computed(filepath)
 
   const isReactive = isRef(filepath)
@@ -40,14 +46,23 @@ export function useFile<T = string, R extends boolean = false>(
   if (!isReactive) filepath = ref(filepath)
 
   // eslint-disable-next-line functional/no-let
+  let cbFileChange: CbFileChange<UnwrapRef<T>> | null = null
+  const onFileChange = useOnFileChange ? (cb: CbFileChange<UnwrapRef<T>>, options?: { immediate: boolean }) => {
+    cbFileChange = cb
+    if (options?.immediate) cb(ret.data)
+  } : undefined
+
+  // eslint-disable-next-line functional/no-let
   let writing = false
   // eslint-disable-next-line functional/no-let
   let reading = false
   const ret = reactive<{
     data: T
+    onFileChange?: typeof onFileChange,
     ready: null | Promise<void>
   }>({
     data: middleare.get(defaultValue) as T,
+    ...useOnFileChange ? { onFileChange } : null,
     ready: null,
   })
 
@@ -60,10 +75,13 @@ export function useFile<T = string, R extends boolean = false>(
         return defaultValue
       })
       .then((data) => {
-        // eslint-disable-next-line promise/always-return
         if (writing) return
         reading = true
+        if (import.meta.env.DEV)
+          console.log("updatte editor because update file")
         ret.data = middleare.get(data)
+        // eslint-disable-next-line no-void, promise/always-return
+        void cbFileChange?.(ret.data)
         // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/no-nesting
         resolved.then(() => {
           reading = false
@@ -94,10 +112,13 @@ export function useFile<T = string, R extends boolean = false>(
           return defaultValue
         })
         .then((data) => {
-          // eslint-disable-next-line promise/always-return
           if (writing) return
           reading = true
+          if (import.meta.env.DEV)
+            console.log("updatte editor because update file")
           ret.data = middleare.get(data)
+          // eslint-disable-next-line no-void, promise/always-return
+          void cbFileChange?.(ret.data)
           // eslint-disable-next-line promise/catch-or-return, promise/always-return, promise/no-nesting
           resolved.then(() => {
             reading = false
@@ -124,6 +145,7 @@ export function useFile<T = string, R extends boolean = false>(
           recursive: true,
         })
         await eventBus.emit("writeFile", path)
+        await nextTick()
         writing = false
       },
       {
@@ -131,5 +153,8 @@ export function useFile<T = string, R extends boolean = false>(
       }
     )
 
-  return ret
+  return ret as (R extends true ? UseFileReturn<T> : Readonly<UseFileReturn<T>>) & (UseOnFileChange extends true ? {
+    readonly onFileChange: OnFileChange<T>
+    // eslint-disable-next-line @typescript-eslint/ban-types
+  } : {}) 
 }

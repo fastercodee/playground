@@ -100,6 +100,7 @@ function watch(
 
   // eslint-disable-next-line functional/no-let
   let called = false
+  const resolved= Promise.resolve()
   on(
     "*",
     (タイプ: keyof Events, パス: string) => {
