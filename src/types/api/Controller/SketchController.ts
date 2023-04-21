@@ -8,19 +8,19 @@ export interface Control<Body extends object, Response extends object> {
 
 type MetaAndFiles<Require extends boolean = boolean> = Require extends true
   ? {
-      meta: string[]
-      files: File[]
-    }
+    meta: string[]
+    files: File[]
+  }
   : // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
+  {}
 
 type MetaAndHashes<Require extends boolean = boolean> = Require extends true
   ? {
-      meta: string[]
-      hashes: string[]
-    }
+    meta: string[]
+    hashes: string[]
+  }
   : // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
+  {}
 
 type FilePath = string
 export interface SketchController {
@@ -66,16 +66,16 @@ export interface SketchController {
         file_changes: Record<
           FilePath,
           | {
-              type: "M"
-              file: File
-            }
+            type: "M"
+            file: File
+          }
           | {
-              type: "U+"
-              file: File
-            }
+            type: "U+"
+            file: File
+          }
           | {
-              type: "U"
-            }
+            type: "U"
+          }
         >
       }
     >
@@ -85,7 +85,9 @@ export interface SketchController {
     {
       uid: number
       deletes?: string[]
-    } & MetaAndFiles,
+    } & MetaAndFiles & {
+      files: globalThis.File[]
+    },
     {
       sketch: Sketch<true, false>
     }

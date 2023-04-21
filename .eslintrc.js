@@ -94,5 +94,6 @@ module.exports = {
     "functional/prefer-immutable-types": "off",
     "functional/no-classes": "off",
     "functional/no-loop-statements": "off",
+    "@typescript-eslint/consistent-type-imports": "off"
   },
 }

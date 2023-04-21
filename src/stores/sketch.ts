@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 
-import { relative } from "path"
+import { basename, relative } from "path"
 
 import { put } from "@fcanvas/communicate"
 import { defineStore } from "pinia"
@@ -86,6 +86,47 @@ export const useSketchStore = defineStore("sketch", () => {
   )
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
     hashes_clientのFile.data[relative(rootのsketch.value, パス)] = await sha256File(パス)
+  }, { dir: true })
+
+  const changes_addedのFile = useFile<{
+    // eslint-disable-next-line no-use-before-define
+    [key in StatusChange]?: string[]
+  }, true>(
+    computed(() => `${rootのsketch.value}/.changes/changes_added`),
+    "{}",
+    true,
+    {
+      get: JSON.parse,
+      set: JSON.stringify,
+    }
+  )
+  eventBus.watch(rootのsketch, async (タイプ, パス) => {
+    const filepath = relative(rootのsketch.value, パス)
+
+    if (タイプ === "deleteFile" || タイプ === "rmdir") {
+      // delete file
+      changes_addedのFile.data.U?.splice(
+        changes_addedのFile.data.U.indexOf(filepath) >>> 0,
+        1
+      )
+      changes_addedのFile.data.M?.splice(
+        changes_addedのFile.data.M.indexOf(filepath) >>> 0,
+        1
+      )
+      return
+    }
+
+    if (タイプ === "copyDir" || タイプ === "writeFile") {
+      // edit file
+      changes_addedのFile.data.D?.splice(
+        changes_addedのFile.data.D.indexOf(filepath) >>> 0,
+        1
+      )
+      changes_addedのFile.data.M?.splice(
+        changes_addedのFile.data.M.indexOf(filepath) >>> 0,
+        1
+      )
+    }
   }, { dir: true })
 
   async function actionNextOpenSketch(
@@ -217,5 +258,47 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   }
 
-  return { rootのsketch, fetch, forceUpdateHashesClient, 変化, undoChange }
+  async function addChange(relativePath: string, status: StatusChange) {
+    // eslint-disable-next-line functional/no-let
+    let arr = changes_addedのFile.data[status]
+
+    if (!arr)
+      changes_addedのFile.data[status] = arr = []
+
+    arr.push(relativePath)
+  }
+
+  async function pushChanges() {
+    // INFO: push changes
+
+    const meta: string[] = []
+    const files: globalThis.File[] = []
+    await Promise.all(
+      [
+        ...changes_addedのFile.data.M ?? [],
+        ...changes_addedのFile.data.U ?? []
+      ]?.map(async relativePath => {
+        meta.push(relativePath)
+        files.push(
+          new File([
+            await Filesystem.readFile({
+              path: `${rootのsketch.value}/${relativePath}`,
+              directory: Directory.External,
+            })
+              .then(res => base64ToUint8(res.data))
+          ], basename(relativePath))
+        )
+      })
+    )
+
+
+    await post<SketchController["update"]>("/sketch/update", {
+      uid: uid_sketch_opening.value,
+      deletes: changes_addedのFile.data.D ?? [],
+      meta,
+      files
+    })
+  }
+
+  return { rootのsketch, fetch, forceUpdateHashesClient, 変化, undoChange, addChange, pushChanges }
 })
