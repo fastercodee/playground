@@ -10,7 +10,7 @@ export async function readFileWithoutExt(
       content: await Filesystem.readFile({
         path,
         directory: Directory.External,
-      }).then((res) => base64ToUint8(res.data)),
+      }).then((res) => base64ToUint8(res.data).buffer),
       ext,
       path,
     }
@@ -22,7 +22,7 @@ export async function readFileWithoutExt(
             content: await Filesystem.readFile({
               path: `${path}.${exts[i]}`,
               directory: Directory.External,
-            }).then((res) => base64ToUint8(res.data)),
+            }).then((res) => base64ToUint8(res.data).buffer),
             ext: exts[i],
             path: `${path}.${exts[i]}`,
           }

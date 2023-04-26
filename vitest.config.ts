@@ -28,7 +28,7 @@ export default defineConfig({
         {
           "@iconify/vue": ["Icon"],
           "@vueuse/core": ["computedAsync"],
-          "@capacitor/filesystem": ["Filesystem", "Directory", "Encoding"],
+          "@tachibana-shin/capacitor-filesystem": ["Filesystem", "Directory", "Encoding"],
         },
       ],
       dirs: ["src/logic/*.ts", "src/composables/*.ts", "src/constants/*.ts"],

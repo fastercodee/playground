@@ -148,7 +148,7 @@ module.exports = configure(function (/* ctx */) {
               {
                 "@iconify/vue": ["Icon"],
                 "@vueuse/core": ["computedAsync"],
-                "@capacitor/filesystem": [
+                "@tachibana-shin/capacitor-filesystem": [
                   "Filesystem",
                   "Directory",
                   "Encoding",

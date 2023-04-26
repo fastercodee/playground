@@ -49,13 +49,13 @@ const sketchStore = useSketchStore()
 
 async function init() {
   await Filesystem.mkdir({
-    path: "current/src",
+    path: "home/-1/src",
     recursive: true,
     directory: Directory.External,
   }).catch(() => false)
 
   await Filesystem.writeFile({
-    path: "current/index.html",
+    path: "home/-1/index.html",
     data: `
 <h1>Hello h1</h1>
 \\<script src="/src/main.js"><\\/script>
@@ -64,7 +64,7 @@ async function init() {
     directory: Directory.External,
   })
   await Filesystem.writeFile({
-    path: "current/src/main.js",
+    path: "home/-1/src/main.js",
     data: `
 setInterval(() => {
   document.querySelector("h1").textContent = new Date().toString();

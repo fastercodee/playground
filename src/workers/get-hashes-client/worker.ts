@@ -3,8 +3,8 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../../node_modules/typescript/lib/lib.webworker.d.ts" />
 
-import { Directory, Encoding } from "@capacitor/filesystem/dist/esm/definitions"
-import { FilesystemWeb } from "@capacitor/filesystem/dist/esm/web"
+import { Directory, Encoding } from "@tachibana-shin/capacitor-filesystem/dist/esm/definitions"
+import { FilesystemWeb } from "@tachibana-shin/capacitor-filesystem/dist/esm/web"
 import { listen } from "@fcanvas/communicate"
 import { isNative } from "src/constants"
 

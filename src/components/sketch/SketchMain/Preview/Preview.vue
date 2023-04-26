@@ -105,7 +105,7 @@ function setup() {
               directory: Directory.External,
             }).then((res) => {
               return {
-                content: base64ToUint8(res.data),
+                content: base64ToUint8(res.data).buffer,
                 ext: "html",
                 path: `${sketchStore.rootのsketch}/index.html`,
               }
@@ -133,7 +133,7 @@ function setup() {
             tsconfigのFile.data
           ))
         : res.content
-
+console.log({ content, }, `${sketchStore.rootのsketch}/index.html`)
       return {
         transfer: [content],
         return: {
