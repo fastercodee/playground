@@ -73,7 +73,7 @@ async function actionNextOpenSketch(
   const path_hashes_client = `${rootのsketch}/.changes/hashes_client`
   const path_hashes_server = `${rootのsketch}/.changes/hashes_server`
 
-  const entries_ashes_client: readonly [string, string][] = Object.entries(
+  const entries_hashes_client: readonly [string, string][] = Object.entries(
     JSON.parse(
       await Filesystem.readFile({
         path: path_hashes_client,
@@ -86,22 +86,27 @@ async function actionNextOpenSketch(
 
   const res = await post<SketchController["fetch"]["next"]>("/sketch/fetch", {
     uid: uid_sketch_opening,
-    meta: entries_ashes_client.map((item) => item[0]),
-    hashes: entries_ashes_client.map((item) => item[1]),
+    meta: entries_hashes_client.map((item) => item[0]),
+    hashes: entries_hashes_client.map((item) => item[1]),
   })
 
-  const hashes_server: Record<string, { readonly uid: number; readonly hash: string }> = Object.fromEntries( entries_hashes_client.filter((filePath, status) => status !== "U"))
+  const hashes_server: Record<string, { readonly uid: number; readonly hash: string }> = {}
   for (const [filePath, change] of Object.entries(res.data.file_changes)) {
+    if (change.type === "M" || change.type === "U+" || change.type === "N") {
+      hashes_server[filePath] = { uid: change.file.uid, hash: change.file.hash }
+    }
+
     switch (change.type) {
-      case "M":
-        hashes_server[filePath] = { uid: change.file.uid, hash: change.file.hash }
-        break
       case "U+":
         onProgress("load_file", change.file.filePath)
         await saveFile(`${rootのsketch}/${change.file.filePath}`, change.file)
         break
+      case "M":
+        break
       case "U":
         break
+      case "N":
+
     }
   }
   await Filesystem.writeFile({

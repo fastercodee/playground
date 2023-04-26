@@ -66,7 +66,7 @@ export interface SketchController {
         file_changes: Record<
           FilePath,
           | {
-            type: "M"
+            type: "M" | "N"
             file: File
           }
           | {
