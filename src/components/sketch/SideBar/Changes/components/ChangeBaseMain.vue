@@ -33,8 +33,10 @@
         icon="codicon:redo"
         :horizontalFlip="true"
         class="w-1.2em h-1.2em mr-1"
+        @click="sketchStore.undoChange(fullpath, status)"
       />
-      <Icon icon="codicon:add" class="w-1.2em h-1.2em" />
+      <Icon icon="codicon:add" class="w-1.2em h-1.2em"
+        @click="sketchStore.addChange(fullpath, status)"/>
     </div>
 
     <span

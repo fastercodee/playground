@@ -181,14 +181,9 @@ export const useSketchStore = defineStore("sketch", () => {
   const uid_sketch_opening = ref<number>(-1)
   const rootのsketch = computed(() => `home/${uid_sketch_opening.value}`)
 
-  const hashes_serverのFile = useFile<Record<string, { uid: number; hash: string }>, true>(
+  const hashes_serverのFile = useFile<Record<string, { uid: number; hash: string }>, false>(
     computed(() => `${rootのsketch.value}/.changes/hashes_server`),
     "{}",
-    true,
-    {
-      get: JSON.parse,
-      set: JSON.stringify,
-    }
   )
   const hashes_clientのFile = useFile<Record<string, string>, true>(
     computed(() => `${rootのsketch.value}/.changes/hashes_client`),
@@ -296,8 +291,9 @@ export const useSketchStore = defineStore("sketch", () => {
     return changes
   })
 
-  async function undoChange(relativePath: string, status: StatusChange) {
+  async function undoChange(fullPath: string, status: StatusChange) {
     const server = hashes_serverのFile.data
+    const relativePath = relative(rootのsketch.value, fullPath)
 
     const uid = server[relativePath]?.uid
 
@@ -306,27 +302,25 @@ export const useSketchStore = defineStore("sketch", () => {
         throw new Error("Some write process before this action misbehaving resulting in '.changes/hashes_server' not recording this file.")
     }
 
-    const filePathToSav = `${rootのsketch.value}/${relativePath}`
-
     switch (status) {
       case "M":
       case "D": {
-        await saveFileWithUID(filePathToSav, uid)
-        delete server[relativePath]
+        await saveFileWithUID(fullPath, uid)
         break
       }
       case "U":
         await Filesystem.deleteFile({
-          path: filePathToSav,
+          path: fullPath,
           directory: Directory.External
         })
-        eventBus.emit("deleteFile", filePathToSav)
+        eventBus.emit("deleteFile", fullPath)
 
         break
     }
   }
 
-  async function addChange(relativePath: string, status: StatusChange) {
+  async function addChange(fullPath: string, status: StatusChange) {
+    const relativePath = relative(rootのsketch.value, fullPath)
     // eslint-disable-next-line functional/no-let
     let arr = changes_addedのFile.data[status]
 
