@@ -1,23 +1,22 @@
 import { normalize, relative } from "path"
 
-import type { Match } from "src/logic/search-text"
 
-export interface TreeFile {
+export interface TreeFile<T> {
   fullPath: string
-  matches: Match[]
+  matches: T
 }
-export interface TreeDir {
+export interface TreeDir<T> {
   fullPath: string
   children: {
-    dirs: Map<string, TreeDir>
-    files: Map<string, TreeFile>
+    dirs: Map<string, TreeDir<T>>
+    files: Map<string, TreeFile<T>>
   }
 }
 
-export type TreeResult = TreeDir["children"]
+export type TreeResult<T> = TreeDir<T>["children"]
 
-export function flatToTree(cwd: string, result: Map<string, Match[]>) {
-  const newMap: TreeResult = {
+export function flatToTree<T>(cwd: string, result: Map<string, T>) {
+  const newMap: TreeResult<T> = {
     dirs: new Map(),
     files: new Map(),
   }
@@ -49,7 +48,7 @@ export function flatToTree(cwd: string, result: Map<string, Match[]>) {
 
       currentDirpath += dirname + "/"
 
-      return (meta as TreeDir).children
+      return (meta as TreeDir<T>).children
     }, newMap)
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

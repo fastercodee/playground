@@ -43,7 +43,7 @@ describe("replace-ctx-file", () => {
     await writeFile("text2.txt", "hello bozz")
     await writeFile("src/text3.txt", "hello world")
 
-    const matches: TreeDir["children"] = {
+    const matches: TreeDir<Match[]>["children"] = {
       files: new Map([
         [
           "text.txt",

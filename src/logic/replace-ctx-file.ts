@@ -67,7 +67,7 @@ export async function replaceMatches(
   // ok
 }
 export async function replaceMultiMatchesTree(
-  { files, dirs }: TreeDir["children"],
+  { files, dirs }: TreeDir<Match[]>["children"],
   replaceWith: string
 ): Promise<void> {
   for (const [, { fullPath, matches }] of files) {

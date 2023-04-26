@@ -76,7 +76,7 @@ import {
 import type { Match } from "src/logic/search-text"
 
 defineProps<{
-  meta: TreeDir
+  meta: TreeDir<Match[]>
   deepLevel: number
 
   onlyChild?: boolean
@@ -94,7 +94,7 @@ const { replace } = storeToRefs(searchStore)
 
 const opening = ref(true)
 
-function existsMatch(dir: TreeDir): boolean {
+function existsMatch(dir: TreeDir<Match[]>): boolean {
   for (const [, { matches }] of dir.children.files) {
     if (matches.length > 0) return true
   }
