@@ -52,7 +52,7 @@
         v-if="creating === 'file'"
         type="file"
         :style="{
-          paddingLeft: 19 + 7 + 7 * deepLevel + 'px',
+          paddingLeft: 16 + 7 + 7 * deepLevel + 'px',
         }"
         :sib-directories="decevier.directories"
         :sib-files="decevier.files"
