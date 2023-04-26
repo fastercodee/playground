@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 
-import { basename, relative } from "path"
+import { basename, join, relative } from "path"
 
 import { put } from "@fcanvas/communicate"
 import { defineStore } from "pinia"
@@ -13,6 +13,9 @@ import type { File } from "src/types/api/Models/File"
 import { getHashesClient } from "src/workers/get-hashes-client"
 import type { ComGetHashesClient } from "src/workers/get-hashes-client/worker"
 import GetHashesClientWorker from "src/workers/get-hashes-client/worker?worker"
+
+export
+  type StatusChange = "M" | "D" | "U"
 
 function exists(path: string) {
   return Filesystem.stat({
@@ -67,11 +70,13 @@ async function actionNextOpenSketch(
   onProgress: (action: "load_file", filePath: string) => void
 ): Promise<void> {
   const rootのsketch = `home/${uid_sketch_opening}`
+  const path_hashes_client = `${rootのsketch}/.changes/hashes_client`
+  const path_hashes_server = `${rootのsketch}/.changes/hashes_server`
 
   const entries_ashes_client: readonly [string, string][] = Object.entries(
     JSON.parse(
       await Filesystem.readFile({
-        path: `${rootのsketch}/.chanbges/hashes_client`,
+        path: path_hashes_client,
         directory: Directory.External,
         encoding: Encoding.UTF8
       }).then(res => res.data)
@@ -85,16 +90,7 @@ async function actionNextOpenSketch(
     hashes: entries_ashes_client.map((item) => item[1]),
   })
 
-  const hashes_server: Record<string, { readonly uid: number; readonly hash: string }> = (
-    JSON.parse(
-      await Filesystem.readFile({
-        path: `${rootのsketch}/.chanbges/hashes_server`,
-        directory: Directory.External,
-        encoding: Encoding.UTF8
-      }).then(res => res.data)
-        .catch(() => "{}")
-    )
-  )
+  const hashes_server: Record<string, { readonly uid: number; readonly hash: string }> = Object.fromEntries( entries_hashes_client.filter((filePath, status) => status !== "U"))
   for (const [filePath, change] of Object.entries(res.data.file_changes)) {
     switch (change.type) {
       case "M":
@@ -109,11 +105,12 @@ async function actionNextOpenSketch(
     }
   }
   await Filesystem.writeFile({
-    path: `${rootのsketch}/.chanbges/hashes_server`,
+    path: path_hashes_server,
     directory: Directory.External,
     encoding: Encoding.UTF8,
     data: JSON.stringify(hashes_server),
   })
+  eventBus.emit("writeFile", path_hashes_server)
 }
 
 // eslint-disable-next-line functional/no-let
@@ -121,9 +118,10 @@ let workerGetHashesClient: InstanceType<typeof GetHashesClientWorker> | null =
   null
 async function forceUpdateHashesClient(
   uid_sketch_opening: number,
-  
+
 ) {
   const rootのsketch = `home/${uid_sketch_opening}`
+  const path_hashes_client = `${rootのsketch}/.changes/hashes_client`
 
   workerGetHashesClient?.terminate()
   workerGetHashesClient = null
@@ -132,7 +130,7 @@ async function forceUpdateHashesClient(
 
   if (isNative) {
     await Filesystem.writeFile({
-      path: `${rootのsketch}/.chanbges/hashes_client`,
+      path: path_hashes_client,
       directory: Directory.External,
       encoding: Encoding.UTF8,
       data: JSON.stringify(await getHashesClient(rootのsketch)),
@@ -140,7 +138,7 @@ async function forceUpdateHashesClient(
   } else {
     workerGetHashesClient = new GetHashesClientWorker()
     await Filesystem.writeFile({
-      path: `${rootのsketch}/.chanbges/hashes_client`,
+      path: path_hashes_client,
       directory: Directory.External,
       encoding: Encoding.UTF8,
       data: JSON.stringify(await await put<
@@ -152,6 +150,14 @@ async function forceUpdateHashesClient(
     workerGetHashesClient?.terminate()
     workerGetHashesClient = null
   }
+
+  eventBus.emit("writeFile", path_hashes_client)
+  console.log(await Filesystem.readFile({
+    path: path_hashes_client,
+    directory: Directory.External,
+    encoding: Encoding.UTF8,
+
+  }))
 }
 
 
@@ -178,11 +184,14 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   )
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
+    const filepath = relative(rootのsketch.value, パス)
+
+    if (filepath.startsWith(".changes/")) return // bypass folder .changes
+
     hashes_clientのFile.data[relative(rootのsketch.value, パス)] = await sha256File(パス)
   }, { dir: true })
 
   const changes_addedのFile = useFile<{
-    // eslint-disable-next-line no-use-before-define
     [key in StatusChange]?: string[]
   }, true>(
     computed(() => `${rootのsketch.value}/.changes/changes_added`),
@@ -195,6 +204,8 @@ export const useSketchStore = defineStore("sketch", () => {
   )
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
     const filepath = relative(rootのsketch.value, パス)
+
+    if (filepath.startsWith(".changes/")) return // bypass folder .changes
 
     if (タイプ === "deleteFile" || タイプ === "rmdir") {
       // delete file
@@ -232,8 +243,6 @@ export const useSketchStore = defineStore("sketch", () => {
     uid_sketch_opening.value = sketch_uid
   }
 
-  type StatusChange = "M" | "D" | "U"
-
   /// INFO: computed change
   const 変化 = computed(() => {
 
@@ -246,7 +255,7 @@ export const useSketchStore = defineStore("sketch", () => {
       .forEach(relativePath => {
         if (relativePath in client) {
           if (server[relativePath].hash !== client[relativePath])
-            changes[relativePath] = "M"
+            changes[join(rootのsketch.value, relativePath)] = "M"
 
           return
         }
@@ -257,12 +266,12 @@ export const useSketchStore = defineStore("sketch", () => {
       .forEach(relativePath => {
         if (relativePath in server) {
           if (server[relativePath].hash !== client[relativePath])
-            changes[relativePath] = "M"
+            changes[join(rootのsketch.value, relativePath)] = "M"
 
           return
         }
 
-        changes[relativePath] = "U"
+        changes[join(rootのsketch.value, relativePath)] = "U"
 
       })
 
