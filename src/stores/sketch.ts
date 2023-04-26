@@ -50,7 +50,7 @@ async function saveFileWithUID(path: string, uid: number) {
 }
 
 async function saveFile(path: string, file: File) {
-  if (file.data !== undefined) {
+  if (file.data !== null) {
     await Filesystem.writeFile({
       path,
       directory: Directory.External,
@@ -83,16 +83,27 @@ async function actionNextOpenSketch(
         .catch(() => "{}")
     )
   )
+  const entries_hashes_server: readonly [string, { readonly uid: number; readonly hash: string }][] = Object.entries(
+    JSON.parse(
+      await Filesystem.readFile({
+        path: path_hashes_server,
+        directory: Directory.External,
+        encoding: Encoding.UTF8
+      }).then(res => res.data)
+        .catch(() => "{}")
+    )
+  )
 
   const res = await post<SketchController["fetch"]["next"]>("/sketch/fetch", {
     uid: uid_sketch_opening,
     meta: entries_hashes_client.map((item) => item[0]),
     hashes: entries_hashes_client.map((item) => item[1]),
+    deletes: entries_hashes_server.filter(([relativePath]) => !(relativePath in entries_hashes_client)).map(([relativePath]) => relativePath)
   })
 
   const hashes_server: Record<string, { readonly uid: number; readonly hash: string }> = {}
   for (const [filePath, change] of Object.entries(res.data.file_changes)) {
-    if (change.type === "M" || change.type === "U+" || change.type === "N") {
+    if (change.type === "M" || change.type === "U+" || change.type === "N" || change.type === "D") {
       hashes_server[filePath] = { uid: change.file.uid, hash: change.file.hash }
     }
 
@@ -193,7 +204,10 @@ export const useSketchStore = defineStore("sketch", () => {
 
     if (filepath.startsWith(".changes/")) return // bypass folder .changes
 
-    hashes_clientのFile.data[relative(rootのsketch.value, パス)] = await sha256File(パス)
+    if (タイプ === "deleteFile" || タイプ === "rmdir") {
+      delete hashes_clientのFile.data[relative(rootのsketch.value, パス)]
+    } else
+      hashes_clientのFile.data[relative(rootのsketch.value, パス)] = await sha256File(パス)
   }, { dir: true })
 
   const changes_addedのFile = useFile<{
@@ -265,7 +279,7 @@ export const useSketchStore = defineStore("sketch", () => {
           return
         }
 
-        changes[relativePath] = "D"
+        changes[join(rootのsketch.value, relativePath)] = "D"
       })
     Object.keys(client)
       .forEach(relativePath => {
@@ -277,7 +291,6 @@ export const useSketchStore = defineStore("sketch", () => {
         }
 
         changes[join(rootのsketch.value, relativePath)] = "U"
-
       })
 
     return changes

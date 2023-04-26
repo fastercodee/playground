@@ -28,22 +28,26 @@
     </div>
 
     <div class="hidden group-hover:!block">
-      <Icon
-        icon="codicon:go-to-file"
-        class="w-1.2em h-1.2em mr-1"
-      />
+      <Icon icon="codicon:go-to-file" class="w-1.2em h-1.2em mr-1" />
       <Icon
         icon="codicon:redo"
         :horizontalFlip="true"
         class="w-1.2em h-1.2em mr-1"
       />
-      <Icon
-        icon="codicon:add"
-        class="w-1.2em h-1.2em"
-      />
+      <Icon icon="codicon:add" class="w-1.2em h-1.2em" />
     </div>
 
-    <span>{{ status }}</span>
+    <span
+      class="font-medium w-12.5px text-center inline-block"
+      :class="
+        {
+          M: 'text-yellow-500',
+          D: 'text-red-500',
+          U: 'text-green-500',
+        }[status]
+      "
+      >{{ status }}</span
+    >
   </div>
 </template>
 

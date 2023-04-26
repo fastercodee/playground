@@ -3,7 +3,7 @@ import type { Sketch } from "./Sketch"
 export interface File<ESketch extends boolean = false> {
   uid: number
   filePath: string
-  data?: string
+  data: string | null
   hash: string
   size: number
   updated_at: string

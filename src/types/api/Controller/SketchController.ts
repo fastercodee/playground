@@ -60,13 +60,15 @@ export interface SketchController {
     next: Control<
       {
         uid: number
-      } & MetaAndHashes,
+      } & MetaAndHashes & {
+        deletes?: string[]
+      },
       {
         sketch: Sketch<true, false>
         file_changes: Record<
           FilePath,
           | {
-            type: "M" | "N"
+            type: "M" | "N" | "D"
             file: File
           }
           | {
