@@ -361,14 +361,24 @@ async function research() {
       inclu.length === 0 ? ["**/*"] : inclu,
       splitString(exclude.value)
     )) {
-      const matches = await put<ComSearchInText, "search-in-text">(
-        searchGloborInTextWorker,
-        "search-in-text",
-        await Filesystem.readFile({
+      const { data: base64 } = await Filesystem.readFile({
           path: file,
           directory: Directory.External,
           encoding: Encoding.UTF8,
-        }).then((res) => res.data),
+        })
+
+        const uint = base64ToUint8(base64)
+
+        if (isBinaryFile(uint)) {
+          console.warn("Can't find binary file at path %s", file)
+          continue
+        }
+
+
+      const matches = await put<ComSearchInText, "search-in-text">(
+        searchGloborInTextWorker,
+        "search-in-text",
+        uint8ToUTF8(uint),
         searchOptions
       )
 
