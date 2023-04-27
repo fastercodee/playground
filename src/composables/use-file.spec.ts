@@ -106,8 +106,7 @@ describe("use-file", () => {
   test("work with moddileware", async () => {
     const { data, ready } = toRefs(
       useFile("text.json", "{}", false, {
-        get: JSON.parse,
-        set: JSON.stringify,
+          get: JSON.parse,
       })
     )
 

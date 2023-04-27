@@ -30,8 +30,10 @@ export function useFile<T = string, R extends boolean = false, UseOnFileChange e
   filepath: string | Ref<string | undefined> | (() => string),
   defaultValue = "",
   overWrite?: R,
-  middleare: {
+  middleare: R extends true ? {
     set: (value: UnwrapRef<T>) => string
+    get: (value: string) => UnwrapRef<T>
+  } : {
     get: (value: string) => UnwrapRef<T>
   } = middleareDef,
   useOnFileChange?: UseOnFileChange
@@ -135,7 +137,10 @@ export function useFile<T = string, R extends boolean = false, UseOnFileChange e
           path,
           directory: Directory.External,
           encoding: Encoding.UTF8,
-          data: middleare.set(content),
+          data: (middleare as {
+            set: (value: UnwrapRef<T>) => string
+            get: (value: string) => UnwrapRef<T>
+          }).set(content),
           recursive: true,
         })
         await eventBus.emit("writeFile", path)
