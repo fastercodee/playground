@@ -312,6 +312,20 @@ export const useSketchStore = defineStore("sketch", () => {
 
     return changes
   })
+const 追加された変更 = computed(() => {
+  const stages: typeof 変化.value = {}
+
+  for (const status in changes_addedのFile.data) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    changes_addedのFile.data[
+      status as keyof typeof changes_addedのFile.data
+    ]!.forEach((relativePath) => {
+      stages[join(rootのsketch.value, relativePath)] = status as keyof typeof changes_addedのFile.data
+    })
+  }
+
+  return stages
+})
 
   async function undoChange(fullPath: string, status: StatusChange) {
     const server = hashes_serverのFile.data
@@ -384,5 +398,5 @@ export const useSketchStore = defineStore("sketch", () => {
     })
   }
 
-  return { rootのsketch, fetch, forceUpdateHashesClient, 変化, changes_addedのFile, gitignoreのFile, undoChange, addChange, pushChanges }
+  return { rootのsketch, fetch, forceUpdateHashesClient, 変化, 追加された変更 , gitignoreのFile, undoChange, addChange, pushChanges }
 })

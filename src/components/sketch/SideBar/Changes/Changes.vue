@@ -1,6 +1,18 @@
 <template>
   <header class="py-2 px-3 text-12px">CHANGES</header>
   <main class="min-h-0 h-full select-none">
+    Stages
+
+    <ChangeBaseMain
+      v-for="(status, fullPath) in sketchStore.追加された変更"
+      :key="fullPath"
+      :opening="false"
+      type="file"
+      :fullpath="fullPath"
+      :status="status"
+    />
+
+    Changes
     <ChangeBaseMain
       v-for="(status, fullPath) in sketchStore.変化"
       :key="fullPath"
