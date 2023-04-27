@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { dirname } from "path"
+
 import type { ComponentInternalInstance } from "vue"
 
 const store = new Map<string, Set<(...args: any) => void>>()
@@ -52,12 +54,14 @@ function emit<N extends keyof Events>(
   return resolved
 }
 
+/** @param deep - required `dir = true` */
 function watch(
   たどる道: string | string[] | Ref<undefined | string | string[] | Set<string>> | Set<string>,
   コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void,
-  { instance = getCurrentInstance(), dir: dirMode }: {
+  { instance = getCurrentInstance(), dir: dirMode, deep = true }: {
     instance?: ComponentInternalInstance | null
     dir?: boolean
+    deep?: boolean
   } = {}
 ) {
   if (typeof たどる道 === "string")
@@ -91,18 +95,29 @@ function watch(
             }
           }
         else
-          for (const ですか of (typeof value === "string" ? [value] : value)) {
-            // pathWatch is file
-            if (パス.startsWith(ですか + "/")) {
-              コールバック(タイプ, パス, ですか)
-              break
+          if (deep)
+            for (const ですか of (typeof value === "string" ? [value] : value)) {
+              // pathWatch is file
+              if (パス.startsWith(ですか + "/")) {
+                コールバック(タイプ, パス, ですか)
+                break
+              }
+            }
+          else {
+            const dir = dirname(パス)
+            for (const ですか of (typeof value === "string" ? [value] : value)) {
+              // pathWatch is file
+              if (ですか === dir) {
+                コールバック(タイプ, パス, ですか)
+                break
+              }
             }
           }
         break
 
       case "copyDir":
       case "rmdir":
-        if (!dirMode)
+        if (!dirMode || deep)
           for (const ですか of (typeof value === "string" ? [value] : value)) {
             // pathWatch is file
             if (ですか.startsWith(パス + "/")) {
@@ -110,6 +125,15 @@ function watch(
               break
             }
           }
+        else
+          for (const ですか of (typeof value === "string" ? [value] : value)) {
+            // pathWatch is file
+            if (ですか === パス) {
+              コールバック(タイプ, パス, ですか)
+              break
+            }
+          }
+
         break
     }
   }
