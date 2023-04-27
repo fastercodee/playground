@@ -137,6 +137,14 @@ watch(
   },
   { immediate: true }
 )
+eventBus.watch(
+  computed(() => props.entry.fullPath),
+  async (タイプ) => {
+    if (タイプ === "rmdir") return
+    decevier.value = await directoryDetails(props.entry)
+  },
+  { dir: true, deep: false }
+)
 
 const creating = ref<"file" | "directory" | null>(null)
 
@@ -175,10 +183,6 @@ async function createDirectory(name: string, isDir: boolean) {
       path: `${props.entry.fullPath}/${name}`,
       directory: Directory.External,
     })
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    decevier.value!.directories.push(await readDetails(name, props.entry))
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    sortEntries(decevier.value!.directories)
   } else {
     const path = `${props.entry.fullPath}/${name}`
     await Filesystem.writeFile({
@@ -188,10 +192,6 @@ async function createDirectory(name: string, isDir: boolean) {
       directory: Directory.External,
     })
     eventBus.emit("writeFile", path)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    decevier.value!.files.push(await readDetails(name, props.entry))
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    sortEntries(decevier.value!.files)
   }
 
   console.log("create item: %s", name)
@@ -209,15 +209,6 @@ async function onChildAdded(info: { parent: boolean; name: string }) {
     return emit("child-added", info)
   }
 
-  const entry = await readDetails(info.name, props.entry)
-  if (!decevier.value) await loadDecevier()
-  const entries =
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    entry.type === "file" ? decevier.value!.files : decevier.value!.directories
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  entries.push(entry as unknown as any)
-  sortEntries(entries)
   opening.value = true
 }
 
