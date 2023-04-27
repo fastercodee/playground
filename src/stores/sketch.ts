@@ -168,12 +168,6 @@ async function forceUpdateHashesClient(
   }
 
   eventBus.emit("writeFile", path_hashes_client)
-  console.log(await Filesystem.readFile({
-    path: path_hashes_client,
-    directory: Directory.External,
-    encoding: Encoding.UTF8,
-
-  }))
 }
 
 
@@ -184,6 +178,11 @@ export const useSketchStore = defineStore("sketch", () => {
   const hashes_serverのFile = useFile<Record<string, { uid: number; hash: string }>, false>(
     computed(() => `${rootのsketch.value}/.changes/hashes_server`),
     "{}",
+    false,
+    {
+      get: JSON.parse,
+      set: JSON.stringify,
+    }
   )
   const hashes_clientのFile = useFile<Record<string, string>, true>(
     computed(() => `${rootのsketch.value}/.changes/hashes_client`),
@@ -259,9 +258,10 @@ export const useSketchStore = defineStore("sketch", () => {
 
   /// INFO: computed change
   const 変化 = computed(() => {
-
     const server = hashes_serverのFile.data
     const client = hashes_clientのFile.data
+
+    if (!server || !client) return
 
     const changes: Record<string, StatusChange> = {}
 
@@ -278,7 +278,7 @@ export const useSketchStore = defineStore("sketch", () => {
       })
     Object.keys(client)
       .forEach(relativePath => {
-        if (relativePath in server) {
+        if ((relativePath in server)) {
           if (server[relativePath].hash !== client[relativePath])
             changes[join(rootのsketch.value, relativePath)] = "M"
 
@@ -362,5 +362,5 @@ export const useSketchStore = defineStore("sketch", () => {
     })
   }
 
-  return { rootのsketch, fetch, forceUpdateHashesClient, 変化, undoChange, addChange, pushChanges }
+  return { rootのsketch, fetch, forceUpdateHashesClient, 変化, changes_addedのFile, undoChange, addChange, pushChanges }
 })
