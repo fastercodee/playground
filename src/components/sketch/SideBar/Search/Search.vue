@@ -156,14 +156,16 @@
     >
 
     <div v-if="results.size > 0" class="h-full overflow-y-auto">
+      <template v-if="showResultAsTree">
       <SearchTreeDirectory
-        v-if="showResultAsTree"
+          v-if="resultsTree"
         only-child
-        :meta="resultsTree.dirs.get(sketchStore.rootのsketch)!"
+          :meta="{ fullPath: sketchStore.rootのsketch, children: resultsTree }"
         :deep-level="0"
         @click:close-item="deleteResults"
         @click:close-match="deleteMatch"
       />
+      </template>
       <template v-else v-for="[fullpath, matches] in results" :key="fullpath">
         <SearchFlat
           v-if="matches.length > 0"
