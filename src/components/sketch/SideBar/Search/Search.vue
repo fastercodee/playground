@@ -189,6 +189,7 @@
 <script lang="ts" setup>
 import { listen, put, uuid } from "@fcanvas/communicate"
 import { Icon } from "@iconify/vue"
+import { isBinaryFile } from "arraybuffer-isbinary"
 import { storeToRefs } from "pinia"
 import { globby } from "src/logic/globby"
 import {
@@ -371,7 +372,6 @@ async function research() {
       const { data: base64 } = await Filesystem.readFile({
           path: file,
           directory: Directory.External,
-          encoding: Encoding.UTF8,
         })
 
         const uint = base64ToUint8(base64)

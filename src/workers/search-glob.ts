@@ -4,7 +4,9 @@
 import { listen, ping } from "@fcanvas/communicate"
 import { Directory, Encoding } from "@tachibana-shin/capacitor-filesystem/dist/esm/definitions"
 import { FilesystemWeb } from "@tachibana-shin/capacitor-filesystem/dist/esm/web"
+import { isBinaryFile } from "arraybuffer-isbinary"
 import { isNative } from "src/constants"
+import { base64ToUint8 } from "src/logic/base64-buffer"
 import { globby } from "src/logic/globby"
 import type { Match, SearchOptions } from "src/logic/search-text"
 import { searchText } from "src/logic/search-text"
@@ -49,11 +51,10 @@ if (!isNative) {
         const { data: base64 } = await Filesystem.readFile({
           path: file,
           directory: Directory.External,
-          encoding: Encoding.UTF8,
         })
 
         const uint = base64ToUint8(base64)
-
+        
         if (isBinaryFile(uint)) {
           console.warn("Can't find binary file at path %s", file)
           continue

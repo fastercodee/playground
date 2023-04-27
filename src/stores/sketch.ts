@@ -5,7 +5,6 @@ import { basename, join, relative } from "path"
 
 import { put } from "@fcanvas/communicate"
 import { some } from "micromatch"
-import ignoreParse from "parse-gitignore"
 import { defineStore } from "pinia"
 import { api, post } from "src/boot/axios"
 import { isNative } from "src/constants"
@@ -146,18 +145,23 @@ async function forceUpdateHashesClient(
 
   if ((await exists(rootのsketch)) === false) return
 
+  const ignore = [
+    "/.changes/",
+    ...parseGitIgnore(
+      await Filesystem.readFile({
+        path: path_gitignore,
+        directory: Directory.External,
+        encoding: Encoding.UTF8,
+      }).then(res => res.data).catch(() => "")
+    )
+  ]
+
   if (isNative) {
     await Filesystem.writeFile({
       path: path_hashes_client,
       directory: Directory.External,
       encoding: Encoding.UTF8,
-      data: JSON.stringify(await getHashesClient(rootのsketch, ignoreParse(
-        await Filesystem.readFile({
-          path: path_gitignore,
-          directory: Directory.External,
-          encoding: Encoding.UTF8,
-        }).then(res => res.data).catch(() => "")
-      ))),
+      data: JSON.stringify(await getHashesClient(rootのsketch, ignore)),
     })
   } else {
     workerGetHashesClient = new GetHashesClientWorker()
@@ -168,7 +172,7 @@ async function forceUpdateHashesClient(
       data: JSON.stringify(await await put<
         ComGetHashesClient,
         "get-hashes-client"
-      >(workerGetHashesClient, "get-hashes-client", rootのsketch)),
+      >(workerGetHashesClient, "get-hashes-client", rootのsketch, ignore)),
     })
 
     workerGetHashesClient?.terminate()
@@ -204,7 +208,7 @@ export const useSketchStore = defineStore("sketch", () => {
     const filepath = relative(rootのsketch.value, パス)
 
     await gitignoreのFile.ready
-    if (some(filepath, gitignoreのFile.data)) return
+    if (some("/" + filepath, gitignoreのFile.data)) return
 
     if (タイプ === "deleteFile" || タイプ === "rmdir") {
       delete hashes_clientのFile.data[relative(rootのsketch.value, パス)]
@@ -227,7 +231,7 @@ export const useSketchStore = defineStore("sketch", () => {
     const filepath = relative(rootのsketch.value, パス)
 
     await gitignoreのFile.ready
-    if (some(filepath, gitignoreのFile.data)) return
+    if (some("/" + filepath, gitignoreのFile.data)) return
 
     if (タイプ === "deleteFile" || タイプ === "rmdir") {
       // delete file
@@ -260,7 +264,7 @@ export const useSketchStore = defineStore("sketch", () => {
     "",
     false,
     {
-      get: ignoreParse
+      get: text => ["/.changes/**/*", ...parseGitIgnore(text)]
     }
   )
 
