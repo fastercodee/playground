@@ -64,6 +64,9 @@ dependencies:
   '@tachibana-shin/capacitor-filesystem':
     specifier: 5.0.0-beta.0
     version: 5.0.0-beta.0(@capacitor/core@4.7.0)
+  '@types/parse-gitignore':
+    specifier: ^1.0.0
+    version: 1.0.0
   '@uiw/codemirror-extensions-hyper-link':
     specifier: ^4.19.9
     version: 4.19.9(@codemirror/state@6.2.0)(@codemirror/view@6.9.2)
@@ -91,6 +94,9 @@ dependencies:
   '@vueuse/core':
     specifier: ^9.13.0
     version: 9.13.0(vue@3.2.47)
+  arraybuffer-isbinary:
+    specifier: ^1.0.2
+    version: 1.0.2
   axios:
     specifier: ^1.3.5
     version: 1.3.5
@@ -124,6 +130,9 @@ dependencies:
   micromatch:
     specifier: ^4.0.5
     version: 4.0.5
+  parse-gitignore:
+    specifier: ^2.0.0
+    version: 2.0.0
   path-browserify:
     specifier: ^1.0.1
     version: 1.0.1
@@ -1462,6 +1471,12 @@ packages:
   /@types/node@12.20.55:
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
 
+  /@types/parse-gitignore@1.0.0:
+    resolution: {integrity: sha512-GCL7NIxhUzJ1M5bp68T8DtDVTbQdw93MPIIII+YASs3icSozMEG9ZjX7pp7ldRJrVgrRtJBwy+/g+aBzCIttlg==}
+    dependencies:
+      '@types/node': 12.20.55
+    dev: false
+
   /@types/prettier@2.7.2:
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
     dev: true
@@ -2320,6 +2335,11 @@ packages:
       es-abstract: 1.21.1
       es-shim-unscopables: 1.0.0
     dev: true
+
+  /arraybuffer-isbinary@1.0.2:
+    resolution: {integrity: sha512-J/E+EBEby6uTRBLHkVqTXQFlONn64kxFKZ23OSe8LKgTFt7jOPmqE9WzMdxBxla/0BkviSxKzmbUhyjOUV0udA==}
+    engines: {node: '>=10'}
+    dev: false
 
   /assertion-error@1.1.0:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}
@@ -5719,6 +5739,11 @@ packages:
     dependencies:
       callsites: 3.1.0
     dev: true
+
+  /parse-gitignore@2.0.0:
+    resolution: {integrity: sha512-RmVuCHWsfu0QPNW+mraxh/xjQVw/lhUCUru8Zni3Ctq3AoMhpDTq0OVdKS6iesd6Kqb7viCV3isAL43dciOSog==}
+    engines: {node: '>=14'}
+    dev: false
 
   /parse5@7.1.2:
     resolution: {integrity: sha512-Czj1WaSVpaoj0wbhMzLmWD69anp2WH7FXMB9n1Sy8/ZFF9jolSQVMu1Ij5WIyGmcBmhk7EOndpO4mIpihVqAXw==}

@@ -157,14 +157,14 @@
 
     <div v-if="results.size > 0" class="h-full overflow-y-auto">
       <template v-if="showResultAsTree">
-      <SearchTreeDirectory
+        <SearchTreeDirectory
           v-if="resultsTree"
-        only-child
+          only-child
           :meta="{ fullPath: sketchStore.rootのsketch, children: resultsTree }"
-        :deep-level="0"
-        @click:close-item="deleteResults"
-        @click:close-match="deleteMatch"
-      />
+          :deep-level="0"
+          @click:close-item="deleteResults"
+          @click:close-match="deleteMatch"
+        />
       </template>
       <template v-else v-for="[fullpath, matches] in results" :key="fullpath">
         <SearchFlat
@@ -338,12 +338,16 @@ async function research() {
       }
     )
 
+    await sketchStore.gitignoreのFile.ready
     await put<ComSearchGlob, "search-on-spa">(
       searchGloborInTextWorker,
       "search-on-spa",
       sketchStore.rootのsketch,
       splitString(include.value),
-      enableExclude.value ? splitString(exclude.value) : [],
+      [
+        ...sketchStore.gitignoreのFile.data,
+        ...(enableExclude.value ? splitString(exclude.value) : []),
+      ],
       uid,
       searchOptions
     )
@@ -358,10 +362,11 @@ async function research() {
 
     const inclu = splitString(include.value)
 
+    await sketchStore.gitignoreのFile.ready
     for await (const file of await globby(
       sketchStore.rootのsketch,
       inclu.length === 0 ? ["**/*"] : inclu,
-      splitString(exclude.value)
+      [...sketchStore.gitignoreのFile.data, ...splitString(exclude.value)]
     )) {
       const { data: base64 } = await Filesystem.readFile({
           path: file,
