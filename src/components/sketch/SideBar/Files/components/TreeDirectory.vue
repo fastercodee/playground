@@ -178,13 +178,14 @@ function sortEntries(entries: Entry<"file" | "directory">[]) {
 }
 async function createDirectory(name: string, isDir: boolean) {
   creating.value = null
+    const path = `${props.entry.fullPath}/${name}`
   if (isDir) {
     await Filesystem.mkdir({
-      path: `${props.entry.fullPath}/${name}`,
+      path,
       directory: Directory.External,
     })
+    eventBus.emit("copyDir", path)
   } else {
-    const path = `${props.entry.fullPath}/${name}`
     await Filesystem.writeFile({
       path,
       data: "",

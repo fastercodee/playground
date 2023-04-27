@@ -28,18 +28,34 @@
     </div>
 
     <div class="hidden group-hover:!block">
-      <Icon icon="codicon:go-to-file" class="w-1.2em h-1.2em mr-1" />
       <Icon
+        v-if="type === 'file'"
+        icon="codicon:go-to-file"
+        class="w-1.2em h-1.2em mr-1"
+      />
+      <Icon
+        v-if="!staged"
         icon="codicon:redo"
         :horizontalFlip="true"
         class="w-1.2em h-1.2em mr-1"
-        @click="sketchStore.undoChange(fullpath, status)"
+        @click="emit('click:undo')"
       />
-      <Icon icon="codicon:add" class="w-1.2em h-1.2em"
-        @click="sketchStore.addChange(fullpath, status)"/>
+      <Icon
+        v-if="!staged"
+        icon="codicon:add"
+        class="w-1.2em h-1.2em"
+        @click="emit('click:add')"
+      />
+      <Icon
+        v-else
+        icon="codicon:remove"
+        class="w-1.2em h-1.2em"
+        @click="emit('click:remove-stage')"
+      />
     </div>
 
     <span
+      v-if="status"
       class="font-medium w-12.5px text-center inline-block"
       :class="
         {
@@ -65,8 +81,14 @@ const props = defineProps<{
   opening: boolean
   type: Entry<"file" | "directory">["type"]
   fullpath: string
-  status: StatusChange
+  staged?: boolean
+  status?: StatusChange
   modeTree?: boolean
+}>()
+const emit = defineEmits<{
+  (name: "click:undo"): void
+  (name: "click:add"): void
+  (name: "click:remove-stage"): void
 }>()
 
 const sketchStore = useSketchStore()

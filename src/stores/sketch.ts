@@ -8,6 +8,7 @@ import { some } from "micromatch"
 import { defineStore } from "pinia"
 import { api, post } from "src/boot/axios"
 import { isNative } from "src/constants"
+import { TreeDir } from "src/logic/flat-to-tree"
 import { sha256File } from "src/logic/sha256-file"
 import type { SketchController } from "src/types/api/Controller/SketchController"
 import type { File } from "src/types/api/Models/File"
@@ -279,11 +280,11 @@ export const useSketchStore = defineStore("sketch", () => {
   }
 
   /// INFO: computed change
-  const 変化 = computed(() => {
+  const 変化 = computed<Record<string, StatusChange>>(() => {
     const server = hashes_serverのFile.data
     const client = hashes_clientのFile.data
 
-    if (!server || !client) return
+    if (!server || !client) return {}
 
     const changes: Record<string, StatusChange> = {}
 
@@ -312,20 +313,21 @@ export const useSketchStore = defineStore("sketch", () => {
 
     return changes
   })
-const 追加された変更 = computed(() => {
-  const stages: typeof 変化.value = {}
 
-  for (const status in changes_addedのFile.data) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    changes_addedのFile.data[
-      status as keyof typeof changes_addedのFile.data
-    ]!.forEach((relativePath) => {
-      stages[join(rootのsketch.value, relativePath)] = status as keyof typeof changes_addedのFile.data
-    })
-  }
+  const 追加された変更 = computed(() => {
+    const stages: typeof 変化.value = {}
 
-  return stages
-})
+    for (const status in changes_addedのFile.data) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      changes_addedのFile.data[
+        status as keyof typeof changes_addedのFile.data
+      ]!.forEach((relativePath) => {
+        stages[join(rootのsketch.value, relativePath)] = status as keyof typeof changes_addedのFile.data
+      })
+    }
+
+    return stages
+  })
 
   async function undoChange(fullPath: string, status: StatusChange) {
     const server = hashes_serverのFile.data
@@ -355,6 +357,13 @@ const 追加された変更 = computed(() => {
     }
   }
 
+  async function undoChanges(dir: TreeDir<StatusChange>) {
+    dir.children.files.forEach(({ fullPath, matches: status }) => {
+      undoChange(fullPath, status)
+    })
+    dir.children.dirs.forEach(meta => undoChanges(meta))
+  }
+
   async function addChange(fullPath: string, status: StatusChange) {
     const relativePath = relative(rootのsketch.value, fullPath)
     // eslint-disable-next-line functional/no-let
@@ -364,6 +373,31 @@ const 追加された変更 = computed(() => {
       changes_addedのFile.data[status] = arr = []
 
     arr.push(relativePath)
+  }
+
+  async function addChanges(dir: TreeDir<StatusChange>) {
+    dir.children.files.forEach(({ fullPath, matches: status }) => {
+      addChange(fullPath, status)
+    })
+    dir.children.dirs.forEach(meta => addChanges(meta))
+  }
+
+  async function removeChange(fullPath: string, status: StatusChange) {
+    const relativePath = relative(rootのsketch.value, fullPath);
+    const arr = changes_addedのFile.data[status];
+    if (arr) {
+      const index = arr.indexOf(relativePath);
+      if (index > -1) {
+        arr.splice(index, 1);
+      }
+    }
+  }
+
+  async function removeChanges(dir: TreeDir<StatusChange>) {
+    dir.children.files.forEach(({ fullPath, matches: status }) => {
+      removeChange(fullPath, status)
+    })
+    dir.children.dirs.forEach(meta => removeChanges(meta))
   }
 
   async function pushChanges() {
@@ -398,5 +432,7 @@ const 追加された変更 = computed(() => {
     })
   }
 
-  return { rootのsketch, fetch, forceUpdateHashesClient, 変化, 追加された変更 , gitignoreのFile, undoChange, addChange, pushChanges }
+  return {
+    rootのsketch, fetch, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges
+  }
 })
