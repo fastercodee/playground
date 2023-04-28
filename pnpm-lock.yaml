@@ -157,6 +157,9 @@ dependencies:
   vue:
     specifier: ^3.0.0
     version: 3.2.47
+  vue-auth3:
+    specifier: ^1.0.0
+    version: 1.0.0
   vue-console-feed:
     specifier: ^0.0.28
     version: 0.0.28
@@ -7224,6 +7227,10 @@ packages:
       - supports-color
       - terser
     dev: true
+
+  /vue-auth3@1.0.0:
+    resolution: {integrity: sha512-e663xLwrsQ6DPb1WRK3vgPVfGauehNr1/AS2qKyWL9O41SDV3ZVDmJAKbgv/LYX6825tHr/E0xHs6/TxADEjZw==}
+    dev: false
 
   /vue-console-feed@0.0.28:
     resolution: {integrity: sha512-IHxhVIEof/9iHfhtw7MrjuoaR7eoJEvjkw6dPLNsNrgZ1DTwcwl9MFhcWvbJtNpS/7elMXf+5UiMmYrrY/Eccg==}
