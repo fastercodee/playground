@@ -16,6 +16,7 @@
         size="sm"
         class="w-full bg-green-500 bg-opacity-80 !text-12px min-h-0"
         no-caps
+        @click="sketchStore.pushChanges"
         >Save stages</q-btn
       >
     </div>

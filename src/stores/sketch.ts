@@ -425,32 +425,37 @@ export const useSketchStore = defineStore("sketch", () => {
   async function pushChanges() {
     // INFO: push changes
 
-    const meta: string[] = []
-    const files: globalThis.File[] = []
+    const form = new FormData()
+    form.append("uid", uid_sketch_opening.value + "")
+    changes_addedのFile.data.D?.forEach(relativePath => form.append("deletes[]", relativePath))
+
     await Promise.all(
       [
         ...changes_addedのFile.data.M ?? [],
         ...changes_addedのFile.data.U ?? []
       ]?.map(async relativePath => {
-        meta.push(relativePath)
-        files.push(
-          new File([
-            await Filesystem.readFile({
-              path: `${rootのsketch.value}/${relativePath}`,
-              directory: Directory.External,
-            })
-              .then(res => base64ToUint8(res.data))
-          ], basename(relativePath))
-        )
+        form.append("meta[]", relativePath)
+        form.append("files[]", new File([
+          await Filesystem.readFile({
+            path: `${rootのsketch.value}/${relativePath}`,
+            directory: Directory.External,
+          })
+            .then(res => base64ToUint8(res.data))
+        ], basename(relativePath)))
       })
     )
 
 
-    await post<SketchController["update"]>("/sketch/update", {
-      uid: uid_sketch_opening.value,
-      deletes: changes_addedのFile.data.D ?? [],
-      meta,
-      files
+    const { data } = await post("/sketch/update", form)
+
+    changes_addedのFile.data.D?.forEach(relativePath => {
+      delete hashes_serverのFile.data[relativePath]
+    })
+    changes_addedのFile.data.M?.forEach(relativePath => {
+      hashes_clientのFile.data[relativePath] = hashes_serverのFile.data[relativePath].hash
+    })
+    changes_addedのFile.data.U?.forEach(relativePath => {
+      hashes_serverのFile.data[relativePath] = data.files_added[relativePath] as { uid: number; hash: string }
     })
   }
 
