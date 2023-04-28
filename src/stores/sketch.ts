@@ -357,14 +357,24 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   }
 
-  async function undoChanges(dir: TreeDir<StatusChange>) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isFlat = (dir: any, flat = false): dir is typeof 変化.value => {
+    return flat
+  }
+  function undoChanges<Flat extends boolean = false>(dir: Flat extends true ? typeof 変化.value : TreeDir<StatusChange>, flat?: Flat) {
+    if (isFlat(dir, flat)) {
+      Object.entries(dir).forEach(([fullPath, status]) => undoChange(fullPath, status))
+
+      return
+    }
+
     dir.children.files.forEach(({ fullPath, matches: status }) => {
       undoChange(fullPath, status)
     })
     dir.children.dirs.forEach(meta => undoChanges(meta))
   }
 
-  async function addChange(fullPath: string, status: StatusChange) {
+  function addChange(fullPath: string, status: StatusChange) {
     const relativePath = relative(rootのsketch.value, fullPath)
     // eslint-disable-next-line functional/no-let
     let arr = changes_addedのFile.data[status]
@@ -375,14 +385,20 @@ export const useSketchStore = defineStore("sketch", () => {
     arr.push(relativePath)
   }
 
-  async function addChanges(dir: TreeDir<StatusChange>) {
+  function addChanges<Flat extends boolean = false>(dir: Flat extends true ? typeof 変化.value : TreeDir<StatusChange>, flat?: Flat) {
+    if (isFlat(dir, flat)) {
+      Object.entries(dir).forEach(([fullPath, status]) => addChange(fullPath, status))
+
+      return
+    }
+
     dir.children.files.forEach(({ fullPath, matches: status }) => {
       addChange(fullPath, status)
     })
     dir.children.dirs.forEach(meta => addChanges(meta))
   }
 
-  async function removeChange(fullPath: string, status: StatusChange) {
+  function removeChange(fullPath: string, status: StatusChange) {
     const relativePath = relative(rootのsketch.value, fullPath);
     const arr = changes_addedのFile.data[status];
     if (arr) {
@@ -393,7 +409,13 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   }
 
-  async function removeChanges(dir: TreeDir<StatusChange>) {
+  function removeChanges<Flat extends boolean = false>(dir: Flat extends true ? typeof 変化.value : TreeDir<StatusChange>, flat?: Flat) {
+    if (isFlat(dir, flat)) {
+      Object.entries(dir).forEach(([fullPath, status]) => removeChange(fullPath, status))
+
+      return
+    }
+
     dir.children.files.forEach(({ fullPath, matches: status }) => {
       removeChange(fullPath, status)
     })

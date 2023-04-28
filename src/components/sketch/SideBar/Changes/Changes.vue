@@ -21,10 +21,18 @@
     </div>
 
     <h3
-      class="px-2 text-13px text-gray-200 py-1 leading-normal mt-1"
+      class="px-2 text-13px text-gray-200 py-1 leading-normal mt-1 flex flex-nowrap justify-between items-center group"
       v-if="Object.keys(sketchStore.追加された変更).length > 0"
     >
       Stages
+
+      <div class="hidden group-hover:!block">
+        <Icon
+          icon="codicon:remove"
+          class="w-1.2em h-1.2em cursor-pointer"
+          @click="sketchStore.removeChanges(sketchStore.変化, true)"
+        />
+      </div>
     </h3>
     <ChangeFlat
       v-if="!showResultAsTree"
@@ -40,13 +48,28 @@
       :meta="{ fullPath: sketchStore.rootのsketch, children: treeStages }"
       :deep-level="0"
       only-child
+      staged
     />
 
     <h3
-      class="px-2 text-13px text-gray-200 py-1 leading-normal mt-1"
+      class="px-2 text-13px text-gray-200 py-1 leading-normal mt-1 flex flex-nowrap justify-between items-center group"
       v-if="Object.keys(sketchStore.変化).length > 0"
     >
       Changes
+
+      <div class="hidden group-hover:!block">
+        <Icon
+          icon="codicon:redo"
+          :horizontalFlip="true"
+          class="w-1.2em h-1.2em mr-1 cursor-pointer"
+          @click="sketchStore.undoChanges(sketchStore.変化, true)"
+        />
+        <Icon
+          icon="codicon:add"
+          class="w-1.2em h-1.2em cursor-pointer"
+          @click="sketchStore.addChanges(sketchStore.変化, true)"
+        />
+      </div>
     </h3>
     <template
       v-if="!showResultAsTree"

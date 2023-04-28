@@ -5,7 +5,7 @@
       v-if="!onlyChild"
       type="directory"
       :opening="opening"
-      staged
+      :staged="staged"
       mode-tree
       :fullpath="meta.fullPath"
       :style="{
@@ -30,7 +30,7 @@
         v-for="[, { fullPath, matches: status }] in meta.children.files"
         v-memo="[fullPath, status, deepLevel]"
         :key="fullPath"
-      mode-tree
+        mode-tree
         :staged="staged"
         type="file"
         :fullpath="fullPath"
