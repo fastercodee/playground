@@ -114,7 +114,14 @@ module.exports = configure(function (/* ctx */) {
 
       vitePlugins: [
         ["vite-plugin-pages"],
-        ["vite-plugin-vue-layouts", { defaultLayout: "MainLayout" }],
+        [
+          "vite-plugin-vue-layouts",
+          {
+            defaultLayout: "MainLayout",
+            importMode: () => "async",
+            routeStyle: "nuxt",
+          },
+        ],
         [
           "unocss/vite",
           {
