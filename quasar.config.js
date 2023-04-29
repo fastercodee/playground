@@ -113,6 +113,8 @@ module.exports = configure(function (/* ctx */) {
       // viteVuePluginOptions: {},
 
       vitePlugins: [
+        ["vite-plugin-pages"],
+        ["vite-plugin-vue-layouts", { defaultLayout: "MainLayout" }],
         [
           "unocss/vite",
           {
