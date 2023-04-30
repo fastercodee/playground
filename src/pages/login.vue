@@ -20,7 +20,7 @@ meta:
       </q-toolbar>
     </q-header>
 
-    <main class="w-full h-full">
+    <form @submit.prevent="logIn" class="w-full h-full">
       <q-card flat class="w-full max-w-280px mx-auto mx-5 py-20 transparent">
         <q-card-section>
           <h1 class="text-subtitle1 text-24px">Log in to your account</h1>
@@ -61,7 +61,8 @@ meta:
             color="green-7"
             class="w-full mt-5"
             no-caps
-            @click="logIn"
+            type="submit"
+            :disable="!email || !password"
           >
             <span class="relative">
               Log In
@@ -89,11 +90,14 @@ meta:
 
         <q-card-section class="text-center">
           <small class="text-13px"
-            >New user? <span class="text-[#57ABFF]">Sign Up</span></small
+            >New user?
+            <router-link to="/signup" class="text-[#57ABFF]"
+              >Sign Up</router-link
+            ></small
           >
         </q-card-section>
       </q-card>
-    </main>
+    </form>
   </q-page>
 </template>
 
