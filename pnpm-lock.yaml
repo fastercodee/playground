@@ -106,6 +106,9 @@ dependencies:
   codemirror:
     specifier: ^6.0.1
     version: 6.0.1(@lezer/common@1.0.2)
+  eruda2:
+    specifier: 0.0.2-b8
+    version: 0.0.2-b8
   esbuild-wasm:
     specifier: ^0.17.12
     version: 0.17.12
@@ -158,8 +161,8 @@ dependencies:
     specifier: ^3.0.0
     version: 3.2.47
   vue-auth3:
-    specifier: ^1.0.0
-    version: 1.0.0
+    specifier: ^1.0.2
+    version: 1.0.2
   vue-console-feed:
     specifier: ^0.0.28
     version: 0.0.28
@@ -3280,6 +3283,10 @@ packages:
     resolution: {integrity: sha512-2bmlRpNKBxT/CRmPOlyISQpNj+qSeYvcym/uT0Jx2bMOlKLtSy1ZmLuVxSEKKyor/N5yhvp/ZiG1oE3DEYMSFA==}
     dev: true
     optional: true
+
+  /eruda2@0.0.2-b8:
+    resolution: {integrity: sha512-Ur6Vvbixz8JrCJTU5mSmoQ2P/zQXLiJi8u3XPX6Gs+fqGpcZjKcGs5fmvwZK4kj82ICA2EXxNOa0PQ+7je1Aeg==}
+    dev: false
 
   /es-abstract@1.21.1:
     resolution: {integrity: sha512-QudMsPOz86xYz/1dG1OuGBKOELjCh99IIWHLzy5znUB6j8xG2yMA7bfTV86VSqKF+Y/H08vQPR+9jyXpuC6hfg==}
@@ -7400,8 +7407,8 @@ packages:
       - terser
     dev: true
 
-  /vue-auth3@1.0.0:
-    resolution: {integrity: sha512-e663xLwrsQ6DPb1WRK3vgPVfGauehNr1/AS2qKyWL9O41SDV3ZVDmJAKbgv/LYX6825tHr/E0xHs6/TxADEjZw==}
+  /vue-auth3@1.0.2:
+    resolution: {integrity: sha512-9GzDNa8XV4m/xAo2pN/TKImlja6dGafcXxQt2BDJFmNY8lnPL7MKyit4CoTXwx3EXDgRs+70T2Ek2Oho530UwQ==}
     dev: false
 
   /vue-console-feed@0.0.28:

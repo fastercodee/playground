@@ -1,3 +1,11 @@
+<route lang="yaml">
+meta:
+  auth:
+    roles: false
+    notFoundRedirect: /
+    forbiddenRedirect: /
+</route>
+
 <template>
   <q-page class="flex flex-nowrap w-full w-[100vw] min-h-[100vh]">
     <q-header class="bg-[#1C2333]">
@@ -13,7 +21,7 @@
     </q-header>
 
     <main class="w-full h-full">
-      <q-card flat class="w-full max-w-280px mx-auto mx-5 py-20">
+      <q-card flat class="w-full max-w-280px mx-auto mx-5 py-20 transparent">
         <q-card-section>
           <h1 class="text-subtitle1 text-24px">Log in to your account</h1>
         </q-card-section>
@@ -91,7 +99,8 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import { AxiosError, AxiosResponse } from "axios"
+import { AxiosError } from "axios"
+import { User } from "src/types/api/Models/User"
 
 const auth = useAuth()
 const $q = useQuasar()
@@ -107,14 +116,20 @@ async function logIn() {
   loading.value = true
 
   try {
-    const user = await auth.login({
-      data: {
-        username: email.value,
-        password: password.value,
-      },
-    })
+    const user = await auth
+      .login({
+        data: {
+          username: email.value,
+          password: password.value,
+        },
+      })
+      .then((res) => res.data.user as User)
 
-    console.log(user)
+    $q.notify({
+      position: "bottom-right",
+      group: false,
+      message: `You logged in as ${user.name}`,
+    })
   } catch (err) {
     $q.notify({
       position: "bottom-right",

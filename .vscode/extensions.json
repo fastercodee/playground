@@ -8,7 +8,8 @@
     "tabnine.tabnine-vscode",
     "codeium.codeium",
     "antfu.unocss",
-    "antfu.iconify"
+    "antfu.iconify",
+    "pkief.material-icon-theme"
   ],
   "unwantedRecommendations": [
     "octref.vetur",
