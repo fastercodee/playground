@@ -162,6 +162,8 @@ module.exports = configure(function (/* ctx */) {
                   "Directory",
                   "Encoding",
                 ],
+                "quasar": ["useQuasar"],
+                "vue-auth3": ["useAuth"]
               },
             ],
             dirs: [
@@ -210,7 +212,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ["Notify"],
     },
 
     // animations: 'all', // --- includes all animations
