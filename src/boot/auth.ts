@@ -6,6 +6,13 @@ import { api } from "./axios"
 
 export default boot(({ app, router }) => {
   const auth = createAuth({
+    cookie: {
+      path: "/",
+      secure: true,
+      expires: 12096e5,
+      sameSite: "None",
+    },
+
     drivers: {
       auth: authDriver,
       http: {
@@ -17,6 +24,9 @@ export default boot(({ app, router }) => {
       router
     },
 
+    registerData: {
+      staySignedIn: true,
+    },
     fetchData: {
       enabled: true, // send a request to `/api/user` if the user information stored in the cookie is not visible
       cache: "default", // save user information to localStorage for use
@@ -27,7 +37,7 @@ export default boot(({ app, router }) => {
     },
     refreshToken: {
       enabled: false, // refresh token in goto page
-      enabledInBackground: true, // refresh token in background
+      enabledInBackground: false, // refresh token in background
     },
   })
 
