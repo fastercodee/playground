@@ -28,6 +28,7 @@ export default boot(({ app, router }) => {
       staySignedIn: true,
     },
     fetchData: {
+      keyUser: "user",
       enabled: true, // send a request to `/api/user` if the user information stored in the cookie is not visible
       cache: "default", // save user information to localStorage for use
       enabledInBackground: true, // refresh user information in the background
@@ -50,15 +51,13 @@ export function loginWithGoogle() {
   // Parameters to pass to OAuth 2.0 endpoint.
   const params = {
     client_id: process.env.OAUTH2_GOOGLE_CLIENT_ID,
-    redirect_uri: "http://localhost:8000",
+    redirect_uri: `${process.env.APP_URL}login?oauth2=true&type=google`,
     response_type: "id_token",
     scope: "email profile openid",
-    include_granted_scopes: "true",
-    state: "pass-through value",
     nonce: "1",
   }
 
-  window.open(oauth2Endpoint + "?" + new URLSearchParams(params).toString())
+  window.open(oauth2Endpoint + "?" + new URLSearchParams(params).toString(), '_self')
 }
 
 export function loginWithGithub() {
@@ -67,9 +66,16 @@ export function loginWithGithub() {
   // Parameters to pass to OAuth 2.0 endpoint.
   const params = {
     client_id: process.env.OAUTH2_GITHUB_CLIENT_ID,
-    redirect_uri: "http://localhost:8000",
+    redirect_uri: `${process.env.APP_URL}login?oauth2=true&type=github`,
     scope: "read:user user:email",
   }
 
-  window.open(oauth2Endpoint + "?" + new URLSearchParams(params).toString())
+  window.open(oauth2Endpoint + "?" + new URLSearchParams(params).toString(), '_self')
 }
+
+Object.assign(window, {
+  loginWithGoogle,
+  loginWithGithub
+})
+
+export const OAuth2_SUPPORTS = ["google", "github"]

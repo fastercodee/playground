@@ -28,7 +28,7 @@ meta:
           </q-card-section>
 
           <q-card-section>
-            <q-input
+            <q-input v-if="!verifyOAuth2"
               standout
               color="green-5"
               label="Email"
@@ -39,7 +39,7 @@ meta:
               :rules="rules.email"
               name="email"
             />
-            <q-input
+            <q-input v-if="!verifyOAuth2"
               standout
               color="green-5"
               label="Password"
@@ -121,9 +121,12 @@ import { AxiosError } from "axios"
 import { QForm } from "quasar"
 import { api } from "src/boot/axios"
 import { User } from "src/types/api/Models/User"
+import { useVerifyOAuth2 } from 'src/composables/use-verify-oauth2'
 
 const auth = useAuth()
 const $q = useQuasar()
+
+const {  verifyOAuth2, loginWithOauth2 } = useVerifyOAuth2()
 
 const email = ref("")
 const password = ref("")
@@ -186,7 +189,7 @@ async function signUp() {
   loading.value = true
 
   try {
-    const user = await auth
+    const user = verifyOAuth2.value ?  await loginWithOauth2(username.value) : await auth
       .register({
         data: {
           email: email.value,
@@ -199,7 +202,7 @@ async function signUp() {
     $q.notify({
       position: "bottom-right",
       group: false,
-      message: `You register in as ${user.username}`,
+      message: `You register in as ${user.name ?? user.username}`,
     })
   } catch (err) {
     $q.notify({
