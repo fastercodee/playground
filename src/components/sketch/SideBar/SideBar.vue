@@ -27,6 +27,13 @@
         class="bottom-12px left-25px right-auto top-auto text-10px py-2px px-5px"
       />
     </button>
+    <button
+      class="hover:text-gray-400 relative before:bg-light-300 before:absolute before:h-full before:w-2px before:top-0 before:left-0">
+      <q-avatar size="24px">
+        <img :src="user?.picture" />
+        {{ user }}
+      </q-avatar>
+    </button>
     <button @click="settingsLayout = !settingsLayout">Settings Layout</button>
 
     <q-separator class="!w-[calc(100%-12px)] h-1px" />
@@ -77,8 +84,11 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
+import { User } from "src/types/api/Models/User"
 import { Resizable } from "vue-re-resizable"
 import "vue-re-resizable/dist/style.css"
+
+const user = useUser<User>()
 
 const tabSelection = ref<null | "file" | "search" | "change" | "setting">(
   "change"

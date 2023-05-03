@@ -163,7 +163,7 @@ module.exports = configure(function (/* ctx */) {
                   "Encoding",
                 ],
                 "quasar": ["useQuasar"],
-                "vue-auth3": ["useAuth"]
+                "vue-auth3": ["useAuth", "useUser"]
               },
             ],
             dirs: [
