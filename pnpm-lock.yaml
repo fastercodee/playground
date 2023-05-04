@@ -161,8 +161,8 @@ dependencies:
     specifier: ^3.0.0
     version: 3.2.47
   vue-auth3:
-    specifier: 1.0.4
-    version: 1.0.4
+    specifier: 1.0.6
+    version: 1.0.6
   vue-console-feed:
     specifier: ^0.0.28
     version: 0.0.28
@@ -7407,8 +7407,8 @@ packages:
       - terser
     dev: true
 
-  /vue-auth3@1.0.4:
-    resolution: {integrity: sha512-hyPXwbgdmopSd4GzeSNCY25cdoMF9hypK+QFAsi+0wjeCSS4NzbjrQqzfYbAZ6v4ZvnVjkaDPhF+064qSz0U3g==}
+  /vue-auth3@1.0.6:
+    resolution: {integrity: sha512-24r3J5KXfmsZQct1ddpVWJfaxlb8BIC7AB4Qvto2y6jauXQPFQmqex6MfE91pCZ+5/qYdhJSGDa43FjWQVqiyQ==}
     dev: false
 
   /vue-console-feed@0.0.28:

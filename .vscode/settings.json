@@ -9,5 +9,6 @@
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
-  "scss.lint.unknownAtRules": "ignore"
+  "scss.lint.unknownAtRules": "ignore",
+  "vue.codeActions.enabled": false
 }
