@@ -2,3 +2,21 @@
 body {
   background-color: #1b1d28 !important;
 }
+
+.input-group {
+  @apply w-full h-30px   text-13px border border-gray-600 border-opacity-80;
+  @apply flex flex-nowrap items-center justify-between;
+
+  .input-action {
+    @apply flex flex-nowrap;
+  }
+
+  input {
+    @apply bg-transparent w-full h-full px-2;
+
+    min-width: 0;
+    &:focus {
+      @apply outline-none;
+    }
+  }
+}

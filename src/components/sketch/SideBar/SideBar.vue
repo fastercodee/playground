@@ -68,9 +68,10 @@
           </q-list>
         </q-menu>
       </button>
-      <button v-else
-        class="w-48px h-48px hover:text-gray-400 relative before:bg-light-300 before:absolute before:h-full before:w-2px before:top-0 before:left-0">
-
+      <button
+        v-else
+        class="w-48px h-48px hover:text-gray-400 relative before:bg-light-300 before:absolute before:h-full before:w-2px before:top-0 before:left-0"
+      >
         <Icon icon="codicon:account" class="w-24px h-24px" />
 
         <q-menu anchor="top right" self="top left">
@@ -140,6 +141,7 @@ import "vue-re-resizable/dist/style.css"
 
 const auth = useAuth()
 const user = useUser<User>()
+const sketchStore = useSketchStore()
 
 const tabSelection = ref<
   null | "info" | "file" | "search" | "change" | "setting"
@@ -164,6 +166,7 @@ const tabs: {
   {
     icon: "material-symbols:cloud-sync-outline",
     value: "change",
+    badge: computed(() => Object.keys(sketchStore.変化).length),
   },
 ]
 

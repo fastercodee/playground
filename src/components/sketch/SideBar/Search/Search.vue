@@ -531,22 +531,3 @@ function deleteMatch(fullpath: string, match: Match) {
   if (matches.length === 0) deleteResults(fullpath, false)
 }
 </script>
-
-<style lang="scss" scoped>
-.input-group {
-  @apply w-full h-30px  px-2 text-13px border border-gray-600 border-opacity-80;
-  @apply flex flex-nowrap items-center justify-between;
-
-  .input-action {
-    @apply flex flex-nowrap;
-  }
-
-  input {
-    @apply bg-transparent;
-    min-width: 0;
-    &:focus {
-      @apply outline-none;
-    }
-  }
-}
-</style>
