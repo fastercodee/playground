@@ -11,7 +11,7 @@ body {
     @apply flex flex-nowrap;
   }
 
-  input {
+  input, textarea {
     @apply bg-transparent w-full h-full px-2;
 
     min-width: 0;

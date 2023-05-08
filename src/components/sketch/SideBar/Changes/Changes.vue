@@ -14,7 +14,7 @@
     class="min-h-0 px-2 select-none"
   >
     <div
-        v-if="!sketchStore.sketchIsOnline"
+      v-if="!sketchStore.sketchIsOnline"
       class="block input-group mb-20px"
       :class="{
         'border border-red': emitErrorName && !sketchName,
@@ -129,6 +129,7 @@ const $q = useQuasar()
 const auth = useAuth()
 const router = useRouter()
 const sketchStore = useSketchStore()
+const notify = useNotify()
 
 const treeStages = computed(() =>
   flatToTree(
@@ -186,19 +187,9 @@ async function publishChanges() {
 
     await router.push(`/sketch/${sketchInfo.uid}`)
 
-    $q.notify({
-      position: "bottom-right",
-      type: "success",
-      message: `Created sketch ${sketchInfo.name}`,
-    })
+    notify.success(`Created sketch ${sketchInfo.name}`)
   } catch (err) {
-    $q.notify({
-      position: "bottom-right",
-      type: "negative",
-      message:
-        (err as AxiosError<any>)?.response?.data?.message ??
-        (err as Error).message,
-    })
+    notify.error(err)
   } finally {
     pushing.value = false
   }

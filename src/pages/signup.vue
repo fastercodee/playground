@@ -28,7 +28,8 @@ meta:
           </q-card-section>
 
           <q-card-section>
-            <q-input v-if="!verifyOAuth2"
+            <q-input
+              v-if="!verifyOAuth2"
               standout
               color="green-5"
               label="Email"
@@ -39,7 +40,8 @@ meta:
               :rules="rules.email"
               name="email"
             />
-            <q-input v-if="!verifyOAuth2"
+            <q-input
+              v-if="!verifyOAuth2"
               standout
               color="green-5"
               label="Password"
@@ -121,12 +123,14 @@ import { AxiosError } from "axios"
 import { QForm } from "quasar"
 import { api } from "src/boot/axios"
 import { User } from "src/types/api/Models/User"
-import { useVerifyOAuth2 } from 'src/composables/use-verify-oauth2'
+import { useVerifyOAuth2 } from "src/composables/use-verify-oauth2"
+import { not } from "micromatch"
 
 const auth = useAuth()
 const $q = useQuasar()
+const notify = useNotify()
 
-const {  verifyOAuth2, loginWithOauth2 } = useVerifyOAuth2()
+const { verifyOAuth2, loginWithOauth2 } = useVerifyOAuth2()
 
 const email = ref("")
 const password = ref("")
@@ -189,30 +193,21 @@ async function signUp() {
   loading.value = true
 
   try {
-    const user = verifyOAuth2.value ?  await loginWithOauth2(username.value) : await auth
-      .register({
-        data: {
-          email: email.value,
-          username: username.value,
-          password: password.value,
-        },
-      })
-      .then((res) => res.data.user as User)
+    const user = verifyOAuth2.value
+      ? await loginWithOauth2(username.value)
+      : await auth
+          .register({
+            data: {
+              email: email.value,
+              username: username.value,
+              password: password.value,
+            },
+          })
+          .then((res) => res.data.user as User)
 
-    $q.notify({
-      position: "bottom-right",
-      group: false,
-      message: `You register in as ${user.name ?? user.username}`,
-    })
+    notify.success(`You register in as ${user.name ?? user.username}`)
   } catch (err) {
-    $q.notify({
-      position: "bottom-right",
-      type: "negative",
-      group: false,
-      message:
-        (err as AxiosError<any> | undefined)?.response?.data?.message ??
-        (err as Error | undefined)?.message,
-    })
+    notify.error(err)
   }
 
   loading.value = false

@@ -10,4 +10,5 @@ export interface Sketch<EUser extends boolean, EFiles extends boolean> {
   created_at: string
   user: EUser extends true ? User : undefined
   files: EFiles extends true ? File[] : undefined
+  description?:string
 }

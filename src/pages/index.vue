@@ -1,6 +1,6 @@
 <route lang="yaml">
 name: sketch
-alias: ["sketch/:uid(\\d+)"]
+alias: "sketch/:uid(\\d+)?"
 </route>
 
 <template>
