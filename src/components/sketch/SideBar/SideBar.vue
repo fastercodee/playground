@@ -119,6 +119,9 @@
       class="h-full border-r border-gray-700 overflow-x-hidden relative flex flex-col flex-nowrap"
     >
       <KeepAlive>
+        <Info v-if="tabSelection === 'info'" />
+      </KeepAlive>
+      <KeepAlive>
         <Files v-if="tabSelection === 'file'" />
       </KeepAlive>
       <KeepAlive>
@@ -145,7 +148,7 @@ const sketchStore = useSketchStore()
 
 const tabSelection = ref<
   null | "info" | "file" | "search" | "change" | "setting"
->("change")
+>("info")
 const tabs: {
   icon: string
   value: Exclude<typeof tabSelection.value, null>
