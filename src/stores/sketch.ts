@@ -202,8 +202,6 @@ export const useSketchStore = defineStore("sketch", () => {
   const fetching = ref(true)
   const rootのsketch = computed(() => `home/${uid_sketch_opening.value}`)
 
-  const sketchIsOnline = computed<boolean>(() => !!uid_sketch_opening.value && uid_sketch_opening.value > 0)
-
   const hashes_serverのFile = useFile<Record<string, { uid: number; hash: string }>, true>(
     computed(() => `${rootのsketch.value}/.changes/hashes_server`),
     "{}",
@@ -223,7 +221,7 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   )
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
-    if (!sketchIsOnline.value) {
+    if (!sketchInfo.value) {
       console.warn("[fs/watch]: Stop updating the hashes due to the offline sketch.")
       return
     }
@@ -251,7 +249,7 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   )
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
-    if (!sketchIsOnline.value) {
+    if (!sketchInfo.value) {
       console.warn("[fs/watch]: Stop updating the hashes due to the offline sketch.")
       return
     }
@@ -337,7 +335,7 @@ export const useSketchStore = defineStore("sketch", () => {
 
   /// INFO: computed change
   const 変化 = computed<Record<string, StatusChange>>(() => {
-    const server = sketchIsOnline.value ? hashes_serverのFile.data : {}
+    const server = sketchInfo.value ? hashes_serverのFile.data : {}
     const client = hashes_clientのFile.data
 
     if (!server || !client) return {}
@@ -386,7 +384,9 @@ export const useSketchStore = defineStore("sketch", () => {
   })
 
   async function undoChange(fullPath: string, status: StatusChange) {
-    const server = sketchIsOnline.value ? hashes_serverのFile.data : {}
+    if (!sketchInfo.value) return
+
+    const server = hashes_serverのFile.data
     const relativePath = relative(rootのsketch.value, fullPath)
 
     const uid = server[relativePath]?.uid
@@ -601,7 +601,7 @@ export const useSketchStore = defineStore("sketch", () => {
 
   return {
     rootのsketch, changes_addedのFile,
-    sketchIsOnline, fetch, fetchOffline, sketchInfo, fetching, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
+    fetch, fetchOffline, sketchInfo, fetching, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
     createSketch, updateInfo, deleteSketch
   }
 })

@@ -9,45 +9,67 @@
       />
     </div>
   </header>
-  <main
-    v-if="sketchStore.sketchIsOnline || auth.check()"
-    class="min-h-0 px-2 select-none"
-  >
-    <div
-      v-if="!sketchStore.sketchIsOnline"
-      class="block input-group mb-20px"
-      :class="{
-        'border border-red': emitErrorName && !sketchName,
-      }"
-    >
-      <input
-        v-model.trim="sketchName"
-        placeholder="Sketch name"
-        @keypress="emitErrorName = false"
-      />
-      <span v-if="emitErrorName && !sketchName" class="text-12px mt-1 text-red"
-        >Required</span
+  <main class="min-h-0 px-2 select-none">
+    <template v-if="auth.check()">
+      <template
+        v-if="
+          !sketchStore.sketchInfo || sketchStore.sketchInfo.user.uid === user?.uid
+        "
       >
-    </div>
+        <div
+          v-if="!sketchStore.sketchInfo"
+          class="block input-group mb-20px"
+          :class="{
+            'border border-red': emitErrorName && !sketchName,
+          }"
+        >
+          <input
+            v-model.trim="sketchName"
+            placeholder="Sketch name"
+            @keypress="emitErrorName = false"
+          />
+          <span
+            v-if="emitErrorName && !sketchName"
+            class="text-12px mt-1 text-red"
+            >Required</span
+          >
+        </div>
 
+        <q-btn
+          rounded
+          size="sm"
+          class="w-full bg-green-500 bg-opacity-80 !text-12px min-h-0"
+          no-caps
+          :disable="notChange && !!sketchStore.sketchInfo"
+          :loading="pushing"
+          @click="publishChanges"
+          >{{
+            sketchStore.sketchInfo ? "Save changes" : "Push new sketch"
+          }}</q-btn
+        >
+      </template>
+      <q-btn
+        v-else
+        rounded
+        size="sm"
+        class="w-full bg-green-500 bg-opacity-80 !text-12px min-h-0"
+        no-caps
+        @click="sketchStore.fork"
+        >Fork sketch to save changes</q-btn
+      >
+    </template>
     <q-btn
+      v-else
       rounded
       size="sm"
       class="w-full bg-green-500 bg-opacity-80 !text-12px min-h-0"
       no-caps
-      :disable="notChange && sketchStore.sketchIsOnline"
-      :loading="pushing"
-      @click="publishChanges"
-      >{{
-        sketchStore.sketchIsOnline ? "Save changes" : "Push new sketch"
-      }}</q-btn
+      to="/login"
+      >Log In with to save changes</q-btn
     >
   </main>
 
-  <section
-    v-if="sketchStore.sketchIsOnline || auth.check()"
-    class="flex-1 min-h-0 flex flex-col flex-nowrap select-none"
-  >
+  <section class="flex-1 min-h-0 flex flex-col flex-nowrap select-none">
     <h3
       class="px-2 text-13px text-gray-200 py-1 leading-normal mt-1 flex flex-nowrap justify-between items-center group"
       v-if="!notChange"
@@ -123,10 +145,10 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import { AxiosError } from "axios"
 
 const $q = useQuasar()
 const auth = useAuth()
+const user = useUser<User>()
 const router = useRouter()
 const sketchStore = useSketchStore()
 const notify = useNotify()
@@ -166,11 +188,11 @@ const pushing = ref(false)
 async function publishChanges() {
   emitErrorName.value = true
 
-  if (!sketchStore.sketchIsOnline && !sketchName.value) return
+  if (!sketchStore.sketchInfo && !sketchName.value) return
 
   pushing.value = true
   try {
-    if (sketchStore.sketchIsOnline) {
+    if (sketchStore.sketchInfo) {
       await sketchStore.pushChanges()
 
       $q.notify({
