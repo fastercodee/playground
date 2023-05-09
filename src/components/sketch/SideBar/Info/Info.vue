@@ -2,12 +2,17 @@
   <header class="py-2 px-3 text-12px flex justify-between">INFO</header>
   <q-separator />
   <main v-if="sketchInfo" class="min-h-0 py-2 px-3 select-none">
-    <template v-if="!editing">
+    <template v-if="!editing || user?.uid !== sketchInfo.user.uid">
       <div class="flex flex-nowrap items-center justify-between">
         <h1 class="text-subtitle1 text-14px weight-normal">
           {{ sketchInfo.name }}
         </h1>
-        <q-btn round dense @click="editing = true">
+        <q-btn
+          v-if="sketchInfo.user.uid === user?.uid"
+          round
+          dense
+          @click="editing = true"
+        >
           <Icon icon="codicon:edit" width="16px" height="16px" />
         </q-btn>
       </div>
@@ -105,17 +110,19 @@
       </div>
     </div>
 
-    <q-separator class="my-3" />
+    <template v-if="sketchInfo.user.uid === user?.uid">
+      <q-separator class="my-3" />
 
-    <div class="flex items-center justify-end">
-      <q-toggle
-        :model-value="sketchInfo.private"
-        @update:model-value="togglePrivate"
-        dense
-        size="sm"
-        label="Private"
-      />
-    </div>
+      <div class="flex items-center justify-end">
+        <q-toggle
+          :model-value="sketchInfo.private"
+          @update:model-value="togglePrivate"
+          dense
+          size="sm"
+          label="Private"
+        />
+      </div>
+    </template>
 
     <q-btn
       rounded
@@ -128,12 +135,15 @@
     >
 
     <q-btn
+      v-if="sketchInfo.user.uid === user?.uid"
       rounded
       outline
       size="sm"
       color="red"
       class="mt-3 w-full !text-12px min-h-0"
       no-caps
+      :loading="deleting"
+      @click="deleteSketch"
       >Delete Sketch</q-btn
     >
   </main>
@@ -144,10 +154,14 @@
 import { Icon } from "@iconify/vue"
 import type { AxiosError } from "axios"
 import { storeToRefs } from "pinia"
+import { User } from "src/types/api/Models/User"
 
 const auth = useAuth()
+const user = useUser<User>()
 const sketchStore = useSketchStore()
 const notify = useNotify()
+const router = useRouter()
+const $q = useQuasar()
 
 const { sketchInfo } = storeToRefs(sketchStore)
 
@@ -236,5 +250,37 @@ async function togglePrivate(newVal: boolean) {
     }
     notify.error(err)
   }
+}
+
+const deleting = ref(false)
+async function deleteSketch() {
+  $q.dialog({
+    title: "Confirm",
+    message: "Are you sure you want to delete this sketch?",
+    cancel: {
+      rounded: true,
+      noCaps: true,
+      color: "transparent",
+    },
+    persistent: true,
+    ok: {
+      label: "Delete",
+      color: "negative",
+      rounded: true,
+      noCaps: true,
+    },
+  }).onOk(async () => {
+    deleting.value = true
+
+    try {
+      await sketchStore.deleteSketch()
+      notify.success("Sketch deleted")
+      await router.push("/")
+    } catch (err) {
+      notify.error(err)
+    } finally {
+      deleting.value = false
+    }
+  })
 }
 </script>

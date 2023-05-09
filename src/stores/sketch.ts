@@ -562,7 +562,7 @@ export const useSketchStore = defineStore("sketch", () => {
   async function updateInfo(info: {
     name?: string,
     description?: string,
-    private?: '0' | '1',
+    private?: "0" | "1",
   }) {
     if (!sketchInfo.value) throw new Error("Sketch info not ready")
 
@@ -580,10 +580,22 @@ export const useSketchStore = defineStore("sketch", () => {
     return sketch
   }
 
+  async function deleteSketch() {
+    if (!sketchInfo.value) throw new Error("Sketch info not ready")
+
+    await auth.http({
+      url: "/sketch/delete",
+      method: "post",
+      data: {
+        uid: sketchInfo.value.uid,
+      },
+    })
+  }
+
 
   return {
     rootのsketch, changes_addedのFile,
     sketchIsOnline, fetch, fetchOffline, sketchInfo, fetching, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
-    createSketch, updateInfo
+    createSketch, updateInfo, deleteSketch
   }
 })
