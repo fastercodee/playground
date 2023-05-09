@@ -120,7 +120,14 @@ const decevier = ref<{
 } | null>(null) // computedAsync(() => directoryDetails(props.entry))
 
 async function loadDecevier() {
-  if (!decevier.value) decevier.value = await directoryDetails(props.entry)
+  if (decevier.value) return
+
+  if (props.deepLevel === 0)
+    decevier.value = await directoryDetails(props.entry).then((res) => {
+      res.directories = res.directories.filter((dir) => dir.name !== ".changes")
+      return res
+    })
+  else decevier.value = await directoryDetails(props.entry)
 }
 watch(opening, (opening) => {
   if (opening) loadDecevier()
@@ -178,7 +185,7 @@ function sortEntries(entries: Entry<"file" | "directory">[]) {
 }
 async function createDirectory(name: string, isDir: boolean) {
   creating.value = null
-    const path = `${props.entry.fullPath}/${name}`
+  const path = `${props.entry.fullPath}/${name}`
   if (isDir) {
     await Filesystem.mkdir({
       path,
