@@ -36,7 +36,7 @@ meta:
             color="green-5"
             label="Email or username"
             v-model="email"
-            class="mb-3 control-transparent"
+            class="q-input--custom mb-3"
           />
           <q-input
             standout
@@ -44,7 +44,7 @@ meta:
             label="Password"
             :type="isPwd ? 'password' : 'text'"
             v-model="password"
-            class="control-transparent"
+            class="q-input--custom"
           >
             <template v-slot:append>
               <q-icon
@@ -196,18 +196,3 @@ async function logIn() {
   loading.value = false
 }
 </script>
-
-<style lang="scss" scoped>
-.control-transparent :deep(.q-field__control) {
-  background-color: rgba(255, 255, 255, 0.07) !important;
-  input {
-    color: white !important;
-  }
-  height: 50px !important;
-
-  .q-field__label {
-    top: 16px !important;
-    font-size: 14px !important;
-  }
-}
-</style>

@@ -35,7 +35,7 @@ meta:
               label="Email"
               type="email"
               v-model="email"
-              class="mb-3 control-transparent"
+              class="mb-3 q-input--custom"
               debounce="500"
               :rules="rules.email"
               name="email"
@@ -47,7 +47,7 @@ meta:
               label="Password"
               :type="isPwd ? 'password' : 'text'"
               v-model="password"
-              class="mb-3 control-transparent"
+              class="mb-3 q-input--custom"
               lazy-rule
               :rules="rules.password"
               name="password"
@@ -66,7 +66,7 @@ meta:
               color="green-5"
               label="Username"
               v-model="username"
-              class="mb-3 control-transparent"
+              class="mb-3 q-input--custom"
               debounce="500"
               :rules="rules.username"
               name="username"
@@ -213,27 +213,3 @@ async function signUp() {
   loading.value = false
 }
 </script>
-
-<style lang="scss" scoped>
-.control-transparent :deep(.q-field__control) {
-  &,
-  .q-field__bottom {
-    --q-negative: #ef4444;
-  }
-
-  background-color: rgba(255, 255, 255, 0.07) !important;
-  input {
-    color: white !important;
-  }
-  height: 50px !important;
-
-  .q-field__label {
-    top: 16px !important;
-    font-size: 14px !important;
-  }
-}
-
-.control-transparent.q-field--error :deep(.q-field__bottom) {
-  color: #ef4444 !important;
-}
-</style>
