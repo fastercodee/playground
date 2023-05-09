@@ -119,16 +119,16 @@
       class="h-full border-r border-gray-700 overflow-x-hidden relative flex flex-col flex-nowrap"
     >
       <KeepAlive>
-        <Info v-if="tabSelection === 'info'" />
+        <Info v-if="!sketchStore.fetching && tabSelection === 'info'" />
       </KeepAlive>
       <KeepAlive>
-        <Files v-if="tabSelection === 'file'" />
+        <Files v-if="sketchStore.fetching || tabSelection === 'file'" />
       </KeepAlive>
       <KeepAlive>
-        <Search v-if="tabSelection === 'search'" />
+        <Search v-if="!sketchStore.fetching && tabSelection === 'search'" />
       </KeepAlive>
       <KeepAlive>
-        <Changes v-if="tabSelection === 'change'" />
+        <Changes v-if="!sketchStore.fetching && tabSelection === 'change'" />
       </KeepAlive>
     </div>
   </Resizable>

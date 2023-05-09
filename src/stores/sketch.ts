@@ -197,12 +197,12 @@ export const useSketchStore = defineStore("sketch", () => {
   const auth = useAuth()
   const route = useRoute()
 
-  const uid_sketch_opening = ref<number>(route.params.uid as unknown as number | undefined ?? -1)
+  const uid_sketch_opening = ref<number | void>(route.params.uid ? parseInt(route.params.uid as string) : undefined)
   const sketchInfo = shallowRef<Readonly<Sketch<true, false>>>()
-  const fetching = ref(false)
+  const fetching = ref(true)
   const rootのsketch = computed(() => `home/${uid_sketch_opening.value}`)
 
-  const sketchIsOnline = computed<boolean>(() => uid_sketch_opening.value > 0)
+  const sketchIsOnline = computed<boolean>(() => !!uid_sketch_opening.value && uid_sketch_opening.value > 0)
 
   const hashes_serverのFile = useFile<Record<string, { uid: number; hash: string }>, true>(
     computed(() => `${rootのsketch.value}/.changes/hashes_server`),
