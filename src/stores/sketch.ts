@@ -221,6 +221,7 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   )
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
+    if (fetching.value) return
     if (!sketchInfo.value) {
       console.warn("[fs/watch]: Stop updating the hashes due to the offline sketch.")
       return
@@ -249,6 +250,7 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   )
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
+    if (fetching.value) return
     if (!sketchInfo.value) {
       console.warn("[fs/watch]: Stop updating the hashes due to the offline sketch.")
       return
@@ -369,6 +371,8 @@ export const useSketchStore = defineStore("sketch", () => {
   })
 
   const 追加された変更 = computed(() => {
+    if (!hashes_serverのFile.data || !hashes_clientのFile.data) return
+
     const stages: typeof 変化.value = {}
 
     for (const status in changes_addedのFile.data) {
@@ -376,6 +380,31 @@ export const useSketchStore = defineStore("sketch", () => {
       changes_addedのFile.data[
         status as keyof typeof changes_addedのFile.data
       ]!.forEach((relativePath) => {
+        // validate change 
+        switch (status) {
+          case "M":
+            // check exists on all
+            if (
+              relativePath in hashes_serverのFile.data ||
+              relativePath in hashes_clientのFile.data
+            ) return
+            break
+          case "D":
+            // check server exists and client not exists
+            if (
+              relativePath in hashes_serverのFile.data ||
+              !(relativePath in hashes_clientのFile.data)
+            ) return
+            break
+          case "U":
+            // check sever not exits client exists
+            if (
+              !(relativePath in hashes_serverのFile.data) ||
+              (relativePath in hashes_clientのFile.data)
+            ) return
+            break
+        }
+
         stages[join(rootのsketch.value, relativePath)] = status as keyof typeof changes_addedのFile.data
       })
     }
@@ -556,6 +585,7 @@ export const useSketchStore = defineStore("sketch", () => {
       responseType: "json"
     })
 
+    changes_addedのFile.data = {}
     return sketch
   }
 
