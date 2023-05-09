@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import { AxiosError } from "axios"
 import { OAuth2_SUPPORTS } from "boot/auth"
+import { User } from "src/types/api/Models/User"
 
 export function useVerifyOAuth2() {
   const route = useRoute()
@@ -37,9 +38,10 @@ export function useVerifyOAuth2() {
           id_token: id_token.value,
           username
         }
-      })
+      }).then(res => res.data.user as User)
     } catch (err) {
       console.log(err)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const code: string | undefined = (err as AxiosError<any> | undefined)?.response?.data?.code
       if (code === "username_required") {
         // question scan username

@@ -11,19 +11,22 @@
           <Icon icon="codicon:edit" width="16px" height="16px" />
         </q-btn>
       </div>
-      <p class="text-gray-400">Add a short description for this sandbox</p>
+      <p class="text-gray-400">
+        {{
+          sketchInfo.description ?? "Add a short description for this sandbox"
+        }}
+      </p>
     </template>
-    <form @submit="updateInfo" v-else>
+    <q-form @submit="updateInfo" v-else>
       <q-input
         filled
         debounce="500"
         v-model.trim="name"
         placeholder="Sketch name"
-        class="control-transparent mt-2"
-        lazy-rules
+        class="q-input--custom mt-2"
         :rules="[(v) => (v ? true : 'Required'), ruleCheckName]"
       />
-      <div class="input-group h-auto bg-gray-700 bg-opacity-30">
+      <div class="input-group h-auto bg-gray-700 bg-opacity-30 mt-4">
         <textarea
           v-model.trim="description"
           placeholder="Description"
@@ -59,7 +62,7 @@
           >Update</q-btn
         >
       </div>
-    </form>
+    </q-form>
 
     <div class="flex items-center mt-3">
       <q-avatar size="30px">
@@ -105,7 +108,9 @@
     <q-separator class="my-3" />
 
     <div class="flex items-center justify-end">
-      <q-toggle v-model="sketchInfo.private" dense size="sm" label="Private" />
+      <q-toggle v-model="sketchInfo.private" @update:model-value="
+      togglePrivate
+      " dense size="sm" label="Private" />
     </div>
 
     <q-btn
@@ -133,6 +138,7 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
+import type { AxiosError } from "axios"
 import { storeToRefs } from "pinia"
 
 const auth = useAuth()
@@ -157,19 +163,26 @@ watch(editing, (editing) => {
 })
 
 async function ruleCheckName(value: string) {
+  if (!sketchInfo.value) return
+  if (sketchInfo.value.name === name.value) return true
+
   try {
     await auth.http({
       url: "/sketch/check_name",
       method: "POST",
       data: {
+        uid: sketchInfo.value.uid,
         name: value,
       },
     })
 
     return true
-  } catch (err: AxiosError<any>) {
+  } catch (err) {
     return (
-      err?.response?.data?.errors?.name?.[0] ?? err?.response?.data?.message
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (err as AxiosError<any>)?.response?.data?.errors?.name?.[0] ??
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (err as AxiosError<any>)?.response?.data?.message
     )
   }
 }
@@ -181,14 +194,12 @@ async function updateInfo() {
   updatingInfo.value = true
 
   try {
-    await auth.http({
-      url: "/sketch/update_info",
-      method: "post",
-      data: {
-        uid: sketchInfo.value.uid,
-        name: name.value,
-        description: description.value,
-      },
+    await sketchStore.updateInfo({
+      name: sketchInfo.value.name === name.value ? undefined : name.value,
+      description:
+        sketchInfo.value.description === description.value
+          ? undefined
+          : description.value,
     })
     notify.success("Info updated")
   } catch (err) {
@@ -198,19 +209,8 @@ async function updateInfo() {
     editing.value = false
   }
 }
-</script>
 
-<style lang="scss" scoped>
-.control-transparent :deep(.q-field__control) {
-  background-color: rgba(255, 255, 255, 0.07) !important;
-  input {
-    color: white !important;
-  }
-  height: 35px !important;
-
-  .q-field__label {
-    top: 16px !important;
-    font-size: 14px !important;
-  }
+function togglePrivate(newVal: boolean) {
+  // send http
 }
-</style>
+</script>

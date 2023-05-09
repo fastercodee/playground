@@ -87,38 +87,7 @@ meta:
       <q-separator />
 
       <q-card-section>
-        <q-btn
-          class="w-full bg-[#2B3245]"
-          no-caps
-          @click="loginWithGoogle"
-          :disable="verifingOauth2"
-        >
-          <Icon icon="logos:google-icon" class="mr-1" />
-          Continue with Google
-
-          <q-spinner-tail
-            v-if="route.query.type === 'google' && verifingOauth2"
-            class="ml-1"
-            size="20px"
-            color="white"
-          />
-        </q-btn>
-        <q-btn
-          class="w-full bg-[#2B3245] mt-3"
-          no-caps
-          @click="loginWithGithub"
-          :disable="verifingOauth2"
-        >
-          <Icon icon="logos:github-icon" class="mr-1" />
-          Continue with Github
-
-          <q-spinner-tail
-            v-if="route.query.type === 'github' && verifingOauth2"
-            class="ml-1"
-            size="20px"
-            color="white"
-          />
-        </q-btn>
+        <LoginWith :verifing-oauth2="verifyOAuth2" />
       </q-card-section>
 
       <q-card-section class="text-center">
@@ -135,16 +104,10 @@ meta:
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import { AxiosError } from "axios"
-import { loginWithGithub, loginWithGoogle , OAuth2_SUPPORTS } from "boot/auth"
-import { api } from "boot/axios"
 import { useVerifyOAuth2 } from "src/composables/use-verify-oauth2"
 import { User } from "src/types/api/Models/User"
 
 const auth = useAuth()
-const $q = useQuasar()
-const route = useRoute()
-const router = useRouter()
 const notify = useNotify()
 
 const { verifyOAuth2, loginWithOauth2 } = useVerifyOAuth2()
@@ -153,12 +116,15 @@ const verifyOAuth2Failure = ref(false)
 
 if (verifyOAuth2.value) {
   verifingOauth2.value = true
+  // eslint-disable-next-line promise/catch-or-return
   loginWithOauth2()
-    .then((res) => res?.data.user as User | undefined)
     .then((user) => {
       if (user)
         notify.success(`You register in as ${user.name ?? user.username}`)
       else console.warn("Redirecting")
+
+      // eslint-disable-next-line no-useless-return
+      return
     })
     .catch((err) => {
       notify.error(err)
@@ -186,9 +152,7 @@ async function logIn() {
       })
       .then((res) => res.data.user as User)
 
-      notify.success(
-        `You logged in as ${user.name}`
-      )
+    notify.success(`You logged in as ${user.name}`)
   } catch (err) {
     notify.error(err)
   }

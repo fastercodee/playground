@@ -10,6 +10,7 @@ import { isNative } from "src/constants"
 import { TreeDir } from "src/logic/flat-to-tree"
 import { globby } from "src/logic/globby"
 import { sha256File } from "src/logic/sha256-file"
+import { SketchController } from "src/types/api/Controller/SketchController"
 import type { File } from "src/types/api/Models/File"
 import { Sketch } from "src/types/api/Models/Sketch"
 import { getHashesClient } from "src/workers/get-hashes-client"
@@ -106,7 +107,9 @@ async function actionNextOpenSketch(
       hashes: entries_hashes_client.map((item) => item[1]),
       deletes: entries_hashes_server.filter(([relativePath]) => !(relativePath in entries_hashes_client)).map(([relativePath]) => relativePath)
     }
-  })
+  }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
+    data: SketchController["fetch"]["next"]["response"]
+  }
 
   const hashes_server: Record<string, { readonly uid: number; readonly hash: string }> = {}
   for (const [filePath, change] of Object.entries(res.data.file_changes)) {
@@ -556,9 +559,31 @@ export const useSketchStore = defineStore("sketch", () => {
     return sketch
   }
 
+  async function updateInfo(info: {
+    name?: string,
+    description?: string,
+    private?: boolean,
+  }) {
+    if (!sketchInfo.value) throw new Error("Sketch info not ready")
+
+    const { data: { sketch } } = await auth.http({
+      url: "/sketch/update_info",
+      method: "post",
+      data: {
+        uid: sketchInfo.value.uid,
+        ...info
+      },
+    })
+
+    sketchInfo.value = sketch
+
+    return sketch
+  }
+
+
   return {
     rootのsketch, changes_addedのFile,
     sketchIsOnline, fetch, fetchOffline, sketchInfo, fetching, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
-    createSketch
+    createSketch, updateInfo
   }
 })

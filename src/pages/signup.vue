@@ -97,10 +97,7 @@ meta:
           <q-separator />
 
           <q-card-section>
-            <q-btn class="w-full bg-[#2B3245]" no-caps>
-              <Icon icon="logos:google-icon" class="mr-1" />
-              Continue with Google
-            </q-btn>
+            <LoginWith :verifing-oauth2="verifyOAuth2 && loading" />
           </q-card-section>
 
           <q-card-section class="text-center">
@@ -122,12 +119,10 @@ import { Icon } from "@iconify/vue"
 import { AxiosError } from "axios"
 import { QForm } from "quasar"
 import { api } from "src/boot/axios"
-import { User } from "src/types/api/Models/User"
 import { useVerifyOAuth2 } from "src/composables/use-verify-oauth2"
-import { not } from "micromatch"
+import { User } from "src/types/api/Models/User"
 
 const auth = useAuth()
-const $q = useQuasar()
 const notify = useNotify()
 
 const { verifyOAuth2, loginWithOauth2 } = useVerifyOAuth2()
@@ -152,6 +147,7 @@ const rules = {
           email: v,
         })
         .then(() => true)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch((err: AxiosError<any>) => {
           return (
             err?.response?.data?.errors?.email?.[0] ??
@@ -179,6 +175,7 @@ const rules = {
           username: v,
         })
         .then(() => true)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .catch((err: AxiosError<any>) => {
           return err?.response?.data?.message
         })
@@ -205,7 +202,7 @@ async function signUp() {
           })
           .then((res) => res.data.user as User)
 
-    notify.success(`You register in as ${user.name ?? user.username}`)
+    if (user) notify.success(`You register in as ${user.name ?? user.username}`)
   } catch (err) {
     notify.error(err)
   }
