@@ -145,6 +145,7 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
+import { User } from "src/types/api/Models/User"
 
 const $q = useQuasar()
 const auth = useAuth()

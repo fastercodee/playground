@@ -371,7 +371,7 @@ export const useSketchStore = defineStore("sketch", () => {
   })
 
   const 追加された変更 = computed(() => {
-    if (!hashes_serverのFile.data || !hashes_clientのFile.data) return
+    if (!hashes_serverのFile.data || !hashes_clientのFile.data) return {}
 
     const stages: typeof 変化.value = {}
 
@@ -380,7 +380,7 @@ export const useSketchStore = defineStore("sketch", () => {
       changes_addedのFile.data[
         status as keyof typeof changes_addedのFile.data
       ]!.forEach((relativePath) => {
-        // validate change 
+        // validate change
         switch (status) {
           case "M":
             // check exists on all
@@ -628,10 +628,14 @@ export const useSketchStore = defineStore("sketch", () => {
     })
   }
 
+  async function fork() {
+
+  }
+
 
   return {
     rootのsketch, changes_addedのFile,
     fetch, fetchOffline, sketchInfo, fetching, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
-    createSketch, updateInfo, deleteSketch
+    createSketch, updateInfo, deleteSketch,fork
   }
 })
