@@ -108,9 +108,13 @@
     <q-separator class="my-3" />
 
     <div class="flex items-center justify-end">
-      <q-toggle v-model="sketchInfo.private" @update:model-value="
-      togglePrivate
-      " dense size="sm" label="Private" />
+      <q-toggle
+        :model-value="sketchInfo.private"
+        @update:model-value="togglePrivate"
+        dense
+        size="sm"
+        label="Private"
+      />
     </div>
 
     <q-btn
@@ -210,7 +214,27 @@ async function updateInfo() {
   }
 }
 
-function togglePrivate(newVal: boolean) {
+async function togglePrivate(newVal: boolean) {
+  if (!sketchStore.sketchInfo) return
+
+  sketchStore.sketchInfo = {
+    ...sketchStore.sketchInfo,
+    private: newVal,
+  }
+
   // send http
+  try {
+    await sketchStore.updateInfo({
+      private: newVal ? "1" : "0",
+    })
+    notify.success(`Sketch updated ${newVal ? "is" : "is not"} private`)
+  } catch (err) {
+    if (!sketchStore.sketchInfo) return
+    sketchStore.sketchInfo = {
+      ...sketchStore.sketchInfo,
+      private: !newVal,
+    }
+    notify.error(err)
+  }
 }
 </script>

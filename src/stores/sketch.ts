@@ -562,7 +562,7 @@ export const useSketchStore = defineStore("sketch", () => {
   async function updateInfo(info: {
     name?: string,
     description?: string,
-    private?: boolean,
+    private?: '0' | '1',
   }) {
     if (!sketchInfo.value) throw new Error("Sketch info not ready")
 
