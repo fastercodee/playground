@@ -590,6 +590,12 @@ export const useSketchStore = defineStore("sketch", () => {
         uid: sketchInfo.value.uid,
       },
     })
+
+    await Filesystem.rmdir({
+      path: `home/${sketchInfo.value.uid}`,
+      directory: Directory.External,
+      recursive: true
+    })
   }
 
 
