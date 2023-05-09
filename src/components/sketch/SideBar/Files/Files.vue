@@ -31,8 +31,8 @@
         ref="treeRef"
         :entry="entryCurrent"
         :deep-level="0"
-        :sib-directories="[]"
-        :sib-files="[]"
+        :sib-directories="{}"
+        :sib-files="{}"
         only-child
         @load="onLoad"
         @error="onError"

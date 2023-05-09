@@ -38,8 +38,8 @@ import type { Entry } from "src/types/Entry"
 defineProps<{
   type: "file" | "directory"
 
-  sibDirectories: Entry<"directory">[]
-  sibFiles: Entry<"file">[]
+  sibDirectories: Record<string, Entry<"directory">>
+  sibFiles: Record<string, Entry<"file">>
 }>()
 const emit = defineEmits<{
   (name: "save", val: string): void

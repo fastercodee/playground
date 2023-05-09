@@ -31,19 +31,14 @@
       />
       <!-- /add dir -->
       <TreeDirectory
-        v-for="item in decevier.directories"
-        :key="item.name"
+        v-for="(item, name) in decevier.directories"
+        :key="name"
         :entry="item"
         :deep-level="deepLevel + 1"
         :sib-directories="decevier.directories"
         :sib-files="decevier.files"
         @renamed="onChildRenamed(item, decevier!.directories, $event)"
-        @deleted="
-          decevier!.directories.splice(
-            decevier!.directories.indexOf(item) >>> 0,
-            1
-          )
-        "
+        @deleted="delete decevier.directories[name]"
         @child-added="onChildAdded"
       />
 
@@ -61,8 +56,8 @@
       />
       <!-- /add file-->
       <TreeDirectoryMain
-        v-for="item in decevier.files"
-        :key="item.name"
+        v-for="(item, name) in decevier.files"
+        :key="name"
         :style="{
           paddingLeft: 17 + 8 + 7 + 7 * deepLevel + 'px',
         }"
@@ -75,15 +70,15 @@
         :sib-files="decevier.files"
         @click="seasonEditStore.openFile(item)"
         @renamed="onChildRenamed(item, decevier!.files, $event)"
-        @deleted="
-          decevier!.files.splice(decevier!.files.indexOf(item) >>> 0, 1)
-        "
+        @deleted="delete decevier.files[name]"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { basename } from "path"
+
 import { useSeasonEdit } from "src/stores/season-edit"
 import type { Entry } from "src/types/Entry"
 
@@ -91,8 +86,8 @@ const props = defineProps<{
   entry: Entry<"directory">
   deepLevel: number
 
-  sibDirectories: Entry<"directory">[]
-  sibFiles: Entry<"file">[]
+  sibDirectories: Record<string, Entry<"directory">>
+  sibFiles: Record<string, Entry<"file">>
 
   onlyChild?: boolean
 }>()
@@ -115,19 +110,20 @@ const seasonEditStore = useSeasonEdit()
 
 const opening = ref(props.onlyChild)
 const decevier = ref<{
-  files: Entry<"file">[]
-  directories: Entry<"directory">[]
+  files: Record<string, Entry<"file">>
+  directories: Record<string, Entry<"directory">>
 } | null>(null) // computedAsync(() => directoryDetails(props.entry))
 
-async function loadDecevier() {
-  if (decevier.value) return
+async function loadDecevier(force = false) {
+  if (!force && decevier.value) return
 
-  if (props.deepLevel === 0)
-    decevier.value = await directoryDetails(props.entry).then((res) => {
-      res.directories = res.directories.filter((dir) => dir.name !== ".changes")
-      return res
-    })
-  else decevier.value = await directoryDetails(props.entry)
+  decevier.value =
+    props.deepLevel === 0
+      ? await directoryDetails(props.entry).then((res) => {
+          delete res.directories[".changes"]
+          return res
+        })
+      : await directoryDetails(props.entry)
 }
 watch(opening, (opening) => {
   if (opening) loadDecevier()
@@ -146,9 +142,17 @@ watch(
 )
 eventBus.watch(
   computed(() => props.entry.fullPath),
-  async (タイプ) => {
+  async (タイプ, パス) => {
     if (タイプ === "rmdir") return
-    decevier.value = await directoryDetails(props.entry)
+
+    if (タイプ === "copyDir") {
+      // check
+      if (decevier.value && basename(パス) in decevier.value.directories) return
+    } else {
+      if (decevier.value && basename(パス) in decevier.value.files) return
+    }
+
+    await loadDecevier(true)
   },
   { dir: true, deep: false }
 )
@@ -180,8 +184,14 @@ function addFolder() {
   creating.value = "directory"
 }
 
-function sortEntries(entries: Entry<"file" | "directory">[]) {
-  entries.sort((a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0))
+function sortEntries(entries: Record<string, Entry<"file" | "directory">>) {
+  Object.keys(entries)
+    .sort()
+    .forEach((key) => {
+      const val = entries[key]
+      delete entries[key]
+      entries[key] = val
+    })
 }
 async function createDirectory(name: string, isDir: boolean) {
   creating.value = null
@@ -206,7 +216,7 @@ async function createDirectory(name: string, isDir: boolean) {
 }
 function onChildRenamed(
   item: Entry<"file" | "directory">,
-  entries: Entry<"file" | "directory">[],
+  entries: Record<string, Entry<"file" | "directory">>,
   newName: string
 ) {
   item.name = newName

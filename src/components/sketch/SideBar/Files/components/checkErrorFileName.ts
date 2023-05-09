@@ -2,19 +2,20 @@ import type { Entry } from "src/types/Entry"
 
 export function checkErrorFileName(
   fileName: string,
-  siblings: Entry<"file" | "directory">[],
+  sibDirectories: Record<string, Entry<"directory">>,
+  sibFiles: Record<string, Entry<"file">>,
   skipEmpty: boolean
 ) {
   if (fileName === "") {
     return skipEmpty
       ? undefined
       : {
-          type: "error",
-          message: "A file or folder name must be provided.",
-        }
+        type: "error",
+        message: "A file or folder name must be provided.",
+      }
   }
 
-  if (siblings.some((item) => item.name === fileName)) {
+  if (fileName in sibDirectories || fileName in sibFiles) {
     return {
       type: "error",
       message: `

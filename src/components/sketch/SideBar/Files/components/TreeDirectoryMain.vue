@@ -81,8 +81,8 @@ const props = defineProps<{
   // eslint-disable-next-line no-use-before-define
   actions?: typeof contextmenu
 
-  sibDirectories: Entry<"directory">[]
-  sibFiles: Entry<"file">[]
+  sibDirectories: Record<string, Entry<"directory">>
+  sibFiles:Record<string,  Entry<"file">>
 }>()
 const emit = defineEmits<{
   (name: "renamed", newName: string): void

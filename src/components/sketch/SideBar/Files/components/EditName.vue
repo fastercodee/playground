@@ -38,8 +38,8 @@ import { checkErrorFileName } from "./checkErrorFileName"
 
 const props = defineProps<{
   currentName: string
-  sibDirectories: Entry<"directory">[]
-  sibFiles: Entry<"file">[]
+  sibDirectories: Record<string, Entry<"directory">>
+  sibFiles: Record<string, Entry<"file">>
   newer?: boolean
 }>()
 const emit = defineEmits<{
@@ -52,7 +52,8 @@ const input = ref(props.currentName)
 const error = computed(() =>
   checkErrorFileName(
     input.value,
-    [...props.sibDirectories, ...props.sibFiles],
+    props.sibDirectories,
+    props.sibFiles,
     props.newer
   )
 )

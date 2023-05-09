@@ -148,7 +148,7 @@ const sketchStore = useSketchStore()
 
 const tabSelection = ref<
   null | "info" | "file" | "search" | "change" | "setting"
->("info")
+>("file")
 const tabs: {
   icon: string
   value: Exclude<typeof tabSelection.value, null>
