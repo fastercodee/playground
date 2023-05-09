@@ -169,6 +169,9 @@ dependencies:
   vue-re-resizable:
     specifier: 6.9.19-beta.5
     version: 6.9.19-beta.5(vue@3.2.47)
+  vue-request:
+    specifier: 2.0.0-rc.4
+    version: 2.0.0-rc.4(vue@3.2.47)
   vue-router:
     specifier: ^4.0.0
     version: 4.1.6(vue@3.2.47)
@@ -2113,7 +2116,7 @@ packages:
   /@vueuse/shared@9.13.0(vue@3.2.47):
     resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
     dependencies:
-      vue-demi: 0.13.11(vue@3.2.47)
+      vue-demi: 0.14.0(vue@3.2.47)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -7432,6 +7435,20 @@ packages:
     dependencies:
       vue: 3.2.47
 
+  /vue-demi@0.14.0(vue@3.2.47):
+    resolution: {integrity: sha512-gt58r2ogsNQeVoQ3EhoUAvUsH9xviydl0dWJj7dabBC/2L4uBId7ujtCwDRD0JhkGsV1i0CtfLAeyYKBht9oWg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    requiresBuild: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      vue: 3.2.47
+
   /vue-eslint-parser@9.1.0(eslint@8.36.0):
     resolution: {integrity: sha512-NGn/iQy8/Wb7RrRa4aRkokyCZfOUWk19OP5HP6JEozQFX5AoS/t+Z0ZN7FY4LlmWc4FNI922V7cvX28zctN8dQ==}
     engines: {node: ^14.17.0 || >=16.0.0}
@@ -7456,6 +7473,19 @@ packages:
       vue: ^3
     dependencies:
       vue: 3.2.47
+    dev: false
+
+  /vue-request@2.0.0-rc.4(vue@3.2.47):
+    resolution: {integrity: sha512-Nv/CpfKlfwW9SVHakEukeSQpuqSwskeJsHK4gfw8KB8NZogWfR8+EU+XupLe+Dapnm+RAP+wZYzhw89v3Zyx2g==}
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^2.0.0 || >=3.0.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      vue: 3.2.47
+      vue-demi: 0.14.0(vue@3.2.47)
     dev: false
 
   /vue-router@4.1.6(vue@3.2.47):
