@@ -626,7 +626,7 @@ export const useSketchStore = defineStore("sketch", () => {
     })
   }
 
-  async function fork(name: string) {
+  async function fork(name?: string) {
     if (!sketchInfo.value) throw new Error("Sketch info not ready")
 
 
@@ -635,6 +635,7 @@ export const useSketchStore = defineStore("sketch", () => {
       method: "post",
       data: {
         uid: sketchInfo.value.uid,
+        name,
       },
     })
 

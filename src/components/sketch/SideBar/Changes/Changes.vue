@@ -176,6 +176,11 @@ const notChange = computed<boolean>(() => {
 const showResultAsTree = ref(true)
 
 const sketchName = ref("")
+watch(
+  () => sketchStore.sketchInfo?.name,
+  (name) => (sketchName.value = name ?? ""),
+  { immediate: true }
+)
 const emitErrorName = ref(false)
 const pushing = ref(false)
 
@@ -212,7 +217,7 @@ async function fork() {
   forking.value = true
 
   try {
-    const sketchInfo = await sketchStore.fork(sketchName.value)
+    const sketchInfo = await sketchStore.fork(sketchName.value || undefined)
     await router.push(`/sketch/${sketchInfo.uid}`)
 
     notify.success("Forked sketch")
