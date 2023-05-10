@@ -1,7 +1,10 @@
+<route lang="yaml">
+name: "catch-all"
+</route>
+
 <template>
-  <div
-    class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center"
-  >
+  <q-page class="text-white text-center q-pa-md w-[100vw] h-[100vh]">
+    <Header />
     <div>
       <div style="font-size: 30vh">404</div>
 
@@ -17,7 +20,7 @@
         no-caps
       />
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script setup lang="ts"></script>

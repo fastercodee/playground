@@ -4,19 +4,26 @@ alias: "sketch/:uid(\\d+)?"
 </route>
 
 <template>
-  <q-page class="flex flex-nowrap w-full w-[100vw] h-[100vh]">
+  <q-page
+    v-if="!notFound && !error"
+    class="flex flex-nowrap w-[100vw] h-[100vh]"
+  >
     <!-- <ToolBar /> -->
 
     <SideBar />
     <SketchMain />
+  </q-page>
+  <q-page v-else class="flex flex-nowrap w-[100vw] h-[100vh]">
+    <NotFound v-if="!notFound" />
+    <pre v-else>{{ error }}</pre>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import { AxiosError } from "axios"
 
+const NotFound = defineAsyncComponent(() => import("./[...catchAll].vue"))
 const route = useRoute()
-const $q = useQuasar()
 const sketchStore = useSketchStore()
 
 const loading = ref(false)
