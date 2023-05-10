@@ -29,7 +29,10 @@
         v-model.trim="name"
         placeholder="Sketch name"
         class="q-input--custom mt-2"
-        :rules="[(v) => (v ? true : 'Required'), ruleCheckName]"
+        :rules="[
+          (v) => (v ? true : 'Required'),
+          (v) => checkSketchName(v, auth, sketchInfo),
+        ]"
       />
       <div class="input-group h-auto bg-gray-700 bg-opacity-30 mt-4">
         <textarea
@@ -152,9 +155,9 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import type { AxiosError } from "axios"
 import { storeToRefs } from "pinia"
 import { User } from "src/types/api/Models/User"
+import { checkSketchName } from "src/validators/check-sketch-name"
 
 const auth = useAuth()
 const user = useUser<User>()
@@ -179,31 +182,6 @@ watch(editing, (editing) => {
     ]
   }
 })
-
-async function ruleCheckName(value: string) {
-  if (!sketchInfo.value) return
-  if (sketchInfo.value.name === name.value) return true
-
-  try {
-    await auth.http({
-      url: "/sketch/check_name",
-      method: "POST",
-      data: {
-        uid: sketchInfo.value.uid,
-        name: value,
-      },
-    })
-
-    return true
-  } catch (err) {
-    return (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (err as AxiosError<any>)?.response?.data?.errors?.name?.[0] ??
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (err as AxiosError<any>)?.response?.data?.message
-    )
-  }
-}
 
 const updatingInfo = ref(false)
 async function updateInfo() {

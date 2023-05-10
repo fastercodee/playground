@@ -10,54 +10,47 @@
     </div>
   </header>
   <main class="min-h-0 px-2 select-none">
-    <template v-if="auth.check()">
-      <template
-        v-if="
-          !sketchStore.sketchInfo || sketchStore.sketchInfo.user.uid === user?.uid
-        "
-      >
-        <div
-          v-if="!sketchStore.sketchInfo"
-          class="block input-group mb-20px"
-          :class="{
-            'border border-red': emitErrorName && !sketchName,
-          }"
-        >
-          <input
-            v-model.trim="sketchName"
-            placeholder="Sketch name"
-            @keypress="emitErrorName = false"
-          />
-          <span
-            v-if="emitErrorName && !sketchName"
-            class="text-12px mt-1 text-red"
-            >Required</span
-          >
-        </div>
+    <q-form v-if="auth.check()" @submit="publishChanges">
+      <q-input
+        v-if="!sketchStore.sketchInfo"
+        filled
+        debounce="500"
+        v-model.trim="sketchName"
+        placeholder="Sketch name"
+        class="q-input--custom mt-2"
+        :rules="[
+          (v) => (v ? true : 'Required'),
+          (v) => checkSketchName(v, auth, null),
+        ]"
+      />
 
-        <q-btn
-          rounded
-          size="sm"
-          class="w-full bg-green-500 bg-opacity-80 !text-12px min-h-0"
-          no-caps
-          :disable="notChange && !!sketchStore.sketchInfo"
-          :loading="pushing"
-          @click="publishChanges"
-          >{{
-            sketchStore.sketchInfo ? "Save changes" : "Push new sketch"
-          }}</q-btn
-        >
-      </template>
+      <q-btn
+        v-if="
+          !sketchStore.sketchInfo ||
+          sketchStore.sketchInfo.user.uid === user?.uid
+        "
+        type="submit"
+        rounded
+        size="sm"
+        class="w-full bg-green-500 bg-opacity-80 !text-12px min-h-0"
+        no-caps
+        :disable="notChange && !!sketchStore.sketchInfo"
+        :loading="pushing"
+        >{{
+          sketchStore.sketchInfo ? "Save changes" : "Push new sketch"
+        }}</q-btn
+      >
       <q-btn
         v-else
         rounded
         size="sm"
         class="w-full bg-green-500 bg-opacity-80 !text-12px min-h-0"
         no-caps
-        @click="sketchStore.fork"
+        :loading="forking"
+        @click="fork"
         >Fork sketch to save changes</q-btn
       >
-    </template>
+    </q-form>
     <q-btn
       v-else
       rounded
@@ -146,8 +139,8 @@
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
 import { User } from "src/types/api/Models/User"
+import { checkSketchName } from "src/validators/check-sketch-name"
 
-const $q = useQuasar()
 const auth = useAuth()
 const user = useUser<User>()
 const router = useRouter()
@@ -196,17 +189,13 @@ async function publishChanges() {
     if (sketchStore.sketchInfo) {
       await sketchStore.pushChanges()
 
-      $q.notify({
-        position: "bottom-right",
-        message: "Updated files sketch",
-      })
-
+      notify.success("Updated files sketch")
       return
     }
 
-    const sketchInfo = await sketchStore.createSketch(sketchName.value, false)
+    const sketchInfo = await sketchStore.publish(sketchName.value, false)
 
-    await sketchStore.fetchOffline(sketchInfo)
+    await sketchStore.fetchAfterPublish(sketchInfo)
 
     await router.push(`/sketch/${sketchInfo.uid}`)
 
@@ -215,6 +204,22 @@ async function publishChanges() {
     notify.error(err)
   } finally {
     pushing.value = false
+  }
+}
+
+const forking = ref(false)
+async function fork() {
+  forking.value = true
+
+  try {
+    const sketchInfo = await sketchStore.fork(sketchName.value)
+    await router.push(`/sketch/${sketchInfo.uid}`)
+
+    notify.success("Forked sketch")
+  } catch (err) {
+    notify.error(err)
+  } finally {
+    forking.value = false
   }
 }
 </script>

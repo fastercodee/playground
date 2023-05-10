@@ -173,6 +173,7 @@ module.exports = configure(function (/* ctx */) {
               "src/stores/**/*.ts",
               "src/composables/*.ts",
               "src/constants/*.ts",
+              "src/validators/*.ts",
             ],
             eslintrc: {
               enabled: true, // Default `false`

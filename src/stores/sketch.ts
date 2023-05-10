@@ -316,9 +316,7 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   }
   /** @description - this function call by after create sketch (sketch data readu on client) */
-  async function fetchOffline(info: Sketch<true, false>) {
-
-    fetching.value = true
+  async function fetchAfterPublish(info: Sketch<true, false>) {
     try {
       console.log(`fetch: renaming ${uid_sketch_opening.value} to ${info.uid}`)
       // rename
@@ -550,7 +548,7 @@ export const useSketchStore = defineStore("sketch", () => {
     changes_addedのFile.data = {}
   }
 
-  async function createSketch(
+  async function publish(
     name: string,
     isPrivate: boolean,
   ): Promise<Sketch<true, false>> {
@@ -628,14 +626,43 @@ export const useSketchStore = defineStore("sketch", () => {
     })
   }
 
-  async function fork() {
+  async function fork(name: string) {
+    if (!sketchInfo.value) throw new Error("Sketch info not ready")
+
+
+    const { data: { sketch } } = await auth.http({
+      url: "/sketch/fork",
+      method: "post",
+      data: {
+        uid: sketchInfo.value.uid,
+      },
+    })
+
+
+
+    try {
+      console.log(`fetch: coping ${uid_sketch_opening.value} to ${sketch.uid}`)
+      // rename
+
+      await Filesystem.copy({
+        from: `home/${uid_sketch_opening.value}`,
+        to: `home/${sketch.uid}`,
+        directory: Directory.External
+      })
+
+      await fetch(sketch.uid)
+
+      return sketch
+    } finally {
+      fetching.value = false
+    }
 
   }
 
 
   return {
     rootのsketch, changes_addedのFile,
-    fetch, fetchOffline, sketchInfo, fetching, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
-    createSketch, updateInfo, deleteSketch,fork
+    fetch, fetchAfterPublish, sketchInfo, fetching, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
+    publish, updateInfo, deleteSketch, fork
   }
 })
