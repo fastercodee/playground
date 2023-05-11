@@ -92,6 +92,26 @@ export interface SketchController {
     },
     {
       sketch: Sketch<true, false>
+      files_added: Record<string, { uid: number; hash: string }>
+    }
+  >
+  update_info: Control<
+    {
+      name?: string,
+      description?: string,
+      private?: "0" | "1",
+    },
+    {
+      sketch: Sketch<true, false>
+    }
+  >
+  fork: Control<
+    {
+      uid: number
+      name?: string,
+    },
+    {
+      sketch: Sketch<true, false>
     }
   >
 

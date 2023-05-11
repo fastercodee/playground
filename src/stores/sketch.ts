@@ -153,7 +153,7 @@ async function forceUpdateHashesClient(
   workerGetHashesClient?.terminate()
   workerGetHashesClient = null
 
-  if ((await exists(rootのsketch)) === false) return
+  if (!(await exists(rootのsketch))) return
 
   const ignore = [
     "/.changes/",
@@ -197,7 +197,7 @@ export const useSketchStore = defineStore("sketch", () => {
   const auth = useAuth()
   const route = useRoute()
 
-  const uid_sketch_opening = ref<number | void>(route.params.uid ? parseInt(route.params.uid as string) : undefined)
+  const uid_sketch_opening = ref<number | string | void>(route.params.uid ? route.params.uid as string : undefined)
   const sketchInfo = shallowRef<Readonly<Sketch<true, false>>>()
   const fetching = ref(true)
   const rootのsketch = computed(() => `home/${uid_sketch_opening.value}`)
@@ -533,7 +533,9 @@ export const useSketchStore = defineStore("sketch", () => {
       url: "/sketch/update",
       method: "post",
       data: form,
-    })
+    }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
+      data: SketchController["update"]["response"]
+    }
 
     changes_addedのFile.data.D?.forEach(relativePath => {
       delete hashes_serverのFile.data[relativePath]
@@ -542,7 +544,7 @@ export const useSketchStore = defineStore("sketch", () => {
       hashes_serverのFile.data[relativePath].hash = hashes_clientのFile.data[relativePath]
     })
     changes_addedのFile.data.U?.forEach(relativePath => {
-      hashes_serverのFile.data[relativePath] = data.files_added[relativePath] as { uid: number; hash: string }
+      hashes_serverのFile.data[relativePath] = data.files_added[relativePath]
     })
 
     changes_addedのFile.data = {}
@@ -581,7 +583,9 @@ export const useSketchStore = defineStore("sketch", () => {
       method: "post",
       data: form,
       responseType: "json"
-    })
+    }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
+      data: SketchController["create"]["response"]
+    }
 
     changes_addedのFile.data = {}
     return sketch
@@ -601,7 +605,9 @@ export const useSketchStore = defineStore("sketch", () => {
         uid: sketchInfo.value.uid,
         ...info
       },
-    })
+    }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
+      data: SketchController["update_info"]["response"]
+    }
 
     sketchInfo.value = sketch
 
@@ -637,7 +643,9 @@ export const useSketchStore = defineStore("sketch", () => {
         uid: sketchInfo.value.uid,
         name,
       },
-    })
+    }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
+      data: SketchController["fork"]["response"]
+    }
 
 
 
