@@ -1,6 +1,6 @@
 <route lang="yaml">
 name: sketch
-alias: "sketch/:uid(\\d+)?"
+alias: ["sketch/:uid(\\d+)?", "new"]
 </route>
 
 <template>
@@ -14,16 +14,29 @@ alias: "sketch/:uid(\\d+)?"
     <SketchMain />
   </q-page>
   <q-page v-else class="flex flex-nowrap w-[100vw] h-[100vh]">
-    <NotFound v-if="!notFound" />
-    <pre v-else>{{ error }}</pre>
+    <div class="q-pa-md">
+      <div style="font-size: 30vh">Error</div>
+
+      <div class="text-h2" style="opacity: 0.4">{{ error }}</div>
+
+      <q-btn
+        class="q-mt-xl"
+        color="white"
+        text-color="blue"
+        unelevated
+        to="/"
+        label="Go Home"
+        no-caps
+      />
+    </div>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import { AxiosError } from "axios"
 
-const NotFound = defineAsyncComponent(() => import("./[...catchAll].vue"))
 const route = useRoute()
+const router = useRouter()
 const sketchStore = useSketchStore()
 
 const loading = ref(false)
@@ -45,12 +58,21 @@ watch(
         await sketchStore.fetch(uid ?? -1, false)
       }
     } catch (err) {
+      console.warn(err)
+
       if (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (err as AxiosError<any> | void)?.response?.data.code ===
-        "sketch_not_found"
+        "sketch_not_exists"
       ) {
-        notFound.value = true
+        router.replace({
+          name: "catch-all",
+          params: {
+            catchAll: route.path.slice(1).split("/"),
+          },
+          query: route.query,
+          hash: route.hash,
+        })
         return
       }
 
