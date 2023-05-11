@@ -76,6 +76,7 @@ async function actionNextOpenSketch(
 ): Promise<Sketch<true, false>> {
   const path_hashes_client = `${rootのsketch}/.changes/hashes_client`
   const path_hashes_server = `${rootのsketch}/.changes/hashes_server`
+  const path_metadata = `${rootのsketch}/.changes/metadata`
 
   const entries_hashes_client: readonly [string, string][] = Object.entries(
     parseJSON(
@@ -130,12 +131,20 @@ async function actionNextOpenSketch(
 
     }
   }
-  await Filesystem.writeFile({
-    path: path_hashes_server,
-    directory: Directory.External,
-    encoding: Encoding.UTF8,
-    data: JSON.stringify(hashes_server),
-  })
+  await Promise.all([
+    Filesystem.writeFile({
+      path: path_hashes_server,
+      directory: Directory.External,
+      encoding: Encoding.UTF8,
+      data: JSON.stringify(hashes_server),
+    }),
+    Filesystem.writeFile({
+      path: path_metadata,
+      directory: Directory.External,
+      encoding: Encoding.UTF8,
+      data: JSON.stringify(res.data.sketch),
+    })
+  ])
   eventBus.emit("writeFile", path_hashes_server)
 
   return res.data.sketch
@@ -197,7 +206,7 @@ export const useSketchStore = defineStore("sketch", () => {
   const auth = useAuth()
   const route = useRoute()
 
-  const uid_sketch_opening = ref<number | string | void>(route.params.uid ? route.params.uid as string : undefined)
+  const uid_sketch_opening = ref<string | number | void>(route.params.uid ? route.params.uid as string : undefined)
   const sketchInfo = shallowRef<Readonly<Sketch<true, false>>>()
   const fetching = ref(true)
   const rootのsketch = computed(() => `home/${uid_sketch_opening.value}`)
