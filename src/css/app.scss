@@ -11,7 +11,8 @@ body {
     @apply flex flex-nowrap;
   }
 
-  input, textarea {
+  input,
+  textarea {
     @apply bg-transparent w-full h-full px-2;
 
     min-width: 0;
@@ -20,7 +21,6 @@ body {
     }
   }
 }
-
 
 .q-input--custom .q-field__control {
   background-color: rgba(255, 255, 255, 0.07) !important;
@@ -34,11 +34,15 @@ body {
     font-size: 14px !important;
   }
 
-
   .q-field__append {
-    height: 100% !important
+    height: 100% !important;
   }
 }
 .q-input--custom.q-field--error .q-field__bottom {
   color: #ef4444 !important;
 }
+
+.q-input--custom.q-input--medium .q-field__control {
+  height: 50px !important;
+}
+

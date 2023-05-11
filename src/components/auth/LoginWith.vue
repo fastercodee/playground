@@ -34,6 +34,7 @@
 </template>
 
 <script lang="ts" setup>
+import { Icon } from "@iconify/vue"
 import { loginWithGithub, loginWithGoogle } from "boot/auth"
 
 const route = useRoute()

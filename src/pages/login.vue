@@ -36,7 +36,7 @@ meta:
             color="green-5"
             label="Email or username"
             v-model="email"
-            class="q-input--custom mb-3"
+            class="q-input--custom q-input--medium mb-3"
           />
           <q-input
             standout
@@ -44,7 +44,7 @@ meta:
             label="Password"
             :type="isPwd ? 'password' : 'text'"
             v-model="password"
-            class="q-input--custom"
+            class="q-input--custom q-input--medium"
           >
             <template v-slot:append>
               <q-icon
