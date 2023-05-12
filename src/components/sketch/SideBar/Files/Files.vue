@@ -20,26 +20,23 @@
       />
     </div>
   </header>
-  <main class="min-h-0 h-full select-none">
-    <template v-if="sketchStore.fetching">
-      <q-skeleton type="rect" v-for="_ in 10" :key="_" class="my-4 mx-4 h-15px" />
-    </template>
-    <template v-else>
-      <TreeDirectory
-        v-if="entryCurrent"
-        class="mx--8px"
-        ref="treeRef"
-        :entry="entryCurrent"
-        :deep-level="0"
-        :sib-directories="{}"
-        :sib-files="{}"
-        only-child
-        @load="onLoad"
-        @error="onError"
-      />
-      <span v-else>loading entry...</span>
-    </template>
+  <MainFileLoading v-if="sketchStore.fetching" />
+  <main v-else-if="sketchStore.rootのsketch" class="min-h-0 h-full select-none">
+    <TreeDirectory
+      v-if="entryCurrent"
+      class="mx--8px"
+      ref="treeRef"
+      :entry="entryCurrent"
+      :deep-level="0"
+      :sib-directories="{}"
+      :sib-files="{}"
+      only-child
+      @load="onLoad"
+      @error="onError"
+    />
+    <span v-else>loading entry...</span>
   </main>
+  <MainOpenSketch v-else />
 </template>
 
 <script lang="ts" setup>
@@ -82,6 +79,8 @@ setInterval(() => {
 
 const entryCurrent = computedAsync(
   async () => {
+    if (!sketchStore.rootのsketch) return
+
     const entryRoot: Entry<"directory"> = createFakeDirectory("")
     // entryRoot.directory = entryRoot
 

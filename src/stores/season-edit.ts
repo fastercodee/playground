@@ -376,6 +376,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
 
   return {
     createEditor,
+    currentEntry,
     seasons,
     editor,
     openFile,

@@ -9,7 +9,7 @@
       />
     </div>
   </header>
-  <main class="min-h-0 px-2 select-none">
+  <main v-if="sketchStore.rootのsketch" class="min-h-0 px-2 select-none">
     <q-form v-if="auth.check()" @submit="publishChanges">
       <q-input
         v-if="!sketchStore.sketchInfo"
@@ -61,8 +61,12 @@
       >Log In with to save changes</q-btn
     >
   </main>
+  <MainOpenSketch v-else />
 
-  <section class="flex-1 min-h-0 flex flex-col flex-nowrap select-none">
+  <section
+    v-if="sketchStore.rootのsketch"
+    class="flex-1 min-h-0 flex flex-col flex-nowrap select-none"
+  >
     <h3
       class="px-2 text-13px text-gray-200 py-1 leading-normal mt-1 flex flex-nowrap justify-between items-center group"
       v-if="!notChange"
@@ -88,7 +92,7 @@
     />
     <ChangeTree
       v-else
-      :meta="{ fullPath: sketchStore.rootのsketch, children: treeStages }"
+      :meta="{ fullPath: sketchStore.rootのsketch, children: treeStages! }"
       :deep-level="0"
       only-child
       staged
@@ -129,7 +133,7 @@
     </template>
     <ChangeTree
       v-else
-      :meta="{ fullPath: sketchStore.rootのsketch, children: treeChanges }"
+      :meta="{ fullPath: sketchStore.rootのsketch, children: treeChanges! }"
       :deep-level="0"
       only-child
     />
@@ -148,20 +152,24 @@ const sketchStore = useSketchStore()
 const notify = useNotify()
 
 const treeStages = computed(() =>
-  flatToTree(
-    sketchStore.rootのsketch,
-    new Map(Object.entries(sketchStore.追加された変更))
-  )
+  sketchStore.rootのsketch
+    ? flatToTree(
+        sketchStore.rootのsketch,
+        new Map(Object.entries(sketchStore.追加された変更))
+      )
+    : undefined
 )
 const treeChanges = computed(() =>
-  flatToTree(
-    sketchStore.rootのsketch,
-    new Map(
-      Object.entries(sketchStore.変化).filter(([fullPath]) => {
-        return !(fullPath in sketchStore.追加された変更)
-      })
-    )
-  )
+  sketchStore.rootのsketch
+    ? flatToTree(
+        sketchStore.rootのsketch,
+        new Map(
+          Object.entries(sketchStore.変化).filter(([fullPath]) => {
+            return !(fullPath in sketchStore.追加された変更)
+          })
+        )
+      )
+    : undefined
 )
 
 const notChange = computed<boolean>(() => {

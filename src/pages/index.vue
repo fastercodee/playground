@@ -1,6 +1,6 @@
 <route lang="yaml">
 name: sketch
-alias: ["sketch/:uid(\\d+)?", "new"]
+alias: ["sketch/:uid(\\d+)?", "local/:uid?", "new"]
 </route>
 
 <template>
@@ -22,6 +22,7 @@ import { AxiosError } from "axios"
 const route = useRoute()
 const router = useRouter()
 const sketchStore = useSketchStore()
+const $q = useQuasar()
 
 const loading = ref(false)
 const notFound = ref(false)
@@ -31,28 +32,54 @@ const ErrorPage = defineAsyncComponent(() => import("./[...catchAll].vue"))
 
 // init
 watch(
-  () => (route.params.uid ? parseInt(route.params.uid as string) : null),
-  async (uid) => {
+  () => [
+    route.path.slice(1, route.path.indexOf("/", 2))?.toLowerCase() as
+      | "sketch"
+      | "local",
+    route.params.uid as string,
+  ],
+  async ([type, uid]) => {
+    if (!type || !uid) return
+
     loading.value = true
     notFound.value = false
     error.value = null
 
     try {
-      if (uid) {
-        await sketchStore.openSketch(uid, false, async (name) => {
+      await sketchStore.openSketch(
+        type === "local" ? uid : parseInt(uid),
+        type === "local",
+        async (name) => {
           console.log(name)
-          return { action: "replace" }
-        })
-      } else {
-        throw new Error("local host")
-      }
+          return { action: "new", val: name + Math.random().toString(34) }
+        }
+      )
     } catch (err) {
       console.warn(err)
 
       if (
+        (err as { code: string; uid: number } | void)?.code ===
+        "sketch_is_online"
+      ) {
+        // confirm?
+        $q.dialog({
+          title: "sketch is online",
+          message: "sketch is online, do you want to continue?",
+          ok: "Yes",
+          cancel: "No",
+        }).onOk(async () => {
+          await router.push(
+            `/sketch/${(err as { code: string; uid: number }).uid}`
+          )
+        })
+
+        return
+      }
+      if (
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (err as AxiosError<any> | void)?.response?.data.code ===
-        "sketch_not_exists"
+          "sketch_not_exists" ||
+        (err as Error | void)?.message === "sketch_not_exists"
       ) {
         router.replace({
           name: "catch-all",

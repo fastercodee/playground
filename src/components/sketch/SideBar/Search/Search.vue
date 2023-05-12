@@ -23,7 +23,7 @@
   </header>
 
   <!-- optional search, mb-20px patch pb--20px in "trigger show include, exclude" -->
-  <main class="min-h-0 select-none pb-20px">
+  <main v-if="sketchStore.rootのsketch" class="min-h-0 select-none pb-20px">
     <q-linear-progress
       v-if="searching || replacing"
       indeterminate
@@ -149,8 +149,12 @@
       </div>
     </div>
   </main>
+  <MainOpenSketch v-else />
 
-  <section class="flex-1 min-h-0 flex flex-col flex-nowrap select-none">
+  <section
+    v-if="sketchStore.rootのsketch"
+    class="flex-1 min-h-0 flex flex-col flex-nowrap select-none"
+  >
     <span v-if="search" class="text-gray-400 text-13px pb-1.5 mx-3"
       >{{ metaResults.results }} results in {{ metaResults.files }} files</span
     >
@@ -271,8 +275,9 @@ const metaResults = shallowReactive({
   results: 0,
   files: 0,
 })
-const resultsTree = computed(() =>
-  flatToTree(sketchStore.rootのsketch, results)
+const resultsTree = computed(
+  () =>
+    sketchStore.rootのsketch && flatToTree(sketchStore.rootのsketch, results)
 )
 /** @description - this function only reset result. don't call stopSearch */
 const resetResults = () => {
@@ -307,6 +312,7 @@ watch(
 )
 
 async function research() {
+  if (!sketchStore.rootのsketch) return
   stopSearch()
   resetResults()
 
@@ -370,17 +376,16 @@ async function research() {
       [...sketchStore.gitignoreのFile.data, ...splitString(exclude.value)]
     )) {
       const { data: base64 } = await Filesystem.readFile({
-          path: file,
-          directory: Directory.External,
-        })
+        path: file,
+        directory: Directory.External,
+      })
 
-        const uint = base64ToUint8(base64)
+      const uint = base64ToUint8(base64)
 
-        if (isBinaryFile(uint)) {
-          console.warn("Can't find binary file at path %s", file)
-          continue
-        }
-
+      if (isBinaryFile(uint)) {
+        console.warn("Can't find binary file at path %s", file)
+        continue
+      }
 
       const matches = await put<ComSearchInText, "search-in-text">(
         searchGloborInTextWorker,

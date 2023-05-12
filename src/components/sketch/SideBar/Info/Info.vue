@@ -1,7 +1,6 @@
 <template>
   <header class="py-2 px-3 text-12px flex justify-between">INFO</header>
-  <q-separator />
-  <main v-if="sketchInfo" class="min-h-0 py-2 px-3 select-none">
+  <main v-if="sketchInfo" class="min-h-0 px-3 select-none">
     <template v-if="!editing || user?.uid !== sketchInfo.user.uid">
       <div class="flex flex-nowrap items-center justify-between">
         <h1 class="text-subtitle1 text-14px weight-normal">
@@ -150,7 +149,8 @@
       >Delete Sketch</q-btn
     >
   </main>
-  <main v-else class="min-h-0 px-2 select-none">This sketch in a local</main>
+  <main v-else-if="sketchStore.rootのsketch" class="min-h-0 px-2 select-none">This sketch in a local</main>
+  <MainOpenSketch v-else />
 </template>
 
 <script lang="ts" setup>

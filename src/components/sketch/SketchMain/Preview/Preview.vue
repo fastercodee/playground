@@ -1,10 +1,12 @@
 <template>
   <iframe
+    v-if="sketchStore.rootのsketch"
     :src="srcIFrame"
     class="w-full h-full border border-light-600 bg-white"
     ref="iframeRef"
     @load="onLoad"
   />
+  <div v-else class="w-full h-full border border-gray-700" />
 </template>
 
 <script lang="ts" setup>
@@ -98,6 +100,7 @@ function setup() {
 
     // loadfile *.* example *.ts, *.js, eslint
     try {
+      if (!sketchStore.rootのsketch) throw new Error("no sketch")
       const res =
         pathname === "/"
           ? await Filesystem.readFile({
@@ -133,7 +136,7 @@ function setup() {
             tsconfigのFile.data
           ))
         : res.content
-console.log({ content, }, `${sketchStore.rootのsketch}/index.html`)
+      console.log({ content }, `${sketchStore.rootのsketch}/index.html`)
       return {
         transfer: [content],
         return: {
@@ -188,12 +191,24 @@ console.log({ content, }, `${sketchStore.rootのsketch}/index.html`)
 
   return port2
 }
-async function onLoad(event: Event) {
+async function onLoad() {
+  if (!iframeRef.value) return
+
   const port2 = setup()
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  ;(event.target as HTMLIFrameElement)!.contentWindow!.postMessage(
+  ;(iframeRef.value as HTMLIFrameElement)!.contentWindow!.postMessage(
     { port2 },
     { transfer: [port2], targetOrigin: "*" }
   )
 }
+
+watch(
+  () => sketchStore.rootのsketch,
+  (root) => {
+    if (!root) return
+
+    onLoad()
+  },
+  { immediate: true }
+)
 </script>

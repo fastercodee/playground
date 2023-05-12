@@ -1,7 +1,17 @@
 <template>
   <div class="flex flex-col flex-nowrap w-full h-full">
     <SeasonManager />
-    <div ref="editorRef" class="h-full w-full min-h-0 parent-editor" />
+    <div
+      v-if="seasonEditStore.currentEntry"
+      ref="editorRef"
+      class="h-full w-full min-h-0 parent-editor"
+    />
+    <section
+      v-else
+      class="h-full w-full min-h-0 flex items-center justify-center"
+    >
+      Click Files to open file
+    </section>
   </div>
 </template>
 
