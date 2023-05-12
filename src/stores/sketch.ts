@@ -67,18 +67,42 @@ async function saveFile(auth: Auth, path: string, file: File) {
     await saveFileWithUID(auth, path, file.uid)
 }
 
+const transformNameToDirname = (name: string) => name.replace(/[\\/:*?"<>|]/g, "_");
 
-async function actionNextOpenSketch(
+type QuestionSketchname = (name: string) => Promise<{ action: "replace" } | { action: "new", val: string }>
+
+async function pullOrClone(
   auth: Auth,
-  rootのsketch: string,
+  dirnameSave: false,
   uid_sketch_opening: number,
+  question: QuestionSketchname,
   onProgress: (action: "load_file", filePath: string) => void
-): Promise<Sketch<true, false>> {
-  const path_hashes_client = `${rootのsketch}/.changes/hashes_client`
-  const path_hashes_server = `${rootのsketch}/.changes/hashes_server`
-  const path_metadata = `${rootのsketch}/.changes/metadata`
+): Promise<{ dirname: string; sketch: Sketch<true, false> }>
+async function pullOrClone(
+  auth: Auth,
+  dirnameSave: string,
+  uid_sketch_opening: number,
+  question: null,
+  onProgress: (action: "load_file", filePath: string) => void
+): Promise<{ dirname: string; sketch: Sketch<true, false> }>
+async function pullOrClone(
+  auth: Auth,
+  dirnameSave: false | string,
+  uid_sketch_opening: number,
+  question: null | QuestionSketchname,
+  onProgress: (action: "load_file", filePath: string) => void
+): Promise<{ dirname: string; sketch: Sketch<true, false> }> {
+  const isNew = !dirnameSave
+  // eslint-disable-next-line functional/no-let
+  let path_hashes_client: string | void
+  // eslint-disable-next-line functional/no-let
+  let path_hashes_server: string | void
+  if (dirnameSave) {
+    path_hashes_client = `home/${dirnameSave}/.changes/hashes_client`
+    path_hashes_server = `home/${dirnameSave}/.changes/hashes_server`
+  }
 
-  const entries_hashes_client: readonly [string, string][] = Object.entries(
+  const entries_hashes_client: readonly [string, string][] = path_hashes_client ? Object.entries(
     parseJSON(
       await Filesystem.readFile({
         path: path_hashes_client,
@@ -87,8 +111,8 @@ async function actionNextOpenSketch(
       }).then(res => res.data)
         .catch(() => "{}")
     )
-  )
-  const entries_hashes_server: readonly [string, { readonly uid: number; readonly hash: string }][] = Object.entries(
+  ) : []
+  const entries_hashes_server: readonly [string, { readonly uid: number; readonly hash: string }][] = path_hashes_server ? Object.entries(
     parseJSON(
       await Filesystem.readFile({
         path: path_hashes_server,
@@ -97,7 +121,7 @@ async function actionNextOpenSketch(
       }).then(res => res.data)
         .catch(() => "{}")
     )
-  )
+  ) : []
 
   const res = await auth.http({
     url: "/sketch/fetch",
@@ -111,6 +135,34 @@ async function actionNextOpenSketch(
   }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
     data: SketchController["fetch"]["next"]["response"]
   }
+  if (!dirnameSave) {
+    // first fetch name
+    dirnameSave = transformNameToDirname(res.data.sketch.name)
+    // check dirname exists
+    if (await exists(`home/${dirnameSave}`)) {
+      // question user rename or overwrite
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const answer = await question!(dirnameSave)
+      if (answer.action === "replace") {
+        await Filesystem.rmdir({
+          path: `home/${dirnameSave}`,
+          directory: Directory.External,
+          recursive: true
+        })
+      } else {
+        dirnameSave = answer.val;
+      }
+    }
+  }
+  path_hashes_client = `home/${dirnameSave}/.changes/hashes_client`
+  path_hashes_server = `home/${dirnameSave}/.changes/hashes_server`
+  const path_metadata = `home/${dirnameSave}/.changes/metadata`
+
+  await Filesystem.mkdir({
+    path: `home/${dirnameSave}`,
+    directory: Directory.External,
+    recursive: true
+  }).catch(() => 0)
 
   const hashes_server: Record<string, { readonly uid: number; readonly hash: string }> = {}
   for (const [filePath, change] of Object.entries(res.data.file_changes)) {
@@ -121,7 +173,7 @@ async function actionNextOpenSketch(
     switch (change.type) {
       case "U+":
         onProgress("load_file", change.file.filePath)
-        await saveFile(auth, `${rootのsketch}/${change.file.filePath}`, change.file)
+        await saveFile(auth, `home/${dirnameSave}/${change.file.filePath}`, change.file)
         break
       case "M":
         break
@@ -138,6 +190,12 @@ async function actionNextOpenSketch(
       encoding: Encoding.UTF8,
       data: JSON.stringify(hashes_server),
     }),
+    isNew ? Filesystem.writeFile({
+      path: path_hashes_client,
+      directory: Directory.External,
+      encoding: Encoding.UTF8,
+      data: JSON.stringify(Object.fromEntries(Object.entries(hashes_server).map(([filePath, { hash }]) => [filePath, hash]))),
+    }) : 0,
     Filesystem.writeFile({
       path: path_metadata,
       directory: Directory.External,
@@ -147,7 +205,7 @@ async function actionNextOpenSketch(
   ])
   eventBus.emit("writeFile", path_hashes_server)
 
-  return res.data.sketch
+  return { dirname: dirnameSave, sketch: res.data.sketch }
 }
 
 // eslint-disable-next-line functional/no-let
@@ -206,10 +264,23 @@ export const useSketchStore = defineStore("sketch", () => {
   const auth = useAuth()
   const route = useRoute()
 
-  const uid_sketch_opening = ref<string | number | void>(route.params.uid ? route.params.uid as string : undefined)
+
+
+
+
+
+  const 参照コンテナ = useFile<
+    Record<string, string>,
+    true
+  >("var/参照コンテナ", "{}", true, {
+    get: parseJSON,
+    set: JSON.stringify,
+  });
+
+  const dirnameSketch = ref<string | void>(route.params.uid ? route.params.uid as string : undefined)
   const sketchInfo = shallowRef<Readonly<Sketch<true, false>>>()
   const fetching = ref(true)
-  const rootのsketch = computed(() => `home/${uid_sketch_opening.value}`)
+  const rootのsketch = computed(() => `home/${dirnameSketch.value}`)
 
   const hashes_serverのFile = useFile<Record<string, { uid: number; hash: string }>, true>(
     computed(() => `${rootのsketch.value}/.changes/hashes_server`),
@@ -305,41 +376,121 @@ export const useSketchStore = defineStore("sketch", () => {
     }
   )
 
-  async function fetch(sketch_uid: number, online = true) {
+  /**
+   * nếu thứ này được mở bằng cách nhấn open sketch local nó phải tìm kiếm chính xác `sketch_uid` từ thư mục gốc `home`
+   * nếu nó tìm thấy nó phải kiểm tra xem cái này có liên kết với cloud không thông qua `metadata`
+   *
+   * nếu nó mở từ fetch nó phải cưỡng chế tải xuống
+   */
+  async function openSketch<Local extends boolean>(
+    sketch_uid: Local extends true ? string : number,
+    openFromLocal: Local,
+    question: Local extends true ? void : QuestionSketchname) {
     fetching.value = true
-    try {
-      console.log("fetch: check hash")
-      await forceUpdateHashesClient(`home/${sketch_uid}`)
 
-      if (online) {
-        console.log("fetch: start download sketch")
-        const info = await actionNextOpenSketch(auth, `home/${sketch_uid}`, sketch_uid, console.log.bind(console))
-        sketchInfo.value = info
-      } else {
-        sketchInfo.value = undefined
+    if (openFromLocal) {
+      const metadata = await Filesystem.readFile({
+        path: `home/${sketch_uid}.sketch`,
+        directory: Directory.External,
+        encoding: Encoding.UTF8,
+      }).then(res => parseJSON(res.data)).catch(() => ({}))
+
+      if (typeof metadata.uid === "number") {
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          code: "sketch_is_online",
+          uid: metadata.uid
+        }
       }
 
-      uid_sketch_opening.value = sketch_uid
-    } finally {
-      fetching.value = false
+      await forceUpdateHashesClient(`home/${sketch_uid}`);
+      sketchInfo.value = undefined
+      dirnameSketch.value = sketch_uid + ""
+
+      return
     }
+
+    await 参照コンテナ.ready
+    // eslint-disable-next-line functional/no-let
+    let dirnamePhysical: string | void = 参照コンテナ.data[sketch_uid + ""];
+
+    if (dirnamePhysical) {
+      try {
+        const metadata = await Filesystem.readFile({
+          path: `home/${dirnamePhysical}/.changes/metadata`,
+          directory: Directory.External,
+          encoding: Encoding.UTF8
+        }).then(res => parseJSON(res.data) as Sketch<true, false>)
+          .catch(() => {
+            // eslint-disable-next-line no-throw-literal, functional/no-throw-statements
+            throw "not_found"
+          });
+
+        if (metadata.uid === sketch_uid) {
+          // yes sketch exists on memory -> pull
+        } else {
+          // no wrong data -> fetch
+          // eslint-disable-next-line no-throw-literal
+          throw "not_found"
+        }
+      } catch (err) {
+        if (err === "not_found") {
+          dirnamePhysical = undefined
+        } else throw err;
+      }
+    }
+
+    console.warn({ dirnamePhysical })
+    /** dirnamePhysical is void -> not exists on cloud */
+    if (dirnamePhysical) {
+      await forceUpdateHashesClient(`home/${dirnamePhysical}`);
+
+      console.log("fetch: start pull sketch");
+
+      const { dirname, sketch } = await pullOrClone(
+        auth,
+        dirnamePhysical,
+        (sketch_uid) as number,
+        null,
+        console.log.bind(console)
+      );
+      console.log({ dirname })
+
+      sketchInfo.value = sketch;
+      参照コンテナ.data[sketch_uid + ""] = dirname
+      dirnameSketch.value = dirname
+    } else {
+      // not exists by roulink
+
+      const { sketch, dirname } = await pullOrClone(
+        auth,
+        false,
+        (sketch_uid) as number,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        question!,
+        console.log.bind(console)
+      );
+
+      sketchInfo.value = sketch;
+      参照コンテナ.data[sketch_uid + ""] = dirname
+      dirnameSketch.value = dirname
+
+    }
+
+    fetching.value = false
   }
   /** @description - this function call by after create sketch (sketch data readu on client) */
   async function fetchAfterPublish(info: Sketch<true, false>) {
-    try {
-      console.log(`fetch: renaming ${uid_sketch_opening.value} to ${info.uid}`)
-      // rename
-      await Filesystem.rename({
-        from: `home/${uid_sketch_opening.value}`,
-        to: `home/${info.uid}`,
-        directory: Directory.External
-      })
-
-      await fetch(info.uid)
-    } finally {
-      fetching.value = false
-    }
-
+    await 参照コンテナ.ready
+    console.log(`fetch: renaming ${dirnameSketch.value} to ${info.uid}`)
+    // rename
+    const dirname = transformNameToDirname(info.name)
+    await Filesystem.rename({
+      from: `home/${dirnameSketch.value}`,
+      to: `home/${dirname}`,
+      directory: Directory.External
+    })
+    参照コンテナ.data[info.uid] = dirname
   }
 
   /// INFO: computed change
@@ -392,22 +543,22 @@ export const useSketchStore = defineStore("sketch", () => {
           case "M":
             // check exists on all
             if (
-              relativePath in hashes_serverのFile.data ||
-              relativePath in hashes_clientのFile.data
+              !(relativePath in hashes_serverのFile.data) ||
+              !(relativePath in hashes_clientのFile.data)
             ) return
             break
           case "D":
             // check server exists and client not exists
             if (
-              relativePath in hashes_serverのFile.data ||
-              !(relativePath in hashes_clientのFile.data)
+              !(relativePath in hashes_serverのFile.data) ||
+              (relativePath in hashes_clientのFile.data)
             ) return
             break
           case "U":
             // check sever not exits client exists
             if (
-              !(relativePath in hashes_serverのFile.data) ||
-              (relativePath in hashes_clientのFile.data)
+              (relativePath in hashes_serverのFile.data) ||
+              !(relativePath in hashes_clientのFile.data)
             ) return
             break
         }
@@ -418,6 +569,7 @@ export const useSketchStore = defineStore("sketch", () => {
 
     return stages
   })
+  console.warn({ hashes_serverのFile, hashes_clientのFile, changes_addedのFile })
 
   async function undoChange(fullPath: string, status: StatusChange) {
     if (!sketchInfo.value) return
@@ -516,9 +668,10 @@ export const useSketchStore = defineStore("sketch", () => {
 
   async function pushChanges() {
     // INFO: push changes
+    if (!sketchInfo.value) throw new Error("[push]: sketchInfo not loaded.")
 
     const form = new FormData()
-    form.append("uid", uid_sketch_opening.value + "")
+    form.append("uid", sketchInfo.value.uid + "")
     changes_addedのFile.data.D?.forEach(relativePath => form.append("deletes[]", relativePath))
 
     await Promise.all(
@@ -659,16 +812,17 @@ export const useSketchStore = defineStore("sketch", () => {
 
 
     try {
-      console.log(`fetch: coping ${uid_sketch_opening.value} to ${sketch.uid}`)
+      console.log(`fetch: coping ${dirnameSketch.value} to ${sketch.uid}`)
       // rename
+      const dirname = transformNameToDirname(sketch.name)
 
+      await 参照コンテナ.ready
       await Filesystem.copy({
-        from: `home/${uid_sketch_opening.value}`,
-        to: `home/${sketch.uid}`,
+        from: `home/${dirnameSketch.value}`,
+        to: `home/${dirname}`,
         directory: Directory.External
       })
-
-      await fetch(sketch.uid)
+      参照コンテナ.data[sketch.uid] = dirname
 
       return sketch
     } finally {
@@ -680,7 +834,7 @@ export const useSketchStore = defineStore("sketch", () => {
 
   return {
     rootのsketch, changes_addedのFile,
-    fetch, fetchAfterPublish, sketchInfo, fetching, forceUpdateHashesClient, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
+    openSketch, sketchInfo, fetching, forceUpdateHashesClient, fetchAfterPublish, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
     publish, updateInfo, deleteSketch, fork
   }
 })
