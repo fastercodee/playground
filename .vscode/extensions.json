@@ -9,7 +9,14 @@
     "codeium.codeium",
     "antfu.unocss",
     "antfu.iconify",
+<<<<<<< Updated upstream
     "pkief.material-icon-theme"
+=======
+    "eamodio.gitlens",
+    "unthrottled.doki-theme",
+    "pkief.material-product-icons",
+    "equinusocio.vsc-material-theme-icons"
+>>>>>>> Stashed changes
   ],
   "unwantedRecommendations": [
     "octref.vetur",
