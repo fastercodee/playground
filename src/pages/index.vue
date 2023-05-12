@@ -36,7 +36,7 @@ watch(
     route.path.slice(1, route.path.indexOf("/", 2))?.toLowerCase() as
       | "sketch"
       | "local",
-    route.params.uid as string,
+    decodeURIComponent((route.params.uid as string).replace(/\+/g, " ")),
   ],
   async ([type, uid]) => {
     if (!type || !uid) return
