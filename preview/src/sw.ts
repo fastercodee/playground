@@ -23,7 +23,6 @@ export type Communicate = {
 const cast = new BroadcastChannel("sw-fetch")
 
 addEventListener("fetch", (event) => {
-  console.log(event)
   const request = event.request
   // eslint-disable-next-line n/no-unsupported-features/node-builtins
   const url = new URL(request.url)
@@ -40,7 +39,6 @@ addEventListener("fetch", (event) => {
         !url.pathname.startsWith("/src/sw.ts"))) &&
     /^https?:$/g.test(url.protocol)
   ) {
-    console.log("send request", url)
 
     const response = put<Communicate>(cast, "get file", {
       url: request.url,
