@@ -1,5 +1,6 @@
 <route lang="yaml">
 name: "catch-all"
+props: true
 </route>
 
 <template>
@@ -8,9 +9,11 @@ name: "catch-all"
   >
     <Header />
     <div class="q-pa-md">
-      <div style="font-size: 30vh">404</div>
+      <div style="font-size: 30vh">{{ type ?? "404" }}</div>
 
-      <div class="text-h2" style="opacity: 0.4">Oops. Nothing here...</div>
+      <div class="text-h2" style="opacity: 0.4">
+        {{ message ?? "Oops. Nothing here..." }}
+      </div>
 
       <q-btn
         class="q-mt-xl"
@@ -25,4 +28,9 @@ name: "catch-all"
   </q-page>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineProps<{
+  type?: string
+  message?: string
+}>()
+</script>

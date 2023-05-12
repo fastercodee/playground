@@ -13,23 +13,7 @@ alias: ["sketch/:uid(\\d+)?", "new"]
     <SideBar />
     <SketchMain />
   </q-page>
-  <q-page v-else class="flex flex-nowrap w-[100vw] h-[100vh]">
-    <div class="q-pa-md">
-      <div style="font-size: 30vh">Error</div>
-
-      <div class="text-h2" style="opacity: 0.4">{{ error }}</div>
-
-      <q-btn
-        class="q-mt-xl"
-        color="white"
-        text-color="blue"
-        unelevated
-        to="/"
-        label="Go Home"
-        no-caps
-      />
-    </div>
-  </q-page>
+  <ErrorPage v-else type="Error" :message="error + ''" />
 </template>
 
 <script lang="ts" setup>
@@ -43,6 +27,8 @@ const loading = ref(false)
 const notFound = ref(false)
 const error = ref<unknown | null>(null)
 
+const ErrorPage = defineAsyncComponent(() => import("./[...catchAll].vue"))
+
 // init
 watch(
   () => (route.params.uid ? parseInt(route.params.uid as string) : null),
@@ -52,10 +38,13 @@ watch(
     error.value = null
 
     try {
-      if (uid && uid > 0) {
-        await sketchStore.fetch(uid)
+      if (uid) {
+        await sketchStore.openSketch(uid, false, async (name) => {
+          console.log(name)
+          return { action: "replace" }
+        })
       } else {
-        await sketchStore.fetch(uid ?? -1, false)
+        throw new Error("local host")
       }
     } catch (err) {
       console.warn(err)
