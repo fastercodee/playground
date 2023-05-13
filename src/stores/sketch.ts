@@ -792,6 +792,7 @@ export const useSketchStore = defineStore("sketch", () => {
   async function deleteSketch() {
     if (!sketchInfo.value) throw new Error("Sketch info not ready")
 
+    const dirname = dirnameSketch.value
     await auth.http({
       url: "/sketch/delete",
       method: "post",
@@ -801,7 +802,7 @@ export const useSketchStore = defineStore("sketch", () => {
     })
 
     await Filesystem.rmdir({
-      path: `home/${sketchInfo.value.uid}`,
+      path: `home/${dirname}`,
       directory: Directory.External,
       recursive: true
     })
