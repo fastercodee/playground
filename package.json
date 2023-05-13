@@ -37,7 +37,7 @@
     "@replit/codemirror-css-color-picker": "^6.0.0",
     "@replit/codemirror-interact": "^6.1.0",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
-    "@tachibana-shin/capacitor-filesystem": "5.0.0-beta.0",
+    "@tachibana-shin/capacitor-filesystem": "5.0.2",
     "@types/parse-gitignore": "^1.0.0",
     "@uiw/codemirror-extensions-hyper-link": "^4.19.9",
     "@uiw/codemirror-extensions-langs": "^4.19.9",

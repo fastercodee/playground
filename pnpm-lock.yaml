@@ -12,7 +12,7 @@ dependencies:
     version: 4.7.0
   '@capacitor/filesystem':
     specifier: npm:@tachibana-shin/capacitor-filesystem
-    version: /@tachibana-shin/capacitor-filesystem@5.0.0-beta.0(@capacitor/core@4.7.0)
+    version: /@tachibana-shin/capacitor-filesystem@5.0.2(@capacitor/core@4.7.0)
   '@codemirror/autocomplete':
     specifier: ^6.4.2
     version: 6.4.2(@codemirror/language@6.6.0)(@codemirror/state@6.2.0)(@codemirror/view@6.9.2)(@lezer/common@1.0.2)
@@ -62,8 +62,8 @@ dependencies:
     specifier: ^6.0.2
     version: 6.0.2(@codemirror/autocomplete@6.4.2)(@codemirror/commands@6.2.2)(@codemirror/language@6.6.0)(@codemirror/lint@6.2.0)(@codemirror/search@6.2.3)(@codemirror/state@6.2.0)(@codemirror/view@6.9.2)
   '@tachibana-shin/capacitor-filesystem':
-    specifier: 5.0.0-beta.0
-    version: 5.0.0-beta.0(@capacitor/core@4.7.0)
+    specifier: 5.0.2
+    version: 5.0.2(@capacitor/core@4.7.0)
   '@types/parse-gitignore':
     specifier: ^1.0.0
     version: 1.0.0
@@ -1336,10 +1336,10 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
-  /@tachibana-shin/capacitor-filesystem@5.0.0-beta.0(@capacitor/core@4.7.0):
-    resolution: {integrity: sha512-FTJ9HTmL7ML93mQ4U6fgYN+yASsqx2fXMov0xhBjKxJGEnQRZgJRpOStyPc1TaSAFo73Gs7id8B+meiJZ+1i2A==}
+  /@tachibana-shin/capacitor-filesystem@5.0.2(@capacitor/core@4.7.0):
+    resolution: {integrity: sha512-jm5RMZ7LjVr0W9k0UGVMGNBxocYfkTSqv2REBNDOnTj9oUChEIH9ye4DEDwnqTVe3hC9rLnbc5oCMxlUv+3VNw==}
     peerDependencies:
-      '@capacitor/core': next
+      '@capacitor/core': ^5.0.0
     dependencies:
       '@capacitor/core': 4.7.0
     dev: false
