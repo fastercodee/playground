@@ -379,17 +379,17 @@ export const useSketchStore = defineStore("sketch", () => {
    * nếu nó mở từ fetch nó phải cưỡng chế tải xuống
    */
   async function openSketch<Local extends boolean>(
-    sketch_uid: Local extends true ? string : number,
+    dirname_sketch: Local extends true ? string : number,
     openFromLocal: Local,
     quesSketchNameSavIfExists: Local extends true ? void : QuestionSketchname) {
     fetching.value = true
 
     try {
       if (openFromLocal) {
-        if (!(await exists(`home/${sketch_uid}`))) throw new Error("sketch_not_exists")
+        if (!(await exists(`home/${dirname_sketch}`))) throw new Error("sketch_not_exists")
 
         const metadata = await Filesystem.readFile({
-          path: `home/${sketch_uid}/.changes/metadata`,
+          path: `home/${dirname_sketch}/.changes/metadata`,
           directory: Directory.External,
           encoding: Encoding.UTF8,
         }).then(res => parseJSON(res.data)).catch(() => ({}))
@@ -402,16 +402,16 @@ export const useSketchStore = defineStore("sketch", () => {
           }
         }
 
-        await forceUpdateHashesClient(`home/${sketch_uid}`);
+        await forceUpdateHashesClient(`home/${dirname_sketch}`);
         sketchInfo.value = undefined
-        dirnameSketch.value = sketch_uid + ""
+        dirnameSketch.value = dirname_sketch + ""
 
         return
       }
 
       await 参照コンテナ.ready
       // eslint-disable-next-line functional/no-let
-      let dirnamePhysical: string | void = 参照コンテナ.data[sketch_uid + ""];
+      let dirnamePhysical: string | void = 参照コンテナ.data[dirname_sketch + ""];
 
       if (dirnamePhysical) {
         try {
@@ -425,7 +425,7 @@ export const useSketchStore = defineStore("sketch", () => {
               throw "not_found"
             });
 
-          if (metadata.uid === sketch_uid) {
+          if (metadata.uid === dirname_sketch) {
             // yes sketch exists on memory -> pull
           } else {
             // no wrong data -> fetch
@@ -449,14 +449,14 @@ export const useSketchStore = defineStore("sketch", () => {
         const { dirname, sketch } = await pullOrClone(
           auth,
           dirnamePhysical,
-          (sketch_uid) as number,
+          (dirname_sketch) as number,
           null,
           console.log.bind(console)
         );
         console.log({ dirname })
 
         sketchInfo.value = sketch;
-        参照コンテナ.data[sketch_uid + ""] = dirname
+        参照コンテナ.data[dirname_sketch + ""] = dirname
         dirnameSketch.value = dirname
       } else {
         // not exists by roulink
@@ -464,14 +464,14 @@ export const useSketchStore = defineStore("sketch", () => {
         const { sketch, dirname } = await pullOrClone(
           auth,
           false,
-          (sketch_uid) as number,
+          (dirname_sketch) as number,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           quesSketchNameSavIfExists!,
           console.log.bind(console)
         );
 
         sketchInfo.value = sketch;
-        参照コンテナ.data[sketch_uid + ""] = dirname
+        参照コンテナ.data[dirname_sketch + ""] = dirname
         dirnameSketch.value = dirname
 
       }
