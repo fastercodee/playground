@@ -79,20 +79,35 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+
+  <q-dialog v-model="openingNewSketch">
+    <q-card style="width: 62% !important" class="min-w-0 max-w-800px">
+      <q-card-section class="px-3 py-2">
+        <q-form @submit="createSketch">
+          <q-input
+            v-model="nameCreateSketch"
+            filled
+            dense
+            placeholder="Enter name sketch to save"
+            class="q-input--custom w-full"
+            :rules="[
+              validateRequired,
+              validateSketchName,
+              validateSketchNameExists,
+            ]"
+          />
+          <q-btn type="submit" :loading="creating">Create</q-btn>
+        </q-form>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
 import getIcon from "src/assets/material-icon-theme/dist/getIcon"
 import { Entry } from "src/logic/read-details"
-import { Sketch } from "src/types/api/Models/Sketch"
-import { validateRequired } from "src/validators/required"
-import { validateSketchName } from "src/validators/validate-sketch-name"
-
-const router = useRouter()
-
-const searchSketch = ref("")
-
+import P
 const appUrl = APP_URL
 const decevier = computedAsync(
   async () => {
@@ -129,4 +144,48 @@ const decevier = computedAsync(
     },
   }
 )
+
+const openingSelectSketch = ref(false)
+const openingNewSketch = ref(true)
+
+// eslint-disable-next-line functional/no-let
+let sketches: string[]
+const validateSketchNameExists = async (v: string) => {
+  if (!sketches)
+    sketches = await Filesystem.readdir({
+      path: "home",
+      directory: Directory.External,
+    })
+      .then((res) =>
+        res.files
+          .filter((item) => item.type === "directory")
+          .map((item) => item.name)
+      )
+      .catch(() => [])
+
+  return sketches.includes(v) ? "Sketch already exists" : true
+}
+
+const nameCreateSketch = ref("")
+const creating = ref(false)
+async function createSketch() {
+  creating.value = true
+
+  const { files } = await import("src/starters/html")
+  const root = `home/${nameCreateSketch.value}`
+
+  for (const [filepath, content] of Object.entries(files)) {
+    await Filesystem.writeFile({
+      path: `${root}/${filepath}`,
+      data: content,
+      directory: Directory.External,
+      encoding: Encoding.UTF8,
+    })
+  }
+
+  await router.push(
+    `/local/${encodeURIComponent(nameCreateSketch.value).replace(/%20/g, "+")}`
+  )
+  creating.value = false
+}
 </script>
