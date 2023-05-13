@@ -1,13 +1,13 @@
 <template>
   <header class="py-2 px-3 text-12px flex justify-between">INFO</header>
-  <main v-if="sketchInfo" class="min-h-0 px-3 select-none">
-    <template v-if="!editing || user?.uid !== sketchInfo.user.uid">
+  <main v-if="metadataのFile.data" class="min-h-0 px-3 select-none">
+    <template v-if="!editing || user?.uid !== metadataのFile.data.user.uid">
       <div class="flex flex-nowrap items-center justify-between">
         <h1 class="text-subtitle1 text-14px weight-normal">
-          {{ sketchInfo.name }}
+          {{ metadataのFile.data.name }}
         </h1>
         <q-btn
-          v-if="sketchInfo.user.uid === user?.uid"
+          v-if="metadataのFile.data.user.uid === user?.uid"
           round
           dense
           @click="editing = true"
@@ -17,7 +17,8 @@
       </div>
       <p class="text-gray-400">
         {{
-          sketchInfo.description ?? "Add a short description for this sandbox"
+          metadataのFile.data.description ??
+          "Add a short description for this sandbox"
         }}
       </p>
     </template>
@@ -30,7 +31,7 @@
         class="q-input--custom mt-2"
         :rules="[
           (v) => (v ? true : 'Required'),
-          (v) => checkSketchName(v, auth, sketchInfo),
+          (v) => checkSketchName(v, auth, metadataのFile.data),
         ]"
       />
       <div class="input-group h-auto bg-gray-700 bg-opacity-30 mt-4">
@@ -61,8 +62,8 @@
           rounded
           class="w-full mx-1"
           :disable="
-            name === sketchInfo.name &&
-            description === (sketchInfo.description ?? '')
+            name === metadataのFile.data.name &&
+            description === (metadataのFile.data.description ?? '')
           "
           :loading="updatingInfo"
           type="submit"
@@ -75,17 +76,17 @@
       <q-avatar size="30px">
         <img
           :src="
-            sketchInfo.user.picture ??
-            `https://ui-avatars.com/api/?name=${sketchInfo.user.name}`
+            metadataのFile.data.user.picture ??
+            `https://ui-avatars.com/api/?name=${metadataのFile.data.user.name}`
           "
         />
       </q-avatar>
       <div class="ml-1">
         <h2 class="py-0 my-0 leading-normal text-subtitle2">
-          {{ sketchInfo.user.name }}
+          {{ metadataのFile.data.user.name }}
         </h2>
         <h3 class="py-0 my-0 leading-normal text-12px text-gray-400">
-          {{ sketchInfo.user.username }}
+          {{ metadataのFile.data.user.username }}
         </h3>
       </div>
     </div>
@@ -112,12 +113,12 @@
       </div>
     </div>
 
-    <template v-if="sketchInfo.user.uid === user?.uid">
+    <template v-if="metadataのFile.data.user.uid === user?.uid">
       <q-separator class="my-3" />
 
       <div class="flex items-center justify-end">
         <q-toggle
-          :model-value="sketchInfo.private"
+          :model-value="metadataのFile.data.private"
           @update:model-value="togglePrivate"
           dense
           size="sm"
@@ -137,7 +138,7 @@
     >
 
     <q-btn
-      v-if="sketchInfo.user.uid === user?.uid"
+      v-if="metadataのFile.data.user.uid === user?.uid"
       rounded
       outline
       size="sm"
@@ -149,7 +150,9 @@
       >Delete Sketch</q-btn
     >
   </main>
-  <main v-else-if="sketchStore.rootのsketch" class="min-h-0 px-2 select-none">This sketch in a local</main>
+  <main v-else-if="sketchStore.rootのsketch" class="min-h-0 px-2 select-none">
+    This sketch in a local
+  </main>
   <MainOpenSketch v-else />
 </template>
 
@@ -166,7 +169,7 @@ const notify = useNotify()
 const router = useRouter()
 const $q = useQuasar()
 
-const { sketchInfo } = storeToRefs(sketchStore)
+const { metadataのFile } = storeToRefs(sketchStore)
 
 const editing = ref(false)
 
@@ -174,26 +177,26 @@ const editing = ref(false)
 const name = ref("")
 const description = ref("")
 watch(editing, (editing) => {
-  if (!sketchInfo.value) return
+  if (!metadataのFile.value) return
   if (editing) {
     ;[name.value, description.value] = [
-      sketchInfo.value?.name,
-      sketchInfo.value?.description ?? "",
+      metadataのFile.value.data?.name,
+      metadataのFile.value.data?.description ?? "",
     ]
   }
 })
 
 const updatingInfo = ref(false)
 async function updateInfo() {
-  if (!sketchInfo.value) return
+  if (!metadataのFile.value.data) return
 
   updatingInfo.value = true
 
   try {
     await sketchStore.updateInfo({
-      name: sketchInfo.value.name === name.value ? undefined : name.value,
+      name: metadataのFile.value.data?.name === name.value ? undefined : name.value,
       description:
-        sketchInfo.value.description === description.value
+      metadataのFile.value.data?.description === description.value
           ? undefined
           : description.value,
     })
@@ -207,10 +210,10 @@ async function updateInfo() {
 }
 
 async function togglePrivate(newVal: boolean) {
-  if (!sketchStore.sketchInfo) return
+  if (!sketchStore.metadataのFile.data) return
 
-  sketchStore.sketchInfo = {
-    ...sketchStore.sketchInfo,
+  sketchStore.metadataのFile.data = {
+    ...sketchStore.metadataのFile.data,
     private: newVal,
   }
 
@@ -221,9 +224,9 @@ async function togglePrivate(newVal: boolean) {
     })
     notify.success(`Sketch updated ${newVal ? "is" : "is not"} private`)
   } catch (err) {
-    if (!sketchStore.sketchInfo) return
-    sketchStore.sketchInfo = {
-      ...sketchStore.sketchInfo,
+    if (!sketchStore.metadataのFile.data) return
+    sketchStore.metadataのFile.data = {
+      ...sketchStore.metadataのFile.data,
       private: !newVal,
     }
     notify.error(err)

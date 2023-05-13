@@ -36,7 +36,7 @@ watch(
     route.path.slice(1, route.path.indexOf("/", 2))?.toLowerCase() as
       | "sketch"
       | "local",
-    decodeURIComponent((route.params.uid as string).replace(/\+/g, " ")),
+    decodeURIComponent((route.params.uid as string)?.replace(/\+/g, " ")),
   ],
   async ([type, uid]) => {
     if (!type || !uid) return
@@ -52,7 +52,8 @@ watch(
         async (name) => {
           console.log(name)
           return { action: "new", val: name + Math.random().toString(34) }
-        }
+        },
+        undefined
       )
     } catch (err) {
       console.warn(err)
@@ -67,11 +68,15 @@ watch(
           message: "sketch is online, do you want to continue?",
           ok: "Yes",
           cancel: "No",
-        }).onOk(async () => {
-          await router.push(
-            `/sketch/${(err as { code: string; uid: number }).uid}`
-          )
         })
+          .onOk(async () => {
+            await router.push(
+              `/sketch/${(err as { code: string; uid: number }).uid}`
+            )
+          })
+          .onCancel(async () => {
+            await sketchStore.openSketch(uid, true, undefined, true)
+          })
 
         return
       }

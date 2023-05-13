@@ -106,7 +106,7 @@ describe("use-file", () => {
   test("work with moddileware", async () => {
     const { data, ready } = toRefs(
       useFile("text.json", "{}", false, {
-          get: JSON.parse,
+        get: JSON.parse,
       })
     )
 
@@ -121,5 +121,34 @@ describe("use-file", () => {
     await ready.value
 
     expect(data.value).toEqual({ foo: "bar" })
+  })
+
+  test("should data reset if filepath is null", async () => {
+    const file = ref<string | undefined>("text.json")
+    const { data, ready } = toRefs(
+      useFile(file, "{}", false, {
+        get: JSON.parse,
+      })
+    )
+
+    await ready.value
+    expect(data.value).toEqual({})
+
+    await writeFile("text.json", '{"foo": "bar"}')
+    eventBus.emit("writeFile", "text.json")
+
+    await sleep(100)
+    await nextTick()
+    await ready.value
+
+    expect(data.value).toEqual({ foo: "bar" })
+
+    file.value = undefined
+    await nextTick()
+    expect(data.value).toEqual({})
+
+    await ready.value
+
+    expect(data.value).toEqual({})
   })
 })

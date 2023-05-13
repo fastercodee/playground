@@ -79,17 +79,11 @@ setInterval(() => {
 
 const entryCurrent = computedAsync(
   async () => {
-    if (!sketchStore.rootのsketch) return
+    if (!sketchStore.dirnameSketch) return
 
-    const entryRoot: Entry<"directory"> = createFakeDirectory("")
+    const entryRoot: Entry<"directory"> = createFakeDirectory("home")
     // entryRoot.directory = entryRoot
-
-    try {
-      return await readDetails<"directory">(sketchStore.rootのsketch, entryRoot)
-    } catch {
-      await init()
-      return await readDetails<"directory">(sketchStore.rootのsketch, entryRoot)
-    }
+return await readDetails<"directory">(sketchStore.dirnameSketch, entryRoot)
   },
   undefined,
   {

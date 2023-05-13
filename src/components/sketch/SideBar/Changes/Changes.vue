@@ -12,7 +12,7 @@
   <main v-if="sketchStore.rootのsketch" class="min-h-0 px-2 select-none">
     <q-form v-if="auth.check()" @submit="publishChanges">
       <q-input
-        v-if="!sketchStore.sketchInfo"
+        v-if="!sketchStore.metadataのFile.data"
         filled
         debounce="500"
         v-model.trim="sketchName"
@@ -26,18 +26,18 @@
 
       <q-btn
         v-if="
-          !sketchStore.sketchInfo ||
-          sketchStore.sketchInfo.user.uid === user?.uid
+          !sketchStore.metadataのFile.data ||
+          sketchStore.metadataのFile.data.user.uid === user?.uid
         "
         type="submit"
         rounded
         size="sm"
         class="w-full bg-green-500 bg-opacity-80 !text-12px min-h-0"
         no-caps
-        :disable="notChange && !!sketchStore.sketchInfo"
+        :disable="notChange && !!sketchStore.metadataのFile.data"
         :loading="pushing"
         >{{
-          sketchStore.sketchInfo ? "Save changes" : "Push new sketch"
+          sketchStore.metadataのFile.data ? "Save changes" : "Push new sketch"
         }}</q-btn
       >
       <q-btn
@@ -185,7 +185,7 @@ const showResultAsTree = ref(true)
 
 const sketchName = ref("")
 watch(
-  () => sketchStore.sketchInfo?.name,
+  () => sketchStore.metadataのFile.data?.name,
   (name) => (sketchName.value = name ?? ""),
   { immediate: true }
 )
@@ -195,11 +195,11 @@ const pushing = ref(false)
 async function publishChanges() {
   emitErrorName.value = true
 
-  if (!sketchStore.sketchInfo && !sketchName.value) return
+  if (!sketchStore.metadataのFile.data && !sketchName.value) return
 
   pushing.value = true
   try {
-    if (sketchStore.sketchInfo) {
+    if (sketchStore.metadataのFile.data) {
       await sketchStore.pushChanges()
 
       notify.success("Updated files sketch")

@@ -205,6 +205,8 @@ async function pullOrClone(
     })
   ])
   eventBus.emit("writeFile", path_hashes_server)
+  eventBus.emit("writeFile", path_hashes_client)
+  eventBus.emit("writeFile", path_metadata)
 
   return { dirname: dirnameSave, sketch: res.data.sketch }
 }
@@ -273,7 +275,6 @@ export const useSketchStore = defineStore("sketch", () => {
   });
 
   const dirnameSketch = ref<string | void>()
-  const sketchInfo = shallowRef<Readonly<Sketch<true, false>>>()
   const fetching = ref(false)
   const rootのsketch = computed(() => dirnameSketch.value ? `home/${dirnameSketch.value}` : undefined)
 
@@ -298,10 +299,12 @@ export const useSketchStore = defineStore("sketch", () => {
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
 
     if (fetching.value) return
-    if (!sketchInfo.value || !rootのsketch.value) {
+    if (!rootのsketch.value) {
       console.warn("[fs/watch]: Stop updating the hashes due to the offline sketch.")
       return
     }
+    await metadataのFile.ready
+    if (!metadataのFile.data) return
 
     const filepath = relative(rootのsketch.value, パス)
 
@@ -327,10 +330,12 @@ export const useSketchStore = defineStore("sketch", () => {
   )
   eventBus.watch(rootのsketch, async (タイプ, パス) => {
     if (fetching.value) return
-    if (!sketchInfo.value || !rootのsketch.value) {
+    if (!rootのsketch.value) {
       console.warn("[fs/watch]: Stop updating the hashes due to the offline sketch.")
       return
     }
+    await metadataのFile.ready
+    if (!metadataのFile.data) return
 
     const filepath = relative(rootのsketch.value, パス)
 
@@ -371,6 +376,15 @@ export const useSketchStore = defineStore("sketch", () => {
       get: text => ["/.changes/**/*", ...parseGitIgnore(text)]
     }
   )
+  const metadataのFile = useFile<Readonly<Sketch<true, false>>, true>(
+    computed(() => rootのsketch.value ? `${rootのsketch.value}/.changes/metadata` : undefined),
+    JSON.stringify(null),
+    true,
+    {
+      get: parseJSON,
+      set: JSON.stringify,
+    }
+  )
 
   /**
    * nếu thứ này được mở bằng cách nhấn open sketch local nó phải tìm kiếm chính xác `sketch_uid` từ thư mục gốc `home`
@@ -381,7 +395,8 @@ export const useSketchStore = defineStore("sketch", () => {
   async function openSketch<Local extends boolean>(
     dirname_sketch: Local extends true ? string : number,
     openFromLocal: Local,
-    quesSketchNameSavIfExists: Local extends true ? void : QuestionSketchname) {
+    quesSketchNameSavIfExists: Local extends true ? void : QuestionSketchname,
+    forceOpenWithLocal: Local extends true ? boolean : void) {
     fetching.value = true
 
     try {
@@ -394,7 +409,7 @@ export const useSketchStore = defineStore("sketch", () => {
           encoding: Encoding.UTF8,
         }).then(res => parseJSON(res.data)).catch(() => ({}))
 
-        if (typeof metadata.uid === "number") {
+        if (typeof metadata.uid === "number" && !forceOpenWithLocal) {
           // eslint-disable-next-line no-throw-literal
           throw {
             code: "sketch_is_online",
@@ -403,7 +418,6 @@ export const useSketchStore = defineStore("sketch", () => {
         }
 
         await forceUpdateHashesClient(`home/${dirname_sketch}`);
-        sketchInfo.value = undefined
         dirnameSketch.value = dirname_sketch + ""
 
         return
@@ -446,22 +460,19 @@ export const useSketchStore = defineStore("sketch", () => {
 
         console.log("fetch: start pull sketch");
 
-        const { dirname, sketch } = await pullOrClone(
+        const { dirname } = await pullOrClone(
           auth,
           dirnamePhysical,
           (dirname_sketch) as number,
           null,
           console.log.bind(console)
         );
-        console.log({ dirname })
-
-        sketchInfo.value = sketch;
         参照コンテナ.data[dirname_sketch + ""] = dirname
         dirnameSketch.value = dirname
       } else {
         // not exists by roulink
 
-        const { sketch, dirname } = await pullOrClone(
+        const { dirname } = await pullOrClone(
           auth,
           false,
           (dirname_sketch) as number,
@@ -470,7 +481,6 @@ export const useSketchStore = defineStore("sketch", () => {
           console.log.bind(console)
         );
 
-        sketchInfo.value = sketch;
         参照コンテナ.data[dirname_sketch + ""] = dirname
         dirnameSketch.value = dirname
 
@@ -497,7 +507,7 @@ export const useSketchStore = defineStore("sketch", () => {
   const 変化 = computed<Record<string, StatusChange>>(() => {
     const dir = rootのsketch.value
     if (!dir) return EMPTY_OBJ
-    const server = sketchInfo.value ? hashes_serverのFile.data : {}
+    const server = metadataのFile.data ? hashes_serverのFile.data : {}
     const client = hashes_clientのFile.data
 
     if (!server || !client) return {}
@@ -579,7 +589,8 @@ export const useSketchStore = defineStore("sketch", () => {
   async function undoChange(fullPath: string, status: StatusChange) {
     if (!rootのsketch.value) return
 
-    if (!sketchInfo.value) return
+    await metadataのFile.ready
+    if (!metadataのFile.data) return
 
     const server = hashes_serverのFile.data
     const relativePath = relative(rootのsketch.value, fullPath)
@@ -679,10 +690,11 @@ export const useSketchStore = defineStore("sketch", () => {
 
   async function pushChanges() {
     // INFO: push changes
-    if (!sketchInfo.value || !rootのsketch.value) throw new Error("[push]: sketchInfo not loaded.")
+    await metadataのFile.ready
+    if (!metadataのFile.data || !rootのsketch.value) throw new Error("[push]: sketchInfo not loaded.")
 
     const form = new FormData()
-    form.append("uid", sketchInfo.value.uid + "")
+    form.append("uid", metadataのFile.data.uid + "")
     changes_addedのFile.data.D?.forEach(relativePath => form.append("deletes[]", relativePath))
 
     await Promise.all(
@@ -761,6 +773,10 @@ export const useSketchStore = defineStore("sketch", () => {
     }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
       data: SketchController["create"]["response"]
     }
+    metadataのFile.data = sketch
+    await 参照コンテナ.ready
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    参照コンテナ.data[sketch.uid + ""] = dirnameSketch.value!
 
     changes_addedのFile.data = {}
     return sketch
@@ -771,33 +787,36 @@ export const useSketchStore = defineStore("sketch", () => {
     description?: string,
     private?: "0" | "1",
   }) {
-    if (!sketchInfo.value) throw new Error("Sketch info not ready")
+    await metadataのFile.ready
+    if (!metadataのFile.data) throw new Error("Sketch info not ready")
 
     const { data: { sketch } } = await auth.http({
       url: "/sketch/update_info",
       method: "post",
       data: {
-        uid: sketchInfo.value.uid,
+        uid: metadataのFile.data.uid,
         ...info
       },
     }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
       data: SketchController["update_info"]["response"]
     }
 
-    sketchInfo.value = sketch
+    metadataのFile.data = sketch
 
     return sketch
   }
 
   async function deleteSketch() {
-    if (!sketchInfo.value) throw new Error("Sketch info not ready")
+
+    await metadataのFile.ready
+    if (!metadataのFile.data)throw new Error("Sketch info not ready")
 
     const dirname = dirnameSketch.value
     await auth.http({
       url: "/sketch/delete",
       method: "post",
       data: {
-        uid: sketchInfo.value.uid,
+        uid: metadataのFile.data.uid,
       },
     })
 
@@ -809,14 +828,16 @@ export const useSketchStore = defineStore("sketch", () => {
   }
 
   async function fork(name?: string) {
-    if (!sketchInfo.value) throw new Error("Sketch info not ready")
+
+    await metadataのFile.ready
+    if (!metadataのFile.data) throw new Error("Sketch info not ready")
 
 
     const { data: { sketch } } = await auth.http({
       url: "/sketch/fork",
       method: "post",
       data: {
-        uid: sketchInfo.value.uid,
+        uid: metadataのFile.data.uid,
         name,
       },
     }) as Omit<Awaited<ReturnType<typeof auth.http>>, "data"> & {
@@ -836,7 +857,16 @@ export const useSketchStore = defineStore("sketch", () => {
         to: `home/${dirname}`,
         directory: Directory.External
       })
+      eventBus.emit("copyDir", `home/${dirname}`)
+
       参照コンテナ.data[sketch.uid] = dirname
+      await Filesystem.writeFile({
+        path: `home/${dirname}/.changes/metadata`,
+        directory: Directory.External,
+        encoding: Encoding.UTF8,
+        data: JSON.stringify(sketch)
+      })
+      eventBus.emit("writeFile", `home/${dirname}/.changes/metadata`)
 
       return sketch
     } finally {
@@ -846,9 +876,9 @@ export const useSketchStore = defineStore("sketch", () => {
   }
 
 
-  return {
+  return {dirnameSketch,
     rootのsketch, changes_addedのFile,
-    openSketch, sketchInfo, fetching, forceUpdateHashesClient, fetchAfterPublish, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
+    openSketch, metadataのFile, fetching, forceUpdateHashesClient, fetchAfterPublish, 変化, 追加された変更, gitignoreのFile, undoChange, undoChanges, addChange, addChanges, removeChange, removeChanges, pushChanges,
     publish, updateInfo, deleteSketch, fork
   }
 })

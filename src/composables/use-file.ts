@@ -69,7 +69,10 @@ export function useFile<T = string, R extends boolean = false, UseOnFileChange e
   })
 
   const watchHandler = (filepath: string | undefined) => {
-    if (!filepath) return
+    if (!filepath) {
+      ret.data = middleare.get(defaultValue)
+      return
+    }
     ret.ready = loadFile(filepath)
       .catch((er) => {
         if (import.meta.env.DEV && er.message !== "File does not exist.")
