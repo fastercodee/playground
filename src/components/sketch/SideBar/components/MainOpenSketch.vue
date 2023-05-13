@@ -1,7 +1,27 @@
 <template>
-  <main class="min-h-0 px-2 select-none">Open sketch</main>
+  <main class="min-h-0 px-2 select-none text-center">
+    <q-btn
+      rounded
+      outline
+      size="sm"
+      color="blue"
+      class="mt-5 !text-12px min-h-0 w-full max-w-200px"
+      no-caps
+      @click="openingSelectSketch = true"
+      >Open sketch IndexedDB</q-btn
+    >
+    <q-btn
+      rounded
+      outline
+      size="sm"
+      color="green"
+      class="mt-3 !text-12px min-h-0 w-full max-w-200px"
+      no-caps
+      >New sketch IndexedDB</q-btn
+    >
+  </main>
 
-  <q-dialog :model-value="true" position="top">
+  <q-dialog v-model="openingSelectSketch" position="top">
     <q-card style="width: 62% !important" class="min-w-0 max-w-400px">
       <q-card-section class="px-3 py-2">
         <q-input
@@ -66,6 +86,10 @@ import { Icon } from "@iconify/vue"
 import getIcon from "src/assets/material-icon-theme/dist/getIcon"
 import { Entry } from "src/logic/read-details"
 import { Sketch } from "src/types/api/Models/Sketch"
+import { validateRequired } from "src/validators/required"
+import { validateSketchName } from "src/validators/validate-sketch-name"
+
+const router = useRouter()
 
 const searchSketch = ref("")
 
