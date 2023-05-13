@@ -19,7 +19,8 @@
         placeholder="Sketch name"
         class="q-input--custom mt-2"
         :rules="[
-          (v) => (v ? true : 'Required'),
+          validateRequired,
+          validateSketchName,
           (v) => checkSketchName(v, auth, null),
         ]"
       />
@@ -144,6 +145,8 @@
 import { Icon } from "@iconify/vue"
 import { User } from "src/types/api/Models/User"
 import { checkSketchName } from "src/validators/check-sketch-name"
+import { validateRequired } from "src/validators/required"
+import { validateSketchName } from "src/validators/validate-sketch-name"
 
 const auth = useAuth()
 const user = useUser<User>()

@@ -30,7 +30,8 @@
         placeholder="Sketch name"
         class="q-input--custom mt-2"
         :rules="[
-          (v) => (v ? true : 'Required'),
+          validateRequired,
+          validateSketchName,
           (v) => checkSketchName(v, auth, metadataのFile.data),
         ]"
       />
@@ -48,19 +49,19 @@
       <div class="flex items-center flex-nowrap mt-3">
         <q-btn
           color="transparent"
-          size="11px"
+          size="sm"
           no-caps
           rounded
-          class="w-full mx-1"
+          class="w-full !text-12px mx-1"
           @click="editing = false"
           >Cancel</q-btn
         >
         <q-btn
           color="blue"
-          size="11px"
+          size="sm"
           no-caps
           rounded
-          class="w-full mx-1"
+          class="w-full !text-12px mx-1"
           :disable="
             name === metadataのFile.data.name &&
             description === (metadataのFile.data.description ?? '')
@@ -161,6 +162,8 @@ import { Icon } from "@iconify/vue"
 import { storeToRefs } from "pinia"
 import { User } from "src/types/api/Models/User"
 import { checkSketchName } from "src/validators/check-sketch-name"
+import { validateRequired } from "src/validators/required"
+import { validateSketchName } from "src/validators/validate-sketch-name"
 
 const auth = useAuth()
 const user = useUser<User>()
@@ -194,9 +197,10 @@ async function updateInfo() {
 
   try {
     await sketchStore.updateInfo({
-      name: metadataのFile.value.data?.name === name.value ? undefined : name.value,
+      name:
+        metadataのFile.value.data?.name === name.value ? undefined : name.value,
       description:
-      metadataのFile.value.data?.description === description.value
+        metadataのFile.value.data?.description === description.value
           ? undefined
           : description.value,
     })
