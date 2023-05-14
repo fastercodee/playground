@@ -107,7 +107,14 @@
 import { Icon } from "@iconify/vue"
 import getIcon from "src/assets/material-icon-theme/dist/getIcon"
 import { Entry } from "src/logic/read-details"
-import P
+import { Sketch } from "src/types/api/Models/Sketch"
+import { validateRequired } from "src/validators/required"
+import { validateSketchName } from "src/validators/validate-sketch-name"
+
+const router = useRouter()
+
+const searchSketch = ref("")
+
 const appUrl = APP_URL
 const decevier = computedAsync(
   async () => {
