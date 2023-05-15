@@ -8,13 +8,9 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-const {
-  default: transformerDirectives,
-} = require("@unocss/transformer-directives")
-const { OnuResolver, presetOnu } = require("onu-ui")
+const { OnuResolver } = require("onu-ui")
 const { extend } = require("quasar")
 const { configure } = require("quasar/wrappers")
-const { presetAttributify, presetUno } = require("unocss")
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -115,7 +111,7 @@ module.exports = configure(function (/* ctx */) {
       vitePlugins: [
         ["vite-plugin-pages"],
         ["vite-plugin-json5"],
-        ["vite-plugin-arraybuffer"],
+        ["vite-plugin-arraybuffer", {}],
         [
           "vite-plugin-vue-layouts",
           {
@@ -124,26 +120,7 @@ module.exports = configure(function (/* ctx */) {
             routeStyle: "nuxt",
           },
         ],
-        [
-          "unocss/vite",
-          {
-            presets: [
-              presetAttributify({
-                prefix: "un-",
-                prefixedOnly: true, // <--
-              }),
-              presetUno(),
-              presetOnu(),
-            ],
-            rules: [
-              [
-                /^size-\[([^[\]]+)\]/,
-                ([, value]) => ({ width: value, height: value }),
-              ],
-            ],
-            transformers: [transformerDirectives()],
-          },
-        ],
+        ["unocss/vite"],
         [
           "unplugin-auto-import/vite",
           {
