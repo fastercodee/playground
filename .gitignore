@@ -38,3 +38,5 @@ yarn-error.log*
 /*.sqlite
 
 /.env
+
+/src/starters/*/index.ts

@@ -1,4 +1,4 @@
 {
-  name: "Svelte TypeScript",
-  icon: ["logos:svelte", 'logos:typescript'],
+  name: "svelte-ts",
+  icon: ["logos:svelte-icon", "logos:typescript-icon"],
 }

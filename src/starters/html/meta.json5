@@ -1,4 +1,4 @@
 {
-  name: "HTML",
-  icon: ["logos:html-5"],
+  "name": "html",
+  "icon": ["logos:html-5"]
 }

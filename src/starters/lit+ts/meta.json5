@@ -1,4 +1,4 @@
 {
-  name: "lit TypeScript",
-  icon: ["logos:lit", "logos:typescript"]
+  name: "lit-ts",
+  icon: ["logos:lit-icon", "logos:typescript-icon"],
 }

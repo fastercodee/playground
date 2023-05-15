@@ -1,4 +1,4 @@
 {
-  name: "Vue TypeScript",
-  icon: ["logos:vue", "logos:typescript"],
+  name: "vue-ts",
+  icon: ["logos:vue", "logos:typescript-icon"],
 }

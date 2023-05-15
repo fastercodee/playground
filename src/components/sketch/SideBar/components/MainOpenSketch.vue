@@ -81,22 +81,58 @@
   </q-dialog>
 
   <q-dialog v-model="openingNewSketch">
-    <q-card style="width: 62% !important" class="min-w-0 max-w-800px">
-      <q-card-section class="px-3 py-2">
+    <q-card
+      style="width: 62% !important"
+      class="min-w-0 max-w-800px flex column flex-nowrap"
+    >
+      <q-card-section>
+        <div class="text-subtitle1">Create sketch</div>
+      </q-card-section>
+
+      <q-separator />
+
+      <q-card-section class="px-3 py-2 h-full min-h-0 h-full scroll">
         <q-form @submit="createSketch">
-          <q-input
-            v-model="nameCreateSketch"
-            filled
-            dense
-            placeholder="Enter name sketch to save"
-            class="q-input--custom w-full"
-            :rules="[
-              validateRequired,
-              validateSketchName,
-              validateSketchNameExists,
-            ]"
-          />
-          <q-btn type="submit" :loading="creating">Create</q-btn>
+          <div>
+            <q-input
+              v-model="nameCreateSketch"
+              filled
+              dense
+              placeholder="Enter name sketch to save"
+              class="q-input--custom w-full"
+              :rules="[
+                validateRequired,
+                validateSketchName,
+                validateSketchNameExists,
+              ]"
+            />
+          </div>
+
+          <ul class="row">
+            <li
+              class="col col-6 col-md-4 col-lg-3 col-xl-6"
+              v-for="te in templates"
+              :key="te.dir"
+            >
+              <button
+                type="submit"
+                @click="template = te.dir"
+                class="w-full text-14px px-2 py-2 text-center flex lt-sm:column items-center hover:bg-gray-600 hover:bg-opacity-20 rounded"
+              >
+                <div>
+                  <Icon
+                    v-for="icon in te.icon.slice(0, 1)"
+                    :key="icon"
+                    :icon="icon"
+                    width="45"
+                    height="45"
+                    class="mx-1"
+                  />
+                </div>
+                <h4 class="text-gray-300">{{ te.name }}</h4>
+              </button>
+            </li>
+          </ul>
         </q-form>
       </q-card-section>
     </q-card>
@@ -107,11 +143,13 @@
 import { Icon } from "@iconify/vue"
 import getIcon from "src/assets/material-icon-theme/dist/getIcon"
 import { Entry } from "src/logic/read-details"
+import { getListTemplates, loadFiles } from "src/starters"
 import { Sketch } from "src/types/api/Models/Sketch"
 import { validateRequired } from "src/validators/required"
 import { validateSketchName } from "src/validators/validate-sketch-name"
 
 const router = useRouter()
+const templates = computedAsync(() => getListTemplates())
 
 const searchSketch = ref("")
 
@@ -174,19 +212,22 @@ const validateSketchNameExists = async (v: string) => {
 }
 
 const nameCreateSketch = ref("")
+const template = ref("html")
+
 const creating = ref(false)
+
 async function createSketch() {
+  if (!template.value) return
   creating.value = true
 
-  const { files } = await import("src/starters/html")
+  const files = await loadFiles(template.value)
   const root = `home/${nameCreateSketch.value}`
 
   for (const [filepath, content] of Object.entries(files)) {
     await Filesystem.writeFile({
       path: `${root}/${filepath}`,
-      data: content,
+      data: uint8ToBase64(content),
       directory: Directory.External,
-      encoding: Encoding.UTF8,
     })
   }
 
@@ -196,3 +237,11 @@ async function createSketch() {
   creating.value = false
 }
 </script>
+
+<style lang="scss" scoped>
+.lt-sm\:column {
+  @media (max-width: $breakpoint-xs-max) {
+    flex-direction: column;
+  }
+}
+</style>

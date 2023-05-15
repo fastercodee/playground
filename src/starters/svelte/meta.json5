@@ -1,4 +1,4 @@
 {
-  name: "Svelte",
-  icon: ["logos:svelte"],
+  name: "svelte",
+  icon: ["logos:svelte-icon"],
 }
