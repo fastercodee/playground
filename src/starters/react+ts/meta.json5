@@ -1,0 +1,4 @@
+{
+  name: "React TypeScript",
+  icon: ["logos:react", "logos:typescript"],
+}

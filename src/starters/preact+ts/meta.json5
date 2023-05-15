@@ -1,0 +1,4 @@
+{
+  name: "PReact TypeScript",
+  icon: ["logos:preact", "logos:typescript"],
+}

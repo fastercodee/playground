@@ -10,5 +10,7 @@
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "scss.lint.unknownAtRules": "ignore",
-  "vue.codeActions.enabled": false
+  "vue.codeActions.enabled": false,
+  "editor.tabCompletion": "on",
+  "diffEditor.codeLens": true
 }

@@ -1,0 +1,4 @@
+{
+  name: "Svelte TypeScript",
+  icon: ["logos:svelte", 'logos:typescript'],
+}

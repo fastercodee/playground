@@ -1,1 +1,2 @@
 src/logic/linter.mjs linguist-vendored
+src/starters/**/* linguist-vendored
