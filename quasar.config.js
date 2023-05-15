@@ -114,6 +114,8 @@ module.exports = configure(function (/* ctx */) {
 
       vitePlugins: [
         ["vite-plugin-pages"],
+        ["vite-plugin-json5"],
+        ["vite-plugin-arraybuffer"],
         [
           "vite-plugin-vue-layouts",
           {
@@ -162,7 +164,7 @@ module.exports = configure(function (/* ctx */) {
                   "Directory",
                   "Encoding",
                 ],
-                "quasar": ["useQuasar"],
+                quasar: ["useQuasar"],
                 "vue-auth3": ["useAuth", "useUser"],
                 "vue-request": ["useRequest"],
               },

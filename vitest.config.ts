@@ -1,5 +1,7 @@
 import { OnuResolver } from "onu-ui"
 import AutoImport from "unplugin-auto-import/vite"
+import vitePluginArraybuffer from "vite-plugin-arraybuffer"
+import json5 from "vite-plugin-json5"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
@@ -15,6 +17,8 @@ export default defineConfig({
     },
   },
   plugins: [
+    json5(),
+    vitePluginArraybuffer(),
     AutoImport({
       resolvers: [OnuResolver()],
       // targets to transform
