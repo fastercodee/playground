@@ -153,6 +153,8 @@
   </main>
   <main v-else-if="sketchStore.rootのsketch" class="min-h-0 px-2 select-none">
     This sketch in a local
+    {{ sketchStore.metadataのFile }}
+    {{ sketchStore.rootのsketch }}
   </main>
   <MainOpenSketch v-else />
 </template>

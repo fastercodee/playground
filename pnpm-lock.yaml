@@ -64,6 +64,9 @@ dependencies:
   '@tachibana-shin/capacitor-filesystem':
     specifier: 5.0.2
     version: 5.0.2(@capacitor/core@4.7.0)
+  '@types/mime-types':
+    specifier: ^2.1.1
+    version: 2.1.1
   '@types/parse-gitignore':
     specifier: ^1.0.0
     version: 1.0.0
@@ -133,6 +136,9 @@ dependencies:
   micromatch:
     specifier: ^4.0.5
     version: 4.0.5
+  mime-types:
+    specifier: ^2.1.35
+    version: 2.1.35
   parse-gitignore:
     specifier: ^2.0.0
     version: 2.0.0
@@ -1520,6 +1526,10 @@ packages:
     dependencies:
       '@types/braces': 3.0.1
     dev: true
+
+  /@types/mime-types@2.1.1:
+    resolution: {integrity: sha512-vXOTGVSLR2jMw440moWTC7H19iUyLtP3Z1YTj7cSsubOICinjMxFeb/V57v9QdyyPGbbWolUFSSmSiRSn94tFw==}
+    dev: false
 
   /@types/mime@3.0.1:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}

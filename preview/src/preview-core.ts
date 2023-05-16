@@ -147,7 +147,7 @@ function setupConsole(port2: MessagePort) {
         args: printfArgs(args).map((item: unknown) => Encode(item, 2)),
       })
 
-      cbRoot.apply(this, args)
+      if (!import.meta.env.DEV) cbRoot.apply(this, args)
     }
   })
   // eslint-disable-next-line n/no-unsupported-features/node-builtins
