@@ -14,7 +14,7 @@ fs.readdirSync(__dirname)
     let code = "export const files = {"
 
     globbySync("**/*", { cwd: base }).forEach(file => {
-      code += `'${file}':` + "new Uint8Array(" + new Uint8Array(fs.readFileSync(join(base, file))) + ")"
+      code += `'${file.replace("._", ".")}':` + "new Uint8Array([" + new Uint8Array(fs.readFileSync(join(base, file))) + "]),"
     })
 
     code += "}"
