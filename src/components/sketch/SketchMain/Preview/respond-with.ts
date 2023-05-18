@@ -7,7 +7,7 @@ export async function respondWith(
   tsconfigのFile: ReturnType<typeof useFile<string>>,
   url: URL
 ): Promise<{
-  content: ArrayBufferLike
+  content: ArrayBuffer
   ext: string
   path: string
 }> {
@@ -28,7 +28,7 @@ export async function respondWith(
   const resolveByImport = resolverImport(url)
   if (resolveByImport)
     return {
-      content: utf8ToUint8(resolveByImport.contents),
+      content: utf8ToUint8(resolveByImport.contents).buffer,
       ext: resolveByImport.loader,
       path: join(rootのsketch, pathname),
     }

@@ -68,7 +68,7 @@ export async function compilerFile(
   ext: string,
   searchParams: URLSearchParams,
   tsconfigRaw: string
-) {
+):Promise<ArrayBuffer> {
   if (!inited) {
     if (!process.env.TEST)
       await initialize({
@@ -93,5 +93,5 @@ export async function compilerFile(
 
   console.log({ result })
 
-  return result.outputFiles[0].contents
+  return result.outputFiles[0].contents.buffer
 }

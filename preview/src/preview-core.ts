@@ -32,7 +32,7 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
   listenParent = listen<Communicate>(cast, "get file", async (opts) => {
     console.log("Request file %s", opts.url)
 
-    const res = await put(port2, "get file", opts)
+    const res = await put(port2, { name: "get file", timeout: 120_000 }, opts)
 
     // console.log({ res })
 
@@ -48,10 +48,14 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
   // eslint-disable-next-line functional/no-let
   let hasScriptNoModule = false
   async function appendIndex() {
-    const index = await put<Communicate>(port2!, "get file", {
-      url: location.href,
-      headers: [],
-    })
+    const index = await put<Communicate>(
+      port2!,
+      { name: "get file", timeout: 120_000 },
+      {
+        url: location.href,
+        headers: [],
+      }
+    )
     // index is content file index.html
     /** @description - parse index.html and apply DOM */
     // eslint-disable-next-line no-labels

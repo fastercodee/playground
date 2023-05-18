@@ -39,17 +39,21 @@ addEventListener("fetch", (event) => {
         !url.pathname.startsWith("/src/sw.ts"))) &&
     /^https?:$/g.test(url.protocol)
   ) {
-
-    const response = put<Communicate>(cast, "get file", {
-      url: request.url,
-      headers: [...request.headers.entries()],
-    })
+    const response = put<Communicate>(
+      cast,
+      { name: "get file", timeout: 120_000 },
+      {
+        url: request.url,
+        headers: [...request.headers.entries()],
+      }
+    )
       .then((response) =>
         response
           ? new Response(response.content, response.init)
           : fetch(event.request)
       )
       .catch((err) => {
+        console.error(err)
         return new Response(err.message, {
           status: 408,
           statusText: "Request timeout",

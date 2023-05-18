@@ -10,9 +10,11 @@
 </template>
 
 <script lang="ts" setup>
+import { extname, join } from "path"
+
 import { listen, put } from "@fcanvas/communicate"
 import type { Communicate } from "app/preview/src/sw"
-import {contentType}from "mime-types"
+import { contentType } from "mime-types"
 
 import { respondWith } from "./respond-with"
 
@@ -47,14 +49,19 @@ function setup() {
   port1.start()
 
   listener = listen<Communicate>(port1, "get file", async (options) => {
-    console.log("Request file %s", options. url)
+    console.log("Request file %s", options.url)
+    const url = new URL(options.url)
 
     // loadfile *.* example *.ts, *.js, eslint
     try {
       if (!sketchStore.rootのsketch) throw new Error("no sketch")
 
-      const res = await respondWith(sketchStore. rootのsketch, tsconfigのFile, new URL(options.url))
-
+      const res = await respondWith(
+        sketchStore.rootのsketch,
+        tsconfigのFile,
+        url
+      )
+      console.log("%c resolved: ", "color:red", res)
       watchFs.addWatchFile(res.path)
 
       return {
@@ -71,13 +78,38 @@ function setup() {
       }
     } catch (err) {
       window.console.error({ err })
-      if ((err as Error).message === "File does not exist.")
-        return {
-          content: null,
-          init: {
-            status: 404,
-          },
+      if ((err as Error).message === "File does not exist.") {
+        // static file
+        // check in /public
+        try {
+          const content = await Filesystem.readFile({
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            path: join(sketchStore.rootのsketch!, "public", url.pathname),
+            directory: Directory.External,
+          }).then((res) => base64ToUint8(res.data).buffer)
+
+          return {
+            transfer: [content],
+            return: {
+              content,
+              init: {
+                status: 200,
+                headers: {
+                  "content-type":
+                    contentType(extname(url.pathname)) || "text/plain",
+                },
+              },
+            },
+          }
+        } catch {
+          return {
+            content: null,
+            init: {
+              status: 404,
+            },
+          }
         }
+      }
       return {
         content: null,
         init: {
