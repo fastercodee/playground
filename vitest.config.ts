@@ -22,7 +22,7 @@ export default defineConfig({
     AutoImport({
       resolvers: [OnuResolver()],
       // targets to transform
-      include: [/\.[tj]sx?$/, /\.vue$/, /\.vue\?vue/],
+      include: [/\.tsx?$/, /\.vue$/, /\.vue\?vue/],
 
       // global imports to register
       imports: [
@@ -32,10 +32,24 @@ export default defineConfig({
         {
           "@iconify/vue": ["Icon"],
           "@vueuse/core": ["computedAsync"],
-          "@tachibana-shin/capacitor-filesystem": ["Filesystem", "Directory", "Encoding"],
+          "@tachibana-shin/capacitor-filesystem": [
+            "Filesystem",
+            "Directory",
+            "Encoding",
+          ],
+          quasar: ["useQuasar"],
+          "vue-auth3": ["useAuth", "useUser"],
+          "vue-request": ["useRequest"],
         },
       ],
-      dirs: ["src/logic/*.ts", "src/composables/*.ts", "src/constants/*.ts"],
+      dirs: [
+        "src/logic/**/*.ts",
+        "src/logic/**/*.tsx",
+        "src/stores/**/*.ts",
+        "src/composables/*.ts",
+        "src/constants/*.ts",
+        "src/validators/*.ts",
+      ],
       eslintrc: {
         enabled: true, // Default `false`
         filepath: "./.eslintrc-auto-import.json", // Default `./.eslintrc-auto-import.json`

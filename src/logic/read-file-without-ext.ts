@@ -5,7 +5,7 @@ export async function readFileWithoutExt(
   exts: string[]
 ): Promise<{ content: ArrayBuffer; ext: string; path: string }> {
   try {
-    const ext = extname(path).slice(1)
+    const ext = extname(path)
     return {
       content: await Filesystem.readFile({
         path,
@@ -23,7 +23,7 @@ export async function readFileWithoutExt(
               path: `${path}.${exts[i]}`,
               directory: Directory.External,
             }).then((res) => base64ToUint8(res.data).buffer),
-            ext: exts[i],
+            ext: '.' + exts[i],
             path: `${path}.${exts[i]}`,
           }
         } catch (err) {

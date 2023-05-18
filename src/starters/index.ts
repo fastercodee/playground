@@ -7,7 +7,7 @@ export async function loadFiles(template: string) {
 }
 
 export function getListTemplates() {
-  const templates = Object.entries(import.meta.glob("./*/meta.json5", { eager: true })).map(async ([filepath, item]) => ({
+  const templates = Object.entries(import.meta.glob("./*/meta.json5")).map(async ([filepath, item]) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(await (item as any)()).default as {
       name: string

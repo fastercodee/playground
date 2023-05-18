@@ -2,7 +2,7 @@ import { getListTemplates, loadFiles } from "."
 
 describe("starters", () => {
   test("getListTemplates", async () => {
-    const templates = getListTemplates(
+    const templates = await getListTemplates(
 
     )
     expect(Array.isArray(templates)).toBe(true)
@@ -22,11 +22,11 @@ describe("starters", () => {
   // ================ test data files ================
 
   test("should all templates exists /index.html", async () => {
-    const templates = getListTemplates()
+    const templates = await getListTemplates()
 
     await Promise.all(
       templates.map(async item => {
-        expect((await loadFiles(item.dir))["index.html"][Symbol.toStringTag]).toBe("ArrayBuffer")
+        expect((await loadFiles(item.dir))["index.html"][Symbol.toStringTag]).toBe("Uint8Array")
       })
     )
   })
