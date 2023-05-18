@@ -12,14 +12,18 @@
 <script lang="ts" setup>
 import { listen, put } from "@fcanvas/communicate"
 import type { Communicate } from "app/preview/src/sw"
+import {contentType}from "mime-types"
 
-import { useRespondWith } from "./respond-with"
+import { respondWith } from "./respond-with"
 
 const iframeRef = ref<HTMLIFrameElement>()
 const previewStore = usePreviewStore()
 const sketchStore = useSketchStore()
 const watchFs = new WatcherFs()
-const respondWith = useRespondWith(watchFs)
+const tsconfigのFile = useFile(
+  () => `${sketchStore.rootのsketch}/tsconfig.json`,
+  "{}"
+)
 
 const srcIFrame = process.env.GITPOD_WORKSPACE_URL
   ? process.env.GITPOD_WORKSPACE_URL.replace("https://", "https://9999-")
@@ -42,7 +46,46 @@ function setup() {
 
   port1.start()
 
-  listener = listen<Communicate>(port1, "get file", respondWith)
+  listener = listen<Communicate>(port1, "get file", async (options) => {
+    console.log("Request file %s", options. url)
+
+    // loadfile *.* example *.ts, *.js, eslint
+    try {
+      if (!sketchStore.rootのsketch) throw new Error("no sketch")
+
+      const res = await respondWith(sketchStore. rootのsketch, tsconfigのFile, new URL(options.url))
+
+      watchFs.addWatchFile(res.path)
+
+      return {
+        transfer: [res.content],
+        return: {
+          content: res.content,
+          init: {
+            status: 200,
+            headers: {
+              "content-type": contentType(res.ext) || "text/plain",
+            },
+          },
+        },
+      }
+    } catch (err) {
+      window.console.error({ err })
+      if ((err as Error).message === "File does not exist.")
+        return {
+          content: null,
+          init: {
+            status: 404,
+          },
+        }
+      return {
+        content: null,
+        init: {
+          status: 503,
+        },
+      }
+    }
+  })
 
   watchFs.コールバックを設定(async (type, path, pathMatch) => {
     window.console.log("send request refresh:", { type, path, pathMatch })

@@ -1,10 +1,8 @@
 import { join, relative } from "path"
 
-import { contentType } from "mime-types"
 import { resolverImport } from "src/logic/compiler/resolver-import"
-import type { WatcherFs } from "src/logic/event-bus"
 
-async function resolverUrl(
+export async function respondWith(
   rootのsketch: string,
   tsconfigのFile: ReturnType<typeof useFile<string>>,
   url: URL
@@ -75,52 +73,4 @@ async function resolverUrl(
   }
 
   return res
-}
-
-export async function respondWith(
-  rootのsketch: string,
-  tsconfigのFile: ReturnType<typeof useFile<string>>,
-  watchFs: WatcherFs,
-  opts: { url: string; headers: [string, string][] }
-) {
-  const url = new URL(opts.url)
-
-  console.log("Request file %s", url)
-
-  // loadfile *.* example *.ts, *.js, eslint
-  try {
-    if (!rootのsketch) throw new Error("no sketch")
-
-    const res = await resolverUrl(rootのsketch, tsconfigのFile, url)
-
-    watchFs.addWatchFile(res.path)
-
-    return {
-      transfer: [res.content],
-      return: {
-        content: res.content,
-        init: {
-          status: 200,
-          headers: {
-            "content-type": contentType(`.${res.ext}`) || "text/plain",
-          },
-        },
-      },
-    }
-  } catch (err) {
-    window.console.error({ err })
-    if ((err as Error).message === "File does not exist.")
-      return {
-        content: null,
-        init: {
-          status: 404,
-        },
-      }
-    return {
-      content: null,
-      init: {
-        status: 503,
-      },
-    }
-  }
 }

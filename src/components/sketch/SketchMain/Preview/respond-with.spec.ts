@@ -8,24 +8,21 @@ describe("respond-with", () => {
     ready: Promise.resolve(),
     data: "{}",
   }
-  const watchFs = new WatcherFs()
 
   beforeEach(cleanupFS)
 
   test("should request /", async () => {
     await writeFile("index.html", "hello index.html")
 
-    const res = await respondWith(rootのsketch, tsconfigのFile, watchFs, {
-      url: "http://localhost/",
-      headers: [],
-    })
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/")
+    )
 
     console.log(res)
 
-    expect(res.return?.init.status).toEqual(200)
-    expect(new Uint8Array(res.return?.content ?? [])).toEqual(
-      utf8ToUint8("hello index.html")
-    )
+    expect(new Uint8Array(res.content)).toEqual(utf8ToUint8("hello index.html"))
   })
 
   test("should request /main.js", async () => {
@@ -59,12 +56,13 @@ describe("respond-with", () => {
     `
     )
 
-    const res = await respondWith(rootのsketch, tsconfigのFile, watchFs, {
-      url: "http://localhost/main.js",
-      headers: [],
-    })
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/main.js")
+    )
 
-    expect(uint8ToUTF8(new Uint8Array(res.return?.content ?? [])))
+    expect(uint8ToUTF8(new Uint8Array(res.content)))
       .include(`// ../../main.js?resolve=
 import "/style.css?import=css";
 import javascriptLogo from "/javascript.svg?import=url";
@@ -75,53 +73,49 @@ import { setupCounter } from "/counter.js";`)
   test("should request /style.css (static file)", async () => {
     await writeFile("style.css", "body{color:red}")
 
-    const res = await respondWith(rootのsketch, tsconfigのFile, watchFs, {
-      url: "http://localhost/style.css",
-      headers: [],
-    })
-
-    expect(res.return?.init.status).toEqual(200)
-    expect(uint8ToUTF8(new Uint8Array(res.return?.content ?? []))).toBe(
-      "body{color:red}"
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/style.css")
     )
+
+    expect(uint8ToUTF8(new Uint8Array(res.content))).toBe("body{color:red}")
   })
 
   test("should request /js.svg (static file)", async () => {
     await writeFile("js.svg", "body{color:red}")
 
-    const res = await respondWith(rootのsketch, tsconfigのFile, watchFs, {
-      url: "http://localhost/js.svg",
-      headers: [],
-    })
-
-    expect(res.return?.init.status).toEqual(200)
-    expect(uint8ToUTF8(new Uint8Array(res.return?.content ?? []))).toBe(
-      "body{color:red}"
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/js.svg")
     )
+
+    expect(uint8ToUTF8(new Uint8Array(res.content))).toBe("body{color:red}")
   })
 
   test("should request /style.css?import=css (gen from file js)", async () => {
     await writeFile("style.css", "body{color:red}")
 
-    const res = await respondWith(rootのsketch, tsconfigのFile, watchFs, {
-      url: "http://localhost/style.css?import=css",
-      headers: [],
-    })
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/style.css?import=css")
+    )
 
-    expect(res.return?.init.status).toEqual(200)
-    expect(uint8ToUTF8(new Uint8Array(res.return?.content ?? []))).toBe(
+    expect(uint8ToUTF8(new Uint8Array(res.content))).toBe(
       "const style = document.createElement('link'); style.rel = 'stylesheet'; style.type = 'text/css'; style.href = \"/style.css\"; document.head.appendChild(style)"
     )
   })
 
   test("should request /ts.svg?url (gen from file js)", async () => {
-    const res = await respondWith(rootのsketch, tsconfigのFile, watchFs, {
-      url: "http://localhost/ts.svg?url",
-      headers: [],
-    })
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/ts.svg?url")
+    )
 
-    expect(res.return?.init.status).toEqual(200)
-    expect(uint8ToUTF8(new Uint8Array(res.return?.content ?? []))).toBe(
+    expect(uint8ToUTF8(new Uint8Array(res.content))).toBe(
       'export default "/ts.svg"'
     )
   })
@@ -157,17 +151,17 @@ import { setupCounter } from "/counter.js";`)
     `
     )
 
-    const res = await respondWith(rootのsketch, tsconfigのFile, watchFs, {
-      url: "http://localhost/main",
-      headers: [],
-    })
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/main")
+    )
 
-    expect(uint8ToUTF8(new Uint8Array(res.return?.content ?? [])))
+    expect(uint8ToUTF8(new Uint8Array(res.content)))
       .include(`// ../../main.js?resolve=
 import "/style.css?import=css";
 import javascriptLogo from "/javascript.svg?import=url";
 import viteLogo from "/vite.svg?import=url";
 import { setupCounter } from "/counter.js";`)
   })
-
 })
