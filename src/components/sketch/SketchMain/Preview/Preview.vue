@@ -1,22 +1,30 @@
 <template>
-  <PreviewNavBar />
+  <PreviewNavBar
+    v-model:src="srcIFrame"
+    :loading="iframeLoading"
+    @click:reload="iframeReload"
+    @click:back="iframeBack"
+    @click:forward="iframeForward"
+  />
   <iframe
     v-if="sketchStore.rootのsketch"
     :src="srcIFrame"
-    class="w-full h-full border border-light-600 bg-white"
+    class="w-full h-full bg-white"
     ref="iframeRef"
     @load="onLoad"
   />
-  <div v-else class="w-full h-full border border-gray-700" />
+  <div v-else class="w-full h-full" />
 </template>
 
 <script lang="ts" setup>
 import { extname, join } from "path"
 
-import { listen, put } from "@fcanvas/communicate"
+import { listen, ping, put } from "@fcanvas/communicate"
+import { ComPreviewCore } from "app/preview/src/preview-core"
 import type { Communicate } from "app/preview/src/sw"
 import { contentType } from "mime-types"
 
+import { ComPreviewVue } from "./Preview.types"
 import { respondWith } from "./respond-with"
 
 const iframeRef = ref<HTMLIFrameElement>()
@@ -28,28 +36,87 @@ const tsconfigのFile = useFile(
   "{}"
 )
 
-const srcIFrame = process.env.GITPOD_WORKSPACE_URL
-  ? process.env.GITPOD_WORKSPACE_URL.replace("https://", "https://9999-")
-  : process.env.CODESPACE_NAME
-  ? `https://${process.env.CODESPACE_NAME}-9999.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`
-  : "https://preview-fcanvas.github.io"
+// ====== status =======
+const iframeLoading = ref(true)
+// ====== /status ======
+
+const srcIFrame = ref(
+  process.env.GITPOD_WORKSPACE_URL
+    ? process.env.GITPOD_WORKSPACE_URL.replace("https://", "https://9999-")
+    : process.env.CODESPACE_NAME
+    ? `https://${process.env.CODESPACE_NAME}-9999.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`
+    : "https://preview-fcanvas.github.io"
+)
 
 // eslint-disable-next-line functional/no-let
-let listener: null | (() => void) = null
+let listenerGetFile: null | (() => void) = null
+// eslint-disable-next-line functional/no-let
+let listenerLoad: null | (() => void) = null
+// eslint-disable-next-line functional/no-let
+let listenerUnload: null | (() => void) = null
 onUnmounted(() => {
   previewStore.setChannel(null)
-  listener?.()
+  listenerGetFile?.()
 })
+
+watchFs.コールバックを設定(async (type, path, pathMatch) => {
+  const port1 = previewStore.channel?.port1
+
+  if (!port1) return
+
+  window.console.log("send request refresh:", { type, path, pathMatch })
+
+  if (!iframeRef.value) {
+    window.console.warn(
+      "[refresh iframe]: can't refresh iframe because not found."
+    )
+    return
+  }
+
+  const forceReload = await put<ComPreviewVue>(port1, {
+    name: "refresh",
+    targetOrigin: "*",
+  })
+
+  if (forceReload) {
+    iframeRef.value.src = ""
+    iframeRef.value.src = srcIFrame.value
+  }
+})
+function iframeReload() {
+  const port1 = previewStore.channel?.port1
+
+  if (!port1) return
+
+  ping<ComPreviewVue>(port1, "reload")
+}
+function iframeBack() {
+  const port1 = previewStore.channel?.port1
+
+  if (!port1) return
+
+  ping<ComPreviewVue>(port1, "back")
+}
+function iframeForward() {
+  const port1 = previewStore.channel?.port1
+
+  if (!port1) return
+
+  ping<ComPreviewVue>(port1, "forward")
+}
 
 function setup() {
   const { port1, port2 } = previewStore.setChannel(new MessageChannel())
 
-  listener?.()
+  listenerGetFile?.()
+  listenerLoad?.()
+  listenerUnload?.()
+
   watchFs.clear()
 
   port1.start()
 
-  listener = listen<Communicate>(port1, "get file", async (options) => {
+  listenerGetFile = listen<Communicate>(port1, "get file", async (options) => {
     console.log("Request file %s", options.url)
     const url = new URL(options.url)
 
@@ -62,7 +129,8 @@ function setup() {
         tsconfigのFile,
         url
       )
-      console.log("%c resolved: ", "color:red", res)
+
+      console.log("%c resolved: ", "color:red", res.content)
       watchFs.addWatchFile(res.path)
 
       return {
@@ -119,26 +187,11 @@ function setup() {
       }
     }
   })
-
-  watchFs.コールバックを設定(async (type, path, pathMatch) => {
-    window.console.log("send request refresh:", { type, path, pathMatch })
-
-    if (!iframeRef.value) {
-      window.console.warn(
-        "[refresh iframe]: can't refresh iframe because not found."
-      )
-      return
-    }
-
-    const forceReload = await put(port1, {
-      name: "refresh",
-      targetOrigin: "*",
-    })
-
-    if (forceReload) {
-      iframeRef.value.src = ""
-      iframeRef.value.src = srcIFrame
-    }
+  listenerLoad = listen<ComPreviewCore>(port1, "load", () => {
+    iframeLoading.value = false
+  })
+  listenerUnload = listen<ComPreviewCore>(port1, "unload", () => {
+    iframeLoading.value = true
   })
 
   return port2

@@ -17,6 +17,13 @@ import regiser from "./sw?serviceworker"
 
 // eslint-disable-next-line functional/no-let
 let listenParent: (() => void) | undefined
+// eslint-disable-next-line functional/no-let
+let listenerRefresh: (() => void) | undefined
+// eslint-disable-next-line functional/no-let
+let listenerBack: (() => void) | undefined
+// eslint-disable-next-line functional/no-let
+let listenForward: (() => void) | undefined
+
 async function init(event?: MessageEvent<{ port2: MessagePort }>) {
   console.log(event)
   const port2 = event?.data.port2
@@ -29,20 +36,18 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
   const cast = new BroadcastChannel("sw-fetch")
 
   listenParent?.()
+  listenerRefresh?.()
+  listenerBack?.()
+  listenForward?.()
+
   listenParent = listen<Communicate>(cast, "get file", async (opts) => {
     console.log("Request file %s", opts.url)
 
-    const res = await put(port2, { name: "get file", timeout: 120_000 }, opts)
-
-    // console.log({ res })
-
-    // const content = "hello world"
-    // const buffer = encoder.encode(content).buffer
-
-    return {
-      transfer: [res.content],
-      return: res,
-    }
+    return await put<Communicate>(
+      port2,
+      { name: "get file", timeout: 120_000 },
+      opts
+    )
   })
 
   // eslint-disable-next-line functional/no-let
@@ -80,7 +85,7 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
               newScript.setAttribute(name, value)
             }
 
-            if (script.type !== "module") hasScriptNoModule = true
+            if (script.type === "module") hasScriptNoModule = true
 
             newScript.innerHTML = script.innerHTML
 
@@ -93,15 +98,24 @@ async function init(event?: MessageEvent<{ port2: MessagePort }>) {
     /** @end */
 
     console.log({ index })
+    // eslint-disable-next-line no-use-before-define
+    ping<ComPreviewCore>(port2!, "load")
+    // eslint-disable-next-line no-use-before-define
+    window.onbeforeunload = () => ping<ComPreviewCore>(port2!, "unload")
   }
 
   appendIndex()
 
-  listen(port2, "refresh", () => {
+  listenerRefresh = listen<ComPreviewVue>(port2, "refresh", () => {
     if (hasScriptNoModule) return true
     else appendIndex()
     return false
   })
+  listen<ComPreviewVue>(port2, "reload", () => location.reload())
+  listenerBack = listen<ComPreviewVue>(port2, "back", () => history.back())
+  listenForward = listen<ComPreviewVue>(port2, "forward", () =>
+    history.forward()
+  )
 
   setupConsole(port2)
 }
@@ -139,6 +153,8 @@ export type ComPreviewCore = {
           args: []
         }
   ): void
+  load: () => void
+  unload: () => void
 }
 
 function setupConsole(port2: MessagePort) {
@@ -151,7 +167,7 @@ function setupConsole(port2: MessagePort) {
         args: printfArgs(args).map((item: unknown) => Encode(item, 2)),
       })
 
-      if (!import.meta.env.DEV) cbRoot.apply(this, args)
+      if (import.meta.env.DEV) cbRoot.apply(this, args)
     }
   })
   // eslint-disable-next-line n/no-unsupported-features/node-builtins

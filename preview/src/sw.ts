@@ -15,7 +15,7 @@ export type Communicate = {
     url: string
     headers: [string, string][]
   }) => Promise<null | {
-    content: ArrayBufferLike | null
+    content: ArrayBuffer | null
     init: ResponseInit
   }>
 }

@@ -2,22 +2,20 @@
   <main class="min-h-0 px-2 select-none text-center">
     <q-btn
       rounded
-      outline
       size="sm"
       color="blue"
       class="mt-5 !text-12px min-h-0 w-full max-w-200px"
       no-caps
       @click="openingSelectSketch = true"
-      >Open sketch IndexedDB</q-btn
+      >Open</q-btn
     >
     <q-btn
       rounded
-      outline
       size="sm"
       color="green"
       class="mt-3 !text-12px min-h-0 w-full max-w-200px"
       no-caps
-      >New sketch IndexedDB</q-btn
+      >New</q-btn
     >
   </main>
 
@@ -191,7 +189,7 @@ const decevier = computedAsync(
 )
 
 const openingSelectSketch = ref(false)
-const openingNewSketch = ref(true)
+const openingNewSketch = ref(false)
 
 // eslint-disable-next-line functional/no-let
 let sketches: string[]
@@ -228,7 +226,7 @@ async function createSketch() {
       path: `${root}/${filepath}`,
       data: uint8ToBase64(content),
       directory: Directory.External,
-      recursive: true
+      recursive: true,
     })
   }
 
