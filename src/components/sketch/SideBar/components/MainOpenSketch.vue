@@ -228,6 +228,7 @@ async function createSketch() {
       path: `${root}/${filepath}`,
       data: uint8ToBase64(content),
       directory: Directory.External,
+      recursive: true
     })
   }
 

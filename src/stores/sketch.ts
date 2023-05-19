@@ -59,6 +59,7 @@ async function saveFile(auth: Auth, path: string, file: File) {
       directory: Directory.External,
       encoding: Encoding.UTF8,
       data: file.data,
+      recursive: true
     })
     eventBus.emit("writeFile", path)
   }
@@ -190,18 +191,21 @@ async function pullOrClone(
       directory: Directory.External,
       encoding: Encoding.UTF8,
       data: JSON.stringify(hashes_server),
+      recursive: true
     }),
     isNew ? Filesystem.writeFile({
       path: path_hashes_client,
       directory: Directory.External,
       encoding: Encoding.UTF8,
       data: JSON.stringify(Object.fromEntries(Object.entries(hashes_server).map(([filePath, { hash }]) => [filePath, hash]))),
+      recursive: true
     }) : 0,
     Filesystem.writeFile({
       path: path_metadata,
       directory: Directory.External,
       encoding: Encoding.UTF8,
       data: JSON.stringify(res.data.sketch),
+      recursive: true
     })
   ])
   eventBus.emit("writeFile", path_hashes_server)
@@ -241,6 +245,7 @@ async function forceUpdateHashesClient(
       directory: Directory.External,
       encoding: Encoding.UTF8,
       data: JSON.stringify(await getHashesClient(rootのsketch, ignore)),
+      recursive: true
     })
   } else {
     workerGetHashesClient = new GetHashesClientWorker()
@@ -252,6 +257,7 @@ async function forceUpdateHashesClient(
         ComGetHashesClient,
         "get-hashes-client"
       >(workerGetHashesClient, "get-hashes-client", rootのsketch, ignore)),
+      recursive: true
     })
 
     workerGetHashesClient?.terminate()
@@ -864,7 +870,8 @@ export const useSketchStore = defineStore("sketch", () => {
         path: `home/${dirname}/.changes/metadata`,
         directory: Directory.External,
         encoding: Encoding.UTF8,
-        data: JSON.stringify(sketch)
+        data: JSON.stringify(sketch),
+        recursive: true
       })
       eventBus.emit("writeFile", `home/${dirname}/.changes/metadata`)
 

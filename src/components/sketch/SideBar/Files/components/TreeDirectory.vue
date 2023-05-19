@@ -208,6 +208,7 @@ async function createDirectory(name: string, isDir: boolean) {
       data: "",
       encoding: Encoding.UTF8,
       directory: Directory.External,
+      recursive: true
     })
     eventBus.emit("writeFile", path)
   }

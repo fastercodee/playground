@@ -1,4 +1,5 @@
 <template>
+  <PreviewNavBar />
   <iframe
     v-if="sketchStore.rootのsketch"
     :src="srcIFrame"

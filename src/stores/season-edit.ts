@@ -335,6 +335,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       data: text,
       directory: Directory.External,
       encoding: Encoding.UTF8,
+      recursive: true
     })
     eventBus.emit("writeFile", currentEntry.value.fullPath)
 
