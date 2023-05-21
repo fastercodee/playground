@@ -3,7 +3,7 @@ import { Loader } from "esbuild-wasm"
 export function resolverImport({ searchParams, pathname }: URL): {
   contents: string
   loader: Loader
-} | void {
+} | never {
   const importAs = searchParams.has("url") ? "url" : searchParams.get("import")
 
   searchParams.delete("import")
