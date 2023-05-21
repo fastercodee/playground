@@ -26,7 +26,7 @@ describe("respond-with", () => {
     expect(new Uint8Array(res.content)).toEqual(utf8ToUint8("hello index.html"))
   })
 
-  test("should request /main.js?import", async () => {
+  test("should request /main.js", async () => {
     await writeFile(
       "main.js",
       `
@@ -60,15 +60,15 @@ describe("respond-with", () => {
     const res = await respondWith(
       rootのsketch,
       tsconfigのFile,
-      new URL("http://localhost/main.js?import")
+      new URL("http://localhost/main.js")
     )
 
     expect(uint8ToUTF8(new Uint8Array(res.content)))
-      .include(`// ../../main.js?resolve&import=js
+      .include(`
 import "/style.css?import=css";
 import javascriptLogo from "/javascript.svg?import=url";
 import viteLogo from "/vite.svg?import=url";
-import { setupCounter } from "/counter.js?import=js";`)
+import { setupCounter } from "/counter.js";`)
   })
 
   test("should request /style.css (static file)", async () => {
@@ -155,15 +155,15 @@ import { setupCounter } from "/counter.js?import=js";`)
     const res = await respondWith(
       rootのsketch,
       tsconfigのFile,
-      new URL("http://localhost/main?import")
+      new URL("http://localhost/main")
     )
 
     expect(uint8ToUTF8(new Uint8Array(res.content)))
-      .include(`// ../../main.js?resolve&import=js
+      .include(`
 import "/style.css?import=css";
 import javascriptLogo from "/javascript.svg?import=url";
 import viteLogo from "/vite.svg?import=url";
-import { setupCounter } from "/counter.js?import=js";`)
+import { setupCounter } from "/counter.js";`)
   })
 
   test("should request /App.vue", async () => {

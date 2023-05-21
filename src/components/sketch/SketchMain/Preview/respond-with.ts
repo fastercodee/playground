@@ -9,10 +9,25 @@ export async function respondWith(
   url: URL
 ): Promise<{
   content: ArrayBuffer
-  ext: string
+  ext: `.${string}`
   path: string
 }> {
   const { pathname, searchParams } = url
+
+  if (pathname.startsWith("/cdn_modules/")) {
+    const content = utf8ToUint8(
+      `export * from "https://esm.run/${pathname.slice(
+        "/cdn_modules/".length
+      )}"`
+    )
+
+    return {
+      content: content.buffer,
+      ext: ".js",
+      path: pathname.slice("/cdn_modules/".length),
+    }
+  }
+
   const requireImport = searchParams.has("import")
 
   if (pathname === "/")
@@ -31,7 +46,7 @@ export async function respondWith(
   if (resolveByImport)
     return {
       content: utf8ToUint8(resolveByImport.contents).buffer,
-      ext: resolveByImport.loader,
+      ext: ("." + resolveByImport.loader) as `.${string}`,
       path: join(rootのsketch, pathname),
     }
 
@@ -45,20 +60,20 @@ export async function respondWith(
     // "text"
   ])
 
-
   if (!res) throw new Error("File does not exist.")
 
-  if (!requireImport) return res
+  if (!requireImport && !rExecTS.test(res.path)) return res
 
   if (allowCompile.includes(res.ext.slice(1))) {
     await tsconfigのFile.ready
     res.content = await compilerFile(
       res.content,
-      "/" + relative(rootのsketch, res.path),
+      "./" + relative(rootのsketch, res.path),
       res.ext,
       searchParams,
       tsconfigのFile.data
     )
+    res.ext = ".js"
   }
 
   return res

@@ -2,36 +2,18 @@ import { basename, extname, join, resolve } from "path"
 
 import { build, initialize, Loader, Plugin, PluginBuild } from "esbuild-wasm"
 import wasmURL from "esbuild-wasm/esbuild.wasm?url"
-import { ArgumentType } from "unocss"
 
 import { compileVue } from "./plugins/vue"
 import { resolverImport } from "./resolver-import"
-
-export interface CPlugin {
-  name: string
-  onResolve: ArgumentType<PluginBuild["onResolve"]>
-  onLoad: ArgumentType<PluginBuild["onLoad"]>
-}
-export function definePlugin(plugin: CPlugin): Plugin {
-  return {
-    name: plugin.name,
-    setup(build) {
-      // eslint-disable-next-line prefer-spread
-      build.onResolve.apply(build, plugin.onResolve)
-      // eslint-disable-next-line prefer-spread
-      build.onLoad.apply(build, plugin.onLoad)
-    },
-  }
-}
 
 function addQuery(url: URL, query: string, val: string) {
   url.searchParams.set(query, val)
 
   return url.pathname + url.search.replace(/=$|=(?=&)/g, "")
 }
-const rExec = /\.(?:m|c)?j|tsx?$/
+export const rExecTS = /\.(?:m|c)?j|tsx?$/
 
-function plugin(contents: ArrayBuffer): Plugin {
+function plugin(contents: ArrayBuffer, currentPath: string): Plugin {
   return {
     name: "plugin-resolve",
     setup(build) {
@@ -39,7 +21,7 @@ function plugin(contents: ArrayBuffer): Plugin {
         if (!args.path.startsWith(".") && !args.path.startsWith("/"))
           // TODO: this is resolve package
           return {
-            path: args.path,
+            path: "/cdn_modules/" + args.path,
             external: true,
           }
 
@@ -49,54 +31,56 @@ function plugin(contents: ArrayBuffer): Plugin {
 
         const url = new URL(path, "http://localhost")
 
-        console.log("resolve %s", args.path, rExec.test(url.pathname))
+        console.log("resolve %s", args.path, rExecTS.test(url.pathname))
 
         const ext = extname(url.pathname)
 
         return {
-          path: addQuery(
-            url,
-            "import",
-            getLoaderByExtension(ext, url.searchParams) ?? ext
-          ),
-          external: !url.searchParams.has("resolve"),
+          path: rExecTS.test(url.pathname)
+            ? path
+            : addQuery(
+                url,
+                "import",
+                getLoaderByExtension(ext, url.searchParams) ?? ext
+              ),
+          namespace: args.path === currentPath ? "current" : undefined,
+          external: args.path !== currentPath,
         }
       })
 
-      build.onLoad({ filter: /.*/ }, async (args) => {
+      build.onLoad({ filter: /.*/, namespace: "current" }, async (args) => {
         console.log("load file %s", args.path)
         const url = new URL(args.path, "http://localhost")
-        if (url.searchParams.has("resolve")) {
-          const importAs = url.searchParams.has("url")
-            ? "url"
-            : url.searchParams.get("import")
 
-          const resolveByImport = resolverImport(url)
-          if (resolveByImport) return resolveByImport
-          if (importAs === ".vue") {
-            const result = await compileVue(
-              basename(url.pathname),
-              uint8ToUTF8(new Uint8Array(contents))
-            )
-            if (result)
-              return {
-                contents:
-                  (result.css
-                    ? `(() => {const style = document.createElement('style'); style.innerHTML = ${JSON.stringify(
-                        result.css
-                      )}; document.head.appendChild(style)})();\n`
-                    : "") + result.js,
-                loader: result.isTS ? "ts" : "js",
-              }
-          }
+        const importAs = url.searchParams.has("url")
+          ? "url"
+          : url.searchParams.get("import")
 
-          return {
-            contents: new Uint8Array(contents),
-            loader: getLoaderByExtension(
-              extname(url.pathname),
-              url.searchParams
-            ) as Loader,
-          }
+        const resolveByImport = resolverImport(url)
+        if (resolveByImport) return resolveByImport
+        if (importAs === ".vue") {
+          const result = await compileVue(
+            basename(url.pathname),
+            uint8ToUTF8(new Uint8Array(contents))
+          )
+          if (result)
+            return {
+              contents:
+                (result.css
+                  ? `(() => {const style = document.createElement('style'); style.innerHTML = ${JSON.stringify(
+                      result.css
+                    )}; document.head.appendChild(style)})();\n`
+                  : "") + result.js,
+              loader: result.isTS ? "ts" : "js",
+            }
+        }
+
+        return {
+          contents: new Uint8Array(contents),
+          loader: getLoaderByExtension(
+            extname(url.pathname),
+            url.searchParams
+          ) as Loader,
         }
       })
     },
@@ -137,12 +121,12 @@ export async function compilerFile(
     inited = true
   }
 
-  searchParams.set("resolve", "")
+  const search = searchParams.toString()
   const result = await build({
-    entryPoints: [pathname + "?" + searchParams],
+    entryPoints: [pathname + (search ? `?${search}` : "")],
     bundle: true,
     write: false,
-    plugins: [plugin(content)],
+    plugins: [plugin(content, pathname + (search ? `?${search}` : ""))],
     define: {
       global: "window",
     },

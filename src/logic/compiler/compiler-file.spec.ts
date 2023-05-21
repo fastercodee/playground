@@ -131,7 +131,7 @@ export {
           )
         )
       )
-    ).include('import { ref } from "vue";')
+    ).include('import { ref } from "/cdn_modules/vue";')
   })
 
   test("should compile file vue", async () => {
@@ -157,7 +157,7 @@ const count = ref(0)
     )
 
     expect(code).include(
-      'import { createElementVNode as _createElementVNode, unref as _unref, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, Fragment as _Fragment, openBlock as _openBlock, createElementBlock as _createElementBlock } from "vue"'
+      'import { createElementVNode as _createElementVNode, unref as _unref, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, Fragment as _Fragment, openBlock as _openBlock, createElementBlock as _createElementBlock } from "/cdn_modules/vue"'
     )
     expect(code).include('"hello"')
     expect(code).include('__file = "main.vue"')
@@ -186,7 +186,7 @@ const count = ref<number>(0)
     )
 
     expect(code).include(
-      'import { createElementVNode as _createElementVNode, unref as _unref, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, Fragment as _Fragment, openBlock as _openBlock, createElementBlock as _createElementBlock } from "vue"'
+      'import { createElementVNode as _createElementVNode, unref as _unref, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, Fragment as _Fragment, openBlock as _openBlock, createElementBlock as _createElementBlock } from "/cdn_modules/vue"'
     )
     expect(code).include('"hello"')
     expect(code).include('__file = "main.vue"')
@@ -222,7 +222,7 @@ h1 {
     console.log(code)
 
     expect(code).include(
-      'import { createElementVNode as _createElementVNode, unref as _unref, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, Fragment as _Fragment, openBlock as _openBlock, createElementBlock as _createElementBlock } from "vue"'
+      'import { createElementVNode as _createElementVNode, unref as _unref, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, Fragment as _Fragment, openBlock as _openBlock, createElementBlock as _createElementBlock } from "/cdn_modules/vue"'
     )
     expect(code).include('"hello"')
     expect(code).include('__file = "main.vue"')
