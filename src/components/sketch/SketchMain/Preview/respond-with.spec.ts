@@ -1,4 +1,5 @@
 import { cleanupFS, writeFile } from "app/setup.vitest"
+import { uint8ToUTF8 } from "src/logic/text-buffer"
 
 import { respondWith } from "./respond-with"
 
@@ -25,7 +26,7 @@ describe("respond-with", () => {
     expect(new Uint8Array(res.content)).toEqual(utf8ToUint8("hello index.html"))
   })
 
-  test("should request /main.js", async () => {
+  test("should request /main.js?import", async () => {
     await writeFile(
       "main.js",
       `
@@ -59,15 +60,15 @@ describe("respond-with", () => {
     const res = await respondWith(
       rootのsketch,
       tsconfigのFile,
-      new URL("http://localhost/main.js")
+      new URL("http://localhost/main.js?import")
     )
 
     expect(uint8ToUTF8(new Uint8Array(res.content)))
-      .include(`// ../../main.js?resolve=
+      .include(`// ../../main.js?resolve&import=js
 import "/style.css?import=css";
 import javascriptLogo from "/javascript.svg?import=url";
 import viteLogo from "/vite.svg?import=url";
-import { setupCounter } from "/counter.js";`)
+import { setupCounter } from "/counter.js?import=js";`)
   })
 
   test("should request /style.css (static file)", async () => {
@@ -154,14 +155,67 @@ import { setupCounter } from "/counter.js";`)
     const res = await respondWith(
       rootのsketch,
       tsconfigのFile,
-      new URL("http://localhost/main")
+      new URL("http://localhost/main?import")
     )
 
     expect(uint8ToUTF8(new Uint8Array(res.content)))
-      .include(`// ../../main.js?resolve=
+      .include(`// ../../main.js?resolve&import=js
 import "/style.css?import=css";
 import javascriptLogo from "/javascript.svg?import=url";
 import viteLogo from "/vite.svg?import=url";
-import { setupCounter } from "/counter.js";`)
+import { setupCounter } from "/counter.js?import=js";`)
+  })
+
+  test("should request /App.vue", async () => {
+    await writeFile(
+      "App.vue",
+      `<template>
+<h1>hello</h1>
+{{ count }}
+</template>
+
+<script setup>
+const count = ref(0)
+</script>`
+    )
+
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/App.vue")
+    )
+
+    expect(uint8ToUTF8(new Uint8Array(res.content))).include(`<template>
+<h1>hello</h1>
+{{ count }}
+</template>
+
+<script setup>
+const count = ref(0)
+</script>`)
+  })
+
+  test("should request /App.vue?import=.vue", async () => {
+    await writeFile(
+      "App.vue",
+      `<template>
+<h1>hello</h1>
+{{ count }}
+</template>
+
+<script setup>
+const count = ref(0)
+</script>`
+    )
+
+    const res = await respondWith(
+      rootのsketch,
+      tsconfigのFile,
+      new URL("http://localhost/App.vue?import=.vue")
+    )
+
+    expect(uint8ToUTF8(new Uint8Array(res.content))).include(
+      '__sfc__.__file = "App.vue";'
+    )
   })
 })

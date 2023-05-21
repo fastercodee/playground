@@ -1,5 +1,6 @@
 import { join, relative } from "path"
 
+import { allowCompile } from "src/logic/compiler/compiler-file"
 import { resolverImport } from "src/logic/compiler/resolver-import"
 
 export async function respondWith(
@@ -12,6 +13,7 @@ export async function respondWith(
   path: string
 }> {
   const { pathname, searchParams } = url
+  const requireImport = searchParams.has("import")
 
   if (pathname === "/")
     return await Filesystem.readFile({
@@ -43,29 +45,16 @@ export async function respondWith(
     // "text"
   ])
 
+
   if (!res) throw new Error("File does not exist.")
 
-  if (
-    [
-      "js",
-      "json",
-      "jsx",
-      "ts",
-      "tsx",
-      "cjs",
-      "cjsx",
-      "mjs",
-      "mjsx",
-      "cts",
-      "ctsx",
-      "mts",
-      "mtsx",
-    ].includes(res.ext.slice(1))
-  ) {
+  if (!requireImport) return res
+
+  if (allowCompile.includes(res.ext.slice(1))) {
     await tsconfigのFile.ready
     res.content = await compilerFile(
       res.content,
-      relative(rootのsketch,res.path),
+      "/" + relative(rootのsketch, res.path),
       res.ext,
       searchParams,
       tsconfigのFile.data
