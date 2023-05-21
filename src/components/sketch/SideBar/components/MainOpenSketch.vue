@@ -15,6 +15,7 @@
       color="green"
       class="mt-3 !text-12px min-h-0 w-full max-w-200px"
       no-caps
+      @click="openingNewSketch = true"
       >New</q-btn
     >
   </main>
