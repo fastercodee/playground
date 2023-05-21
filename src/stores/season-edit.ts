@@ -4,6 +4,7 @@ import { autocompletion, closeBrackets } from "@codemirror/autocomplete"
 import { history as exHistory } from "@codemirror/commands"
 import { esLint } from "@codemirror/lang-javascript"
 import { jsonParseLinter } from "@codemirror/lang-json"
+import { vue } from "@codemirror/lang-vue"
 import {
   bracketMatching,
   defaultHighlightStyle,
@@ -241,21 +242,24 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     JSON.stringify(eslintrcDefault)
   )
 
-  currentFileのFile.onFileChange(data => {
-    if (!currentEntry.value || !editor.value) return
+  currentFileのFile.onFileChange(
+    (data) => {
+      if (!currentEntry.value || !editor.value) return
 
-    // saveCurrentSeason()
-    editor.value.dispatch({
-      changes: {
-        from: 0,
-        to: editor.value.state.doc.length,
-        insert: data,
-      },
-      selection: selectionStore.has(currentEntry.value)
-        ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
-        : undefined,
-    })
-  }, { immediate: true })
+      // saveCurrentSeason()
+      editor.value.dispatch({
+        changes: {
+          from: 0,
+          to: editor.value.state.doc.length,
+          insert: data,
+        },
+        selection: selectionStore.has(currentEntry.value)
+          ? EditorSelection.fromJSON(selectionStore.get(currentEntry.value))
+          : undefined,
+      })
+    },
+    { immediate: true }
+  )
   // eslint-disable-next-line functional/no-let
   let entryChanging: Entry<"file"> | null = null
   async function openFile(entry: Entry<"file">) {
@@ -271,25 +275,34 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     await currentFileのFile.ready
 
     const ext = extname(entry.name).slice(1)
-    const checkLang = (langMap as unknown as Record<string, string>)[ext] ?? [
-      ext,
-    ]
+    if (ext === "vue") {
+      editor.value?.dispatch({
+        effects: [
+          language.reconfigure(vue()),
+          linter.reconfigure(extensionNOOP),
+        ],
+      })
+    } else {
+      const checkLang = (langMap as unknown as Record<string, string>)[ext] ?? [
+        ext,
+      ]
 
-    console.log({ checkLang })
+      console.log({ checkLang })
 
-    for (const name of checkLang) {
-      if (name in langs) {
-        editor.value?.dispatch({
-          effects: [
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
-            language.reconfigure(loadLanguage(name as unknown as any)!),
-            linter.reconfigure(
-              (await loadLinter(name, JSON.parse(eslintrcのFile.data))) ??
-              extensionNOOP
-            ),
-          ],
-        })
-        break
+      for (const name of checkLang) {
+        if (name in langs) {
+          editor.value?.dispatch({
+            effects: [
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion
+              language.reconfigure(loadLanguage(name as unknown as any)!),
+              linter.reconfigure(
+                (await loadLinter(name, JSON.parse(eslintrcのFile.data))) ??
+                  extensionNOOP
+              ),
+            ],
+          })
+          break
+        }
       }
     }
 
@@ -335,7 +348,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
       data: text,
       directory: Directory.External,
       encoding: Encoding.UTF8,
-      recursive: true
+      recursive: true,
     })
     eventBus.emit("writeFile", currentEntry.value.fullPath)
 
