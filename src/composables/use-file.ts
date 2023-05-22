@@ -91,6 +91,7 @@ export function useFile<T = string, R extends boolean = false, UseOnFileChange e
         resolved.then(() => {
           reading = false
         })
+        ret.ready = null
       })
   }
   if (isReactive)
