@@ -84,6 +84,9 @@
       .area_3 {
         @apply w-1/2 h-full;
       }
+      .area_3 {
+        flex: 1;
+      }
     }
   }
   &.left {
