@@ -3,6 +3,7 @@
 import { basename, join, relative } from "path"
 
 import { put } from "@fcanvas/communicate"
+import { parse as parse5 } from "json5"
 import { some } from "micromatch"
 import { defineStore } from "pinia"
 import { isNative } from "src/constants"
@@ -18,6 +19,29 @@ import GetHashesClientWorker from "src/workers/get-hashes-client/worker?worker"
 import type { Auth } from "vue-auth3"
 
 export type StatusChange = "M" | "D" | "U"
+
+interface TSConfig {
+  compilerOptions?: {
+    jsxImportSource?: string
+    jsx?: "transform" | "preserve" | "automatic"
+  }
+}
+interface PackageJSON {
+  tsconfig?: TSConfig
+  dependencies?: Record<string, string>
+  devDependencies?: Record<string, string>
+  peerDependencies?: Record<string, string>
+  optionalDependencies?: Record<string, string>
+}
+
+export function getValidJSX(
+  str?: string
+): "transform" | "preserve" | "automatic" | undefined {
+  if (!str) return
+
+  if (["transform", "preserve", "automatic"].includes(str))
+    return str as "transform" | "preserve" | "automatic"
+}
 
 const parseJSON = (str: string) => {
   try {
@@ -39,10 +63,10 @@ function exists(path: string) {
 async function getFileFromServer(auth: Auth, uid: number): Promise<Uint8Array> {
   return await auth
     .http({
-    url: "/sketch/get_file",
-    data: { uid },
-    responseType: "arraybuffer",
-  })
+      url: "/sketch/get_file",
+      data: { uid },
+      responseType: "arraybuffer",
+    })
     .then((res) => new Uint8Array(res.data))
 }
 async function saveFileWithUID(auth: Auth, path: string, uid: number) {
@@ -111,15 +135,15 @@ async function pullOrClone(
 
   const entries_hashes_client: readonly [string, string][] = path_hashes_client
     ? Object.entries(
-    parseJSON(
-      await Filesystem.readFile({
-        path: path_hashes_client,
-        directory: Directory.External,
+        parseJSON(
+          await Filesystem.readFile({
+            path: path_hashes_client,
+            directory: Directory.External,
             encoding: Encoding.UTF8,
           })
             .then((res) => res.data)
-        .catch(() => "{}")
-    )
+            .catch(() => "{}")
+        )
       )
     : []
   const entries_hashes_server: readonly [
@@ -127,15 +151,15 @@ async function pullOrClone(
     { readonly uid: number; readonly hash: string }
   ][] = path_hashes_server
     ? Object.entries(
-    parseJSON(
-      await Filesystem.readFile({
-        path: path_hashes_server,
-        directory: Directory.External,
+        parseJSON(
+          await Filesystem.readFile({
+            path: path_hashes_server,
+            directory: Directory.External,
             encoding: Encoding.UTF8,
           })
             .then((res) => res.data)
-        .catch(() => "{}")
-    )
+            .catch(() => "{}")
+        )
       )
     : []
 
@@ -222,9 +246,9 @@ async function pullOrClone(
     }),
     isNew
       ? Filesystem.writeFile({
-      path: path_hashes_client,
-      directory: Directory.External,
-      encoding: Encoding.UTF8,
+          path: path_hashes_client,
+          directory: Directory.External,
+          encoding: Encoding.UTF8,
           data: JSON.stringify(
             Object.fromEntries(
               Object.entries(hashes_server).map(([filePath, { hash }]) => [
@@ -314,8 +338,8 @@ export const useSketchStore = defineStore("sketch", () => {
     "{}",
     true,
     {
-    get: parseJSON,
-    set: JSON.stringify,
+      get: parseJSON,
+      set: JSON.stringify,
     }
   )
 
@@ -357,24 +381,24 @@ export const useSketchStore = defineStore("sketch", () => {
   eventBus.watch(
     rootのsketch,
     async (タイプ, パス) => {
-    if (fetching.value) return
-    if (!rootのsketch.value) {
+      if (fetching.value) return
+      if (!rootのsketch.value) {
         console.warn(
           "[fs/watch]: Stop updating the hashes due to the offline sketch."
         )
-      return
-    }
-    await metadataのFile.ready
-    if (!metadataのFile.data) return
+        return
+      }
+      await metadataのFile.ready
+      if (!metadataのFile.data) return
 
-    const filepath = relative(rootのsketch.value, パス)
+      const filepath = relative(rootのsketch.value, パス)
 
-    await gitignoreのFile.ready
-    if (some("/" + filepath, gitignoreのFile.data)) return
+      await gitignoreのFile.ready
+      if (some("/" + filepath, gitignoreのFile.data)) return
 
-    if (タイプ === "deleteFile" || タイプ === "rmdir") {
-      delete hashes_clientのFile.data[relative(rootのsketch.value, パス)]
-    } else
+      if (タイプ === "deleteFile" || タイプ === "rmdir") {
+        delete hashes_clientのFile.data[relative(rootのsketch.value, パス)]
+      } else
         hashes_clientのFile.data[relative(rootのsketch.value, パス)] =
           await sha256File(パス)
     },
@@ -383,7 +407,7 @@ export const useSketchStore = defineStore("sketch", () => {
 
   const changes_addedのFile = useFile<
     {
-    [key in StatusChange]?: string[]
+      [key in StatusChange]?: string[]
     },
     true
   >(
@@ -402,45 +426,45 @@ export const useSketchStore = defineStore("sketch", () => {
   eventBus.watch(
     rootのsketch,
     async (タイプ, パス) => {
-    if (fetching.value) return
-    if (!rootのsketch.value) {
+      if (fetching.value) return
+      if (!rootのsketch.value) {
         console.warn(
           "[fs/watch]: Stop updating the hashes due to the offline sketch."
         )
-      return
-    }
-    await metadataのFile.ready
-    if (!metadataのFile.data) return
+        return
+      }
+      await metadataのFile.ready
+      if (!metadataのFile.data) return
 
-    const filepath = relative(rootのsketch.value, パス)
+      const filepath = relative(rootのsketch.value, パス)
 
-    await gitignoreのFile.ready
-    if (some("/" + filepath, gitignoreのFile.data)) return
+      await gitignoreのFile.ready
+      if (some("/" + filepath, gitignoreのFile.data)) return
 
-    if (タイプ === "deleteFile" || タイプ === "rmdir") {
-      // delete file
-      changes_addedのFile.data.U?.splice(
-        changes_addedのFile.data.U.indexOf(filepath) >>> 0,
-        1
-      )
-      changes_addedのFile.data.M?.splice(
-        changes_addedのFile.data.M.indexOf(filepath) >>> 0,
-        1
-      )
-      return
-    }
+      if (タイプ === "deleteFile" || タイプ === "rmdir") {
+        // delete file
+        changes_addedのFile.data.U?.splice(
+          changes_addedのFile.data.U.indexOf(filepath) >>> 0,
+          1
+        )
+        changes_addedのFile.data.M?.splice(
+          changes_addedのFile.data.M.indexOf(filepath) >>> 0,
+          1
+        )
+        return
+      }
 
-    if (タイプ === "copyDir" || タイプ === "writeFile") {
-      // edit file
-      changes_addedのFile.data.D?.splice(
-        changes_addedのFile.data.D.indexOf(filepath) >>> 0,
-        1
-      )
-      changes_addedのFile.data.M?.splice(
-        changes_addedのFile.data.M.indexOf(filepath) >>> 0,
-        1
-      )
-    }
+      if (タイプ === "copyDir" || タイプ === "writeFile") {
+        // edit file
+        changes_addedのFile.data.D?.splice(
+          changes_addedのFile.data.D.indexOf(filepath) >>> 0,
+          1
+        )
+        changes_addedのFile.data.M?.splice(
+          changes_addedのFile.data.M.indexOf(filepath) >>> 0,
+          1
+        )
+      }
     },
     { dir: true }
   )
@@ -464,6 +488,39 @@ export const useSketchStore = defineStore("sketch", () => {
     {
       get: parseJSON,
       set: JSON.stringify,
+    }
+  )
+  const tsconfigのFile = useFile<string, false>(
+    () => `${rootのsketch.value}/tsconfig.json`,
+    JSON.stringify(null),
+    false
+  )
+  const jsxConfigStore = new WeakMap<
+    TSConfig,
+    { jsx?: "transform" | "preserve" | "automatic"; jsxImportSource?: string }
+  >()
+  const getJSXConfig = async () => {
+    const tsconfig = parse5(await getDataAsync(tsconfigのFile)) as TSConfig
+    const cache = jsxConfigStore.get(tsconfig)
+    if (cache) return cache
+
+    if (!tsconfig?.compilerOptions) return null
+
+    const jsx = getValidJSX(tsconfig.compilerOptions?.jsx)
+    const cur = {
+      jsx,
+      jsxImportSource: tsconfig.compilerOptions?.jsxImportSource,
+    }
+    jsxConfigStore.set(tsconfig, cur)
+
+    return cur
+  }
+  const packageのFile = useFile<Readonly<PackageJSON>, false>(
+    () => `${rootのsketch.value}/package.json`,
+    JSON.stringify(null),
+    false,
+    {
+      get: parseJSON,
     }
   )
 
@@ -601,25 +658,25 @@ export const useSketchStore = defineStore("sketch", () => {
     const changes: Record<string, StatusChange> = {}
 
     Object.keys(server).forEach((relativePath) => {
-        if (relativePath in client) {
-          if (server[relativePath].hash !== client[relativePath])
-            changes[join(dir, relativePath)] = "M"
+      if (relativePath in client) {
+        if (server[relativePath].hash !== client[relativePath])
+          changes[join(dir, relativePath)] = "M"
 
-          return
-        }
+        return
+      }
 
-        changes[join(dir, relativePath)] = "D"
-      })
+      changes[join(dir, relativePath)] = "D"
+    })
     Object.keys(client).forEach((relativePath) => {
       if (relativePath in server) {
-          if (server[relativePath].hash !== client[relativePath])
-            changes[join(dir, relativePath)] = "M"
+        if (server[relativePath].hash !== client[relativePath])
+          changes[join(dir, relativePath)] = "M"
 
-          return
-        }
+        return
+      }
 
-        changes[join(dir, relativePath)] = "U"
-      })
+      changes[join(dir, relativePath)] = "U"
+    })
 
     return changes
   })
@@ -818,9 +875,9 @@ export const useSketchStore = defineStore("sketch", () => {
           "files[]",
           new File(
             [
-          await Filesystem.readFile({
-            path: `${rootのsketch.value}/${relativePath}`,
-            directory: Directory.External,
+              await Filesystem.readFile({
+                path: `${rootのsketch.value}/${relativePath}`,
+                directory: Directory.External,
               }).then((res) => base64ToUint8(res.data)),
             ],
             basename(relativePath)
@@ -874,9 +931,9 @@ export const useSketchStore = defineStore("sketch", () => {
         "files[]",
         new File(
           [
-        await Filesystem.readFile({
-          path: fullPath,
-          directory: Directory.External,
+            await Filesystem.readFile({
+              path: fullPath,
+              directory: Directory.External,
             }).then((res) => base64ToUint8(res.data)),
           ],
           basename(fullPath)
@@ -1020,5 +1077,6 @@ export const useSketchStore = defineStore("sketch", () => {
     fork,
     tsconfigのFile,
     packageのFile,
+    getJSXConfig,
   }
 })

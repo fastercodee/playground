@@ -42,10 +42,6 @@ const iframeRef = ref<HTMLIFrameElement>()
 const previewStore = usePreviewStore()
 const sketchStore = useSketchStore()
 const watchFs = new WatcherFs()
-const tsconfigのFile = useFile(
-  () => `${sketchStore.rootのsketch}/tsconfig.json`,
-  "{}"
-)
 
 // ====== status =======
 const iframeLoading = ref(true)
@@ -134,7 +130,7 @@ function setup() {
 
       const res = await respondWith(
         sketchStore.rootのsketch,
-        tsconfigのFile,
+        sketchStore,
         url
       )
 

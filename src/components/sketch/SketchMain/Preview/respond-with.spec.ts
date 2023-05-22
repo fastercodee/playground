@@ -5,10 +5,10 @@ import { respondWith } from "./respond-with"
 
 describe("respond-with", () => {
   const rootのsketch = "/"
-  const tsconfigのFile: ReturnType<typeof useFile<string>> = {
-    ready: Promise.resolve(),
-    data: "{}",
-  }
+  const sketchStore = {
+    getJSXConfig: () => null,
+    tsconfigのFile: { ready: null },
+  } as unknown as ReturnType<typeof useSketchStore>
 
   beforeEach(cleanupFS)
 
@@ -17,7 +17,7 @@ describe("respond-with", () => {
 
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/")
     )
 
@@ -59,12 +59,11 @@ describe("respond-with", () => {
 
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/main.js")
     )
 
-    expect(uint8ToUTF8(new Uint8Array(res.content)))
-      .include(`
+    expect(uint8ToUTF8(new Uint8Array(res.content))).include(`
 import "/style.css?import=css";
 import javascriptLogo from "/javascript.svg?import=url";
 import viteLogo from "/vite.svg?import=url";
@@ -76,7 +75,7 @@ import { setupCounter } from "/counter.js";`)
 
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/style.css")
     )
 
@@ -88,7 +87,7 @@ import { setupCounter } from "/counter.js";`)
 
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/js.svg")
     )
 
@@ -100,7 +99,7 @@ import { setupCounter } from "/counter.js";`)
 
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/style.css?import=css")
     )
 
@@ -112,7 +111,7 @@ import { setupCounter } from "/counter.js";`)
   test("should request /ts.svg?url (gen from file js)", async () => {
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/ts.svg?url")
     )
 
@@ -154,12 +153,11 @@ import { setupCounter } from "/counter.js";`)
 
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/main")
     )
 
-    expect(uint8ToUTF8(new Uint8Array(res.content)))
-      .include(`
+    expect(uint8ToUTF8(new Uint8Array(res.content))).include(`
 import "/style.css?import=css";
 import javascriptLogo from "/javascript.svg?import=url";
 import viteLogo from "/vite.svg?import=url";
@@ -181,7 +179,7 @@ const count = ref(0)
 
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/App.vue")
     )
 
@@ -210,7 +208,7 @@ const count = ref(0)
 
     const res = await respondWith(
       rootのsketch,
-      tsconfigのFile,
+      sketchStore,
       new URL("http://localhost/App.vue?import=.vue")
     )
 

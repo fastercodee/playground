@@ -1,6 +1,6 @@
 import { basename, extname, join, resolve } from "path"
 
-import { build, initialize, Loader, Plugin, PluginBuild } from "esbuild-wasm"
+import { build, initialize, Loader, Plugin } from "esbuild-wasm"
 import wasmURL from "esbuild-wasm/esbuild.wasm?url"
 
 import { compileVue } from "./plugins/vue"
@@ -111,7 +111,7 @@ export async function compilerFile(
   pathname: string,
   ext: string,
   searchParams: URLSearchParams,
-  tsconfigRaw: string
+  sketchStore: ReturnType<typeof useSketchStore>
 ): Promise<ArrayBuffer> {
   if (!inited) {
     if (!process.env.TEST)
@@ -122,6 +122,10 @@ export async function compilerFile(
   }
 
   const search = searchParams.toString()
+  const jsxConfig =
+    (await sketchStore.getJSXConfig()) ??
+    (await getDataAsync(sketchStore.packageのFile)).tsconfig?.compilerOptions
+
   const result = await build({
     entryPoints: [pathname + (search ? `?${search}` : "")],
     bundle: true,
@@ -131,10 +135,11 @@ export async function compilerFile(
       global: "window",
     },
     jsxDev: true,
-    jsx: "automatic",
+    jsx: jsxConfig?.jsx ?? "automatic",
+    jsxImportSource: jsxConfig?.jsxImportSource,
     format: "esm",
     sourcemap: "inline",
-    tsconfig: tsconfigRaw,
+    tsconfig: await getDataAsync(sketchStore.tsconfigのFile),
   })
 
   console.log({ result })

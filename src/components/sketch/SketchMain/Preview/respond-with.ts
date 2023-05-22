@@ -5,7 +5,7 @@ import { resolverImport } from "src/logic/compiler/resolver-import"
 
 export async function respondWith(
   rootのsketch: string,
-  tsconfigのFile: ReturnType<typeof useFile<string>>,
+  sketchStore: ReturnType<typeof useSketchStore>,
   url: URL
 ): Promise<{
   content: ArrayBuffer
@@ -65,13 +65,12 @@ export async function respondWith(
   if (!requireImport && !rExecTS.test(res.path)) return res
 
   if (allowCompile.includes(res.ext.slice(1))) {
-    await tsconfigのFile.ready
     res.content = await compilerFile(
       res.content,
       "./" + relative(rootのsketch, res.path),
       res.ext,
       searchParams,
-      tsconfigのFile.data
+      sketchStore
     )
     res.ext = ".js"
   }

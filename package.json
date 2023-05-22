@@ -65,6 +65,7 @@
     "file-extension": "^4.0.5",
     "hash-sum": "^2.0.0",
     "indexeddb-fs": "^1.2.5",
+    "json5": "^2.2.3",
     "lang-map": "^0.4.0",
     "micromatch": "^4.0.5",
     "mime-types": "^2.1.35",

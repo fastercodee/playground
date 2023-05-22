@@ -1,4 +1,9 @@
 describe("compiler-file", async () => {
+  const sketchStore = {
+    getJSXConfig: () => null,
+    tsconfigのFile: { ready: null },
+  } as unknown as ReturnType<typeof useSketchStore>
+
   test("should compile file import js", async () => {
     expect(
       uint8ToUTF8(
@@ -8,7 +13,7 @@ describe("compiler-file", async () => {
             "/main.js",
             ".js",
             new URLSearchParams(),
-            ""
+            sketchStore
           )
         )
       )
@@ -24,7 +29,7 @@ describe("compiler-file", async () => {
             "/main.js",
             ".js",
             new URLSearchParams(),
-            ""
+            sketchStore
           )
         )
       )
@@ -40,7 +45,7 @@ describe("compiler-file", async () => {
             "/main.js",
             ".js",
             new URLSearchParams(),
-            ""
+            sketchStore
           )
         )
       )
@@ -56,7 +61,7 @@ describe("compiler-file", async () => {
             "/main.js",
             ".js",
             new URLSearchParams(),
-            ""
+            sketchStore
           )
         )
       )
@@ -72,7 +77,7 @@ describe("compiler-file", async () => {
             "/main.js",
             ".js",
             new URLSearchParams("?url"),
-            ""
+            sketchStore
           )
         )
       )
@@ -91,7 +96,7 @@ export {
             "/main.js",
             ".js",
             new URLSearchParams("?base64"),
-            ""
+            sketchStore
           )
         )
       )
@@ -111,7 +116,7 @@ export {
             "/main.js",
             ".js",
             new URLSearchParams("?import=css"),
-            ""
+            sketchStore
           )
         )
       )
@@ -127,7 +132,7 @@ export {
             "/main.js",
             ".js",
             new URLSearchParams(),
-            ""
+            sketchStore
           )
         )
       )
@@ -151,7 +156,7 @@ const count = ref(0)
           "/main.vue",
           ".vue",
           new URLSearchParams(),
-          ""
+          sketchStore
         )
       )
     )
@@ -180,7 +185,7 @@ const count = ref<number>(0)
           "/main.vue",
           ".vue",
           new URLSearchParams(),
-          ""
+          sketchStore
         )
       )
     )
@@ -215,7 +220,7 @@ h1 {
           "/main.vue",
           ".vue",
           new URLSearchParams(),
-          ""
+          sketchStore
         )
       )
     )
@@ -247,7 +252,7 @@ const count = ref(0)
           "/main.vue",
           ".vue",
           new URLSearchParams(),
-          ""
+          sketchStore
         )
       )
     )
