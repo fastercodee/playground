@@ -312,7 +312,7 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     if (history.length > 100) history.splice(0, 100 - history.length)
 
     onChanged = debounce(async (text) => {
-      if (entryChanging === entry) return
+      if (toRaw(entryChanging) === toRaw(entry)) return
       entryChanging = entry
       currentFileのFile.data = text
       entryChanging = null
@@ -326,17 +326,19 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     seasons.delete(entry)
 
     for (let i = 0; i < history.length; i++) {
-      if (history[i] === entry) {
+      if (toRaw(history[i]) === toRaw(entry)) {
         history.splice(i, 1)
         i--
       }
     }
 
-    if (currentEntry.value === entry) {
+    if (toRaw(currentEntry.value) === toRaw(entry)) {
       // out
       if (history.length === 0) return
 
       openFile(history[history.length - 1])
+    } else {
+      currentEntry.value = null
     }
   }
 
