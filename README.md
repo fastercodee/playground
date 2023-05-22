@@ -18,7 +18,7 @@ A fcanvas playground code
 ## Preview
 This is screenshot edit and preview sketch use Vue SFC template
 ![image](https://github.com/fcanvas/playground/assets/45375496/b9cb2ced-59a5-49eb-a7c5-e1a3fd00eb9e)
-
+![image](https://github.com/fcanvas/playground/assets/45375496/af57d969-e661-428f-9ad4-c53a84ccc3e2)
 
 ## Install the dependencies
 
