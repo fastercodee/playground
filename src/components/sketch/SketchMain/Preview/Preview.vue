@@ -6,12 +6,23 @@
     @click:back="iframeBack"
     @click:forward="iframeForward"
   />
+  <template v-if="comLoaded">
+    <iframe
+      v-if="sketchStore.rootのsketch"
+      :src="srcIFrame"
+      class="w-full h-full bg-white"
+      @load="iframeLoading = false"
+    />
+  </template>
+  <div class="w-full h-full flex items-center justify-center">
+    Wait for a second...
+  </div>
   <iframe
     v-if="sketchStore.rootのsketch"
-    :src="srcIFrame"
-    class="w-full h-full bg-white"
+    :src="`${srcIFrame}/pw-com.html`"
     ref="iframeRef"
     @load="onLoad"
+    class="hidden"
   />
   <div v-else class="w-full h-full" />
 </template>
@@ -19,8 +30,8 @@
 <script lang="ts" setup>
 import { extname, join } from "path"
 
-import { listen, ping, put } from "@fcanvas/communicate"
-import { ComPreviewCore } from "app/preview/src/preview-core"
+import { listen, ping } from "@fcanvas/communicate"
+import { ComCom } from "app/preview/src/com"
 import type { Communicate } from "app/preview/src/sw"
 import { contentType } from "mime-types"
 
@@ -50,10 +61,6 @@ const srcIFrame = ref(
 
 // eslint-disable-next-line functional/no-let
 let listenerGetFile: null | (() => void) = null
-// eslint-disable-next-line functional/no-let
-let listenerLoad: null | (() => void) = null
-// eslint-disable-next-line functional/no-let
-let listenerUnload: null | (() => void) = null
 onUnmounted(() => {
   previewStore.setChannel(null)
   listenerGetFile?.()
@@ -73,21 +80,24 @@ watchFs.コールバックを設定(async (type, path, pathMatch) => {
     return
   }
 
-  const forceReload = await put<ComPreviewVue>(port1, {
-    name: "refresh",
-    targetOrigin: "*",
-  })
+  iframeReload()
 
-  if (forceReload) {
-    iframeRef.value.src = ""
-    iframeRef.value.src = srcIFrame.value
-  }
+  // const forceReload = await put<ComPreviewVue>(port1, {
+  //   name: "refresh",
+  //   targetOrigin: "*",
+  // })
+
+  // if (forceReload) {
+  //   iframeRef.value.src = ""
+  //   iframeRef.value.src = srcIFrame.value
+  // }
 })
 function iframeReload() {
   const port1 = previewStore.channel?.port1
 
   if (!port1) return
 
+  iframeLoading.value = true
   ping<ComPreviewVue>(port1, "reload")
 }
 function iframeBack() {
@@ -109,8 +119,6 @@ function setup() {
   const { port1, port2 } = previewStore.setChannel(new MessageChannel())
 
   listenerGetFile?.()
-  listenerLoad?.()
-  listenerUnload?.()
 
   watchFs.clear()
 
@@ -187,29 +195,35 @@ function setup() {
       }
     }
   })
-  listenerLoad = listen<ComPreviewCore>(port1, "load", () => {
-    iframeLoading.value = false
-  })
-  listenerUnload = listen<ComPreviewCore>(port1, "unload", () => {
-    iframeLoading.value = true
-  })
 
-  return port2
+  return { port1, port2 }
 }
+const comLoaded = ref(false)
 async function onLoad() {
   if (!iframeRef.value) return
 
-  const port2 = setup()
+  const { port1, port2 } = setup()
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   ;(iframeRef.value as HTMLIFrameElement)!.contentWindow!.postMessage(
     { port2 },
     { transfer: [port2], targetOrigin: "*" }
+  )
+  listen<ComCom>(
+    port1,
+    "service load",
+    () => {
+      comLoaded.value = true
+    },
+    {
+      once: true,
+    }
   )
 }
 
 watch(
   () => sketchStore.rootのsketch,
   (root) => {
+    comLoaded.value = false
     if (!root) return
 
     onLoad()

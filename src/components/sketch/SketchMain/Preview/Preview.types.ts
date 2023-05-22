@@ -11,7 +11,6 @@ export type ComPreviewVue = {
   callFnLink: typeof callFnLink
 
   clear(): void
-  refresh(): boolean
 
   reload(): void
   back(): void

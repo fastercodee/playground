@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { listen, put } from "@fcanvas/communicate"
 import { Icon } from "@iconify/vue"
-import type { ComPreviewCore } from "app/preview/src/preview-core"
+import type { ComPreviewCore } from "app/preview/src/__pw_inject-console"
 import { Console, DataAPI, Encode } from "vue-console-feed"
 import type { Data } from "vue-console-feed"
 import type {
