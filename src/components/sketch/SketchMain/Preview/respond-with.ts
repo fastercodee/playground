@@ -16,9 +16,9 @@ export async function respondWith(
 
   if (pathname.startsWith("/cdn_modules/")) {
     const content = utf8ToUint8(
-      `export * from "https://esm.run/${pathname.slice(
+      `export * from "https://esm.sh/${pathname.slice(
         "/cdn_modules/".length
-      )}"`
+      )}?dev"`
     )
 
     return {
