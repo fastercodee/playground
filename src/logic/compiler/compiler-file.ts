@@ -130,6 +130,8 @@ export async function compilerFile(
     define: {
       global: "window",
     },
+    jsxDev: true,
+    jsx: "automatic",
     format: "esm",
     sourcemap: "inline",
     tsconfig: tsconfigRaw,
