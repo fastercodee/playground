@@ -17,8 +17,19 @@ A fcanvas playground code
 
 ## Preview
 This is screenshot edit and preview sketch use Vue SFC template
+
+Vue + TypeScript
 ![image](https://github.com/fcanvas/playground/assets/45375496/b9cb2ced-59a5-49eb-a7c5-e1a3fd00eb9e)
+
+React + TypeScript
 ![image](https://github.com/fcanvas/playground/assets/45375496/af57d969-e661-428f-9ad4-c53a84ccc3e2)
+
+Lit + TypeScript
+![image](https://github.com/fcanvas/playground/assets/45375496/3f0645fc-e589-4d33-a4da-88cdcacd9e3e)
+
+Preact + TypeScript
+![image](https://github.com/fcanvas/playground/assets/45375496/3699bb07-5c4b-415a-ad09-7a280efae8db)
+
 
 ## Install the dependencies
 
