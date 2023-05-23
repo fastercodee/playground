@@ -7,8 +7,11 @@ interface PackageJSON {
 
 export function resolveImportPkg(name: string, pkgs: PackageJSON) {
   // deps
+  const indexSlashPath = name.startsWith("@") ? -1 : name.indexOf("/")
+  const pkgName = indexSlashPath > -1 ? name.slice(0, indexSlashPath) : name
+
   const allDeps = { ...pkgs.dependencies }
-  delete allDeps[name]
+  delete allDeps[pkgName]
 
   const deps =
     pkgs.dependencies &&
@@ -16,7 +19,12 @@ export function resolveImportPkg(name: string, pkgs: PackageJSON) {
       .map((item) => `${item[0]}@${item[1]}`)
       .join(",")
 
-  const version = pkgs.dependencies?.[name] ?? "latest"
-
-  return `https://esm.sh/${name}@${version}?dev${deps ? `&deps=${deps}` : ""}`
+  return `https://esm.sh/${`${pkgName}@${
+    pkgs.dependencies?.[pkgName] ?? "latest"
+  }${
+    indexSlashPath === -1 || indexSlashPath >= name.length
+      ? ""
+      : name.slice(indexSlashPath)
+  }`}?dev${deps ? `&deps=${deps}` : ""}`
 }
+// https://esm.sh/preact/hooks@latest?dev&deps=preact@^10.13.1

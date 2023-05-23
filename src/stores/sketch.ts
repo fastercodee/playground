@@ -3,7 +3,7 @@
 import { basename, join, relative } from "path"
 
 import { put } from "@fcanvas/communicate"
-import { parse as parse5 } from "json5"
+import json5 from "json5"
 import { some } from "micromatch"
 import { defineStore } from "pinia"
 import { isNative } from "src/constants"
@@ -500,7 +500,7 @@ export const useSketchStore = defineStore("sketch", () => {
     { jsx?: "transform" | "preserve" | "automatic"; jsxImportSource?: string }
   >()
   const getJSXConfig = async () => {
-    const tsconfig = parse5(await getDataAsync(tsconfigのFile)) as TSConfig
+    const tsconfig = json5.parse(await getDataAsync(tsconfigのFile)) as TSConfig
     const cache = jsxConfigStore.get(tsconfig)
     if (cache) return cache
 
