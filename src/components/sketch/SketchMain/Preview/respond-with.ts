@@ -15,15 +15,15 @@ export async function respondWith(
   const { pathname, searchParams } = url
 
   if (pathname.startsWith("/cdn_modules/")) {
-    const content = utf8ToUint8(
-      `export * from "${resolveImportPkg(
+    const content = await fetch(
+      resolveImportPkg(
         pathname.slice("/cdn_modules/".length),
         await getDataAsync(sketchStore.packageのFile)
-      )}"`
-    )
+      )
+    ).then((res) => res.arrayBuffer())
 
     return {
-      content: content.buffer,
+      content,
       ext: ".js",
       path: pathname.slice("/cdn_modules/".length),
     }

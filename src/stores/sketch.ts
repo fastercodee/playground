@@ -24,6 +24,8 @@ interface TSConfig {
   compilerOptions?: {
     jsxImportSource?: string
     jsx?: "transform" | "preserve" | "automatic"
+    jsxFactory?: "h" | "jsx"
+    jsxFragment?: "Fragment" | "FragmentFactory"
   }
 }
 interface PackageJSON {
@@ -497,7 +499,12 @@ export const useSketchStore = defineStore("sketch", () => {
   )
   const jsxConfigStore = new WeakMap<
     TSConfig,
-    { jsx?: "transform" | "preserve" | "automatic"; jsxImportSource?: string }
+    {
+      jsx?: "transform" | "preserve" | "automatic"
+      jsxImportSource?: string
+      jsxFactory?: string
+      jsxFragment?: string
+    }
   >()
   const getJSXConfig = async () => {
     const tsconfig = json5.parse(await getDataAsync(tsconfigのFile)) as TSConfig
@@ -510,6 +517,8 @@ export const useSketchStore = defineStore("sketch", () => {
     const cur = {
       jsx,
       jsxImportSource: tsconfig.compilerOptions?.jsxImportSource,
+      jsxFactory: tsconfig.compilerOptions.jsxFactory,
+      jsxFragment: tsconfig.compilerOptions?.jsxFragment,
     }
     jsxConfigStore.set(tsconfig, cur)
 

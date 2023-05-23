@@ -137,6 +137,8 @@ export async function compilerFile(
     jsxDev: true,
     jsx: jsxConfig?.jsx ?? "automatic",
     jsxImportSource: jsxConfig?.jsxImportSource,
+    jsxFactory: jsxConfig?.jsxFactory,
+    jsxFragment: jsxConfig?.jsxFragment,
     format: "esm",
     sourcemap: "inline",
     tsconfig: await getDataAsync(sketchStore.tsconfigのFile),
