@@ -16,14 +16,14 @@ A fcanvas playground code
 [![Try build](https://github.com/fcanvas/playground/actions/workflows/try-build.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/try-build.yml)
 
 ## Upcoming
-- [] support solidjs, svelte
-- [] add tester similar to vitest
-- [] add settings
-- [] add check sketches
-- [] add comment sketch
-- [] add like sketch
+- [ ] support solidjs, svelte
+- [ ] add tester similar to vitest
+- [ ] add settings
+- [ ] add check sketches
+- [ ] add comment sketch
+- [ ] add like sketch
 -
-- [] add a compiler/interpreter to run C/C++, Python or Ruby
+- [ ] add a compiler/interpreter to run C/C++, Python or Ruby
 
 
 ## Preview
@@ -41,6 +41,8 @@ Lit + TypeScript
 Preact + TypeScript
 ![image](https://github.com/fcanvas/playground/assets/45375496/3699bb07-5c4b-415a-ad09-7a280efae8db)
 
+Solid + TypeScript
+![image](https://github.com/fcanvas/playground/assets/45375496/5aff163c-eb70-4831-bac7-17ebc981a69c)
 
 ## Install the dependencies
 
