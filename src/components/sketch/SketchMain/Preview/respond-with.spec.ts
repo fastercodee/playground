@@ -8,6 +8,7 @@ describe("respond-with", () => {
   const sketchStore = {
     getJSXConfig: () => null,
     tsconfigのFile: { ready: null },
+    packageのFile: { data: { dependencies: { vue: "3", shared: "2" } } },
   } as unknown as ReturnType<typeof useSketchStore>
 
   beforeEach(cleanupFS)
@@ -214,6 +215,18 @@ const count = ref(0)
 
     expect(uint8ToUTF8(new Uint8Array(res.content))).include(
       '__sfc__.__file = "App.vue";'
+    )
+  })
+
+  test("should request /cdn_modules/vue", async () => {
+    const res = await respondWith(
+      rootのsketch,
+      sketchStore,
+      new URL("http://localhost/cdn_modules/vue")
+    )
+
+    expect(uint8ToUTF8(new Uint8Array(res.content))).toBe(
+      "export * from \"https://esm.sh/vue@3?dev&deps=vue@3,shared@2\""
     )
   })
 })

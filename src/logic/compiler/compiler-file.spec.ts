@@ -2,6 +2,7 @@ describe("compiler-file", async () => {
   const sketchStore = {
     getJSXConfig: () => null,
     tsconfigのFile: { ready: null },
+    packageのFile: { data: { dependencies: { vue: "3", shared: "2" } } },
   } as unknown as ReturnType<typeof useSketchStore>
 
   test("should compile file import js", async () => {

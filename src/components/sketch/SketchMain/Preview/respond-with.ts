@@ -16,9 +16,10 @@ export async function respondWith(
 
   if (pathname.startsWith("/cdn_modules/")) {
     const content = utf8ToUint8(
-      `export * from "https://esm.sh/${pathname.slice(
-        "/cdn_modules/".length
-      )}?dev"`
+      `export * from "${resolveImportPkg(
+        pathname.slice("/cdn_modules/".length),
+        await getDataAsync(sketchStore.packageのFile)
+      )}"`
     )
 
     return {
