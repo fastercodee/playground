@@ -313,14 +313,21 @@ export const useSeasonEdit = defineStore("season-edit", () => {
 
     onChanged = debounce(async (text) => {
       if (toRaw(entryChanging) === toRaw(entry)) return
+      if (toRaw(currentEntry.value) !== toRaw(entry)) return
+
       entryChanging = entry
       currentFileのFile.data = text
+      await nextTick()
+      await currentFileのFile.writing
       entryChanging = null
     }, 1000)
   }
-  function closeFile(entry: Entry<"file">) {
-    if (currentEntry.value && editor.value)
-      onChanged?.(editor.value.state.doc + "")
+
+  async function closeFile(entry: Entry<"file">) {
+    if (currentEntry.value && editor.value) {
+      const data = editor.value.state.doc + ""
+      await onChanged?.(data)
+    }
     onChanged = null
 
     seasons.delete(entry)
@@ -334,27 +341,15 @@ export const useSeasonEdit = defineStore("season-edit", () => {
 
     if (toRaw(currentEntry.value) === toRaw(entry)) {
       // out
-      if (history.length === 0) return
+      if (history.length === 0) {
+        currentEntry.value = null
+        return
+      }
 
       openFile(history[history.length - 1])
     } else {
       currentEntry.value = null
     }
-  }
-
-  async function saveFile(text: string) {
-    if (!currentEntry.value) return
-
-    await Filesystem.writeFile({
-      path: currentEntry.value.fullPath,
-      data: text,
-      directory: Directory.External,
-      encoding: Encoding.UTF8,
-      recursive: true,
-    })
-    eventBus.emit("writeFile", currentEntry.value.fullPath)
-
-    console.info("saved file %s", currentEntry.value.fullPath)
   }
 
   function isCurrent(entry: Entry<"file">) {
@@ -397,7 +392,6 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     editor,
     openFile,
     closeFile,
-    saveFile,
     isCurrent,
 
     openMatch,

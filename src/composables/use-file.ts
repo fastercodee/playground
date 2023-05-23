@@ -21,6 +21,7 @@ type CbFileChange<T> = (newValue: T) => Promise<void> | void
 interface UseFileReturn<T> {
   data: UnwrapRef<T>
   readonly ready: Promise<void> | null
+  writing?: Promise<void>
 }
 interface OnFileChange<T> {
   (cb: CbFileChange<UnwrapRef<T>>, options?: { immediate: boolean }): void
@@ -72,6 +73,7 @@ export function useFile<
   const ret = reactive<{
     data: T
     onFileChange?: typeof onFileChange
+    writing?: Promise<void>
     ready: null | Promise<void>
   }>({
     data: middleare.get(defaultValue) as T,
@@ -149,7 +151,7 @@ export function useFile<
         const path = (filepath as Ref<string | undefined>).value
         if (!path) return
         console.log("write file %s", reading)
-        await Filesystem.writeFile({
+        ret.writing = Filesystem.writeFile({
           path,
           directory: Directory.External,
           encoding: Encoding.UTF8,
@@ -160,7 +162,9 @@ export function useFile<
             }
           ).set(content),
           recursive: true,
-        })
+        }).then(() => undefined)
+        await ret.writing
+        ret.writing = undefined
         await eventBus.emit("writeFile", path)
         await nextTick()
         writing = false

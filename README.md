@@ -15,6 +15,17 @@ A fcanvas playground code
 [![TypeScript Checker Declaration](https://github.com/fcanvas/playground/actions/workflows/typing.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/typing.yml)
 [![Try build](https://github.com/fcanvas/playground/actions/workflows/try-build.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/try-build.yml)
 
+## Upcoming
+- [] support solidjs, svelte
+- [] add tester similar to vitest
+- [] add settings
+- [] add check sketches
+- [] add comment sketch
+- [] add like sketch
+-
+- [] add a compiler/interpreter to run C/C++, Python or Ruby
+
+
 ## Preview
 This is screenshot edit and preview sketch use Vue SFC template
 
