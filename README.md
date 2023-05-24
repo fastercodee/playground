@@ -24,6 +24,7 @@ A fcanvas playground code
 - [ ] add like sketch
 -
 - [ ] add a compiler/interpreter to run C/C++, Python or Ruby
+- [ ] cache all files?
 
 
 ## Preview
