@@ -3,13 +3,18 @@ import { basename, extname, join, resolve } from "path"
 import { build, initialize, Loader, Plugin } from "esbuild-wasm"
 import wasmURL from "esbuild-wasm/esbuild.wasm?url"
 
-import { compileVue } from "./plugins/vue"
+import { LoaderCustom } from "./get-loader-extension"
 import { resolverImport } from "./resolver-import"
 
-function addQuery(url: URL, query: string, val: string) {
-  url.searchParams.set(query, val)
+function addImportAs(url: URL, val: LoaderCustom | `.${string}`) {
+  url.searchParams.set("import", val)
 
   return url.pathname + url.search.replace(/=$|=(?=&)/g, "")
+}
+export function getImportAs(url: URL): LoaderCustom | `.${string}` | null {
+  return url.searchParams.has("url")
+    ? "url"
+    : (url.searchParams.get("import") as LoaderCustom | `.${string}` | null)
 }
 export const rExecTS = /\.(?:m|c)?j|tsx?$/
 
@@ -33,15 +38,14 @@ function plugin(contents: ArrayBuffer, currentPath: string): Plugin {
 
         console.log("resolve %s", args.path, rExecTS.test(url.pathname))
 
-        const ext = extname(url.pathname)
+        const ext = extname(url.pathname) as `.${string}`
 
         return {
           path: rExecTS.test(url.pathname)
             ? path
-            : addQuery(
+            : addImportAs(
                 url,
-                "import",
-                getLoaderByExtension(ext, url.searchParams) ?? ext
+                getLoaderByExtension(ext, url.searchParams, url.pathname) ?? ext
               ),
           namespace: args.path === currentPath ? "current" : undefined,
           external: args.path !== currentPath,
@@ -52,16 +56,16 @@ function plugin(contents: ArrayBuffer, currentPath: string): Plugin {
         console.log("load file %s", args.path)
         const url = new URL(args.path, "http://localhost")
 
-        const importAs = url.searchParams.has("url")
-          ? "url"
-          : url.searchParams.get("import")
+        const importAs = getImportAs(url)
 
-        const resolveByImport = resolverImport(url)
+        const resolveByImport = resolverImport(url, importAs)
         if (resolveByImport) return resolveByImport
         if (importAs === ".vue") {
-          const result = await compileVue(
-            basename(url.pathname),
-            uint8ToUTF8(new Uint8Array(contents))
+          const result = await import("./plugins/vue").then(({ compileVue }) =>
+            compileVue(
+              basename(url.pathname),
+              uint8ToUTF8(new Uint8Array(contents))
+            )
           )
           if (result)
             return {
@@ -73,6 +77,20 @@ function plugin(contents: ArrayBuffer, currentPath: string): Plugin {
                   : "") + result.js,
               loader: result.isTS ? "ts" : "js",
             }
+        }
+        if (importAs === "css-module") {
+          const result = await import("./plugins/css-module").then(
+            ({ compileCSSModule }) =>
+              compileCSSModule("", uint8ToUTF8(new Uint8Array(contents)))
+          )
+
+          return {
+            contents:
+              `(() => {const style = document.createElement('style'); style.innerHTML = ${JSON.stringify(
+                result.css
+              )}; document.head.appendChild(style)})();\n` + result.js,
+            loader: "js",
+          }
         }
 
         return {
@@ -104,6 +122,7 @@ export const allowCompile = [
   "vue",
   "svelte",
 ]
+export const allowEndFile = ["module.css"]
 // eslint-disable-next-line functional/no-let
 let inited = false
 export async function compilerFile(

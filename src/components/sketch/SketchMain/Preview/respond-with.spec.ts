@@ -226,7 +226,41 @@ const count = ref(0)
     )
 
     expect(uint8ToUTF8(new Uint8Array(res.content))).toBe(
-      "export * from \"https://esm.sh/vue@3?dev&deps=vue@3,shared@2\""
+      '/* esm.sh - vue@3.3.4 */\nexport * from "https://esm.sh/stable/vue@3.3.4/esnext/vue.development.mjs";\n'
+    )
+  })
+
+  test("should request /style.module.css?import=css-module", async () => {
+    await writeFile(
+      "style.module.css",
+      `.App {
+        color: red
+      }
+
+      .header {
+        font-size: 22px;
+        color: black
+      }
+
+      .a {
+        color: blue;
+        font-weight: 500
+      }`
+    )
+
+    const res = await respondWith(
+      rootのsketch,
+      sketchStore,
+      new URL("http://localhost/style.module.css?import=css-module")
+    )
+
+    const code = uint8ToUTF8(new Uint8Array(res.content))
+
+    expect(code).include(
+      '".__App_1a3a6a4b{color:red}.__header_75c41e03{font-size:22px;color:black}.__a_8daa19aa{color:blue;font-weight:500}";'
+    )
+    expect(code).include(
+      ' { "App": "__App_1a3a6a4b", "header": "__header_75c41e03", "a": "__a_8daa19aa" };'
     )
   })
 })

@@ -1,11 +1,16 @@
 import { Loader } from "esbuild-wasm"
 
-export function resolverImport({ searchParams, pathname }: URL): {
-  contents: string
-  loader: Loader
-} | undefined {
-  const importAs = searchParams.has("url") ? "url" : searchParams.get("import")
+import { LoaderCustom } from "./get-loader-extension"
 
+export function resolverImport(
+  { searchParams, pathname }: URL,
+  importAs: LoaderCustom | `.${string}` | null
+):
+  | {
+      contents: string
+      loader: Loader
+    }
+  | undefined {
   searchParams.delete("import")
   searchParams.delete("resolve")
   searchParams.delete("url")

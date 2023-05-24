@@ -1,3 +1,7 @@
+import { uint8ToUTF8, utf8ToUint8 } from "src/logic/text-buffer"
+
+import { compilerFile } from "./compiler-file"
+
 describe("compiler-file", async () => {
   const sketchStore = {
     getJSXConfig: () => null,
@@ -35,6 +39,22 @@ describe("compiler-file", async () => {
         )
       )
     ).include('import "/style.css?import=css";')
+  })
+
+  test("should compile file import css module", async () => {
+    expect(
+      uint8ToUTF8(
+        new Uint8Array(
+          await compilerFile(
+            utf8ToUint8("import styles from './style.module.css'"),
+            "/main.js",
+            ".js",
+            new URLSearchParams(),
+            sketchStore
+          )
+        )
+      )
+    ).include('import styles from "/style.module.css?import=css-module";')
   })
 
   test("should compile file import svg", async () => {
@@ -258,10 +278,43 @@ const count = ref(0)
       )
     )
 
-    console.log(code)
-
     expect(code).include('"hello"')
     expect(code).include('__file = "main.vue"')
     expect(code).include('import Counter from "/Counter.vue?import=.vue";')
+  })
+
+  test("should compile file css module", async () => {
+    const code = uint8ToUTF8(
+      new Uint8Array(
+        await compilerFile(
+          utf8ToUint8(`
+.App {
+  color: red
+}
+
+.header {
+  font-size: 22px;
+  color: black
+}
+
+.a {
+  color: blue;
+  font-weight: 500
+}
+          `),
+          "/style.module.css",
+          ".css",
+          new URLSearchParams(),
+          sketchStore
+        )
+      )
+    )
+
+    expect(code).include(
+      "\".__App_1a3a6a4b{color:red}.__header_75c41e03{font-size:22px;color:black}.__a_8daa19aa{color:blue;font-weight:500}\";"
+    )
+    expect(code).include(
+      " { \"App\": \"__App_1a3a6a4b\", \"header\": \"__header_75c41e03\", \"a\": \"__a_8daa19aa\" };"
+    )
   })
 })

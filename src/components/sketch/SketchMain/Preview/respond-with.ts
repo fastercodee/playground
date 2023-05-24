@@ -1,6 +1,6 @@
 import { join, relative } from "path"
 
-import { allowCompile } from "src/logic/compiler/compiler-file"
+import { allowCompile, getImportAs } from "src/logic/compiler/compiler-file"
 import { resolverImport } from "src/logic/compiler/resolver-import"
 
 export async function respondWith(
@@ -43,7 +43,7 @@ export async function respondWith(
       }
     })
 
-  const resolveByImport = resolverImport(url)
+  const resolveByImport = resolverImport(url, getImportAs(url))
   if (resolveByImport)
     return {
       content: utf8ToUint8(resolveByImport.contents).buffer,
@@ -65,7 +65,10 @@ export async function respondWith(
 
   if (!requireImport && !rExecTS.test(res.path)) return res
 
-  if (allowCompile.includes(res.ext.slice(1))) {
+  if (
+    allowCompile.includes(res.ext.slice(1)) ||
+    allowEndFile.some((item) => pathname.endsWith(item))
+  ) {
     res.content = await compilerFile(
       res.content,
       "./" + relative(rootのsketch, res.path),

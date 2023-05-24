@@ -14,4 +14,8 @@ describe("get-loader-extension", () => {
   test("should get loader by extension custom", () => {
     expect(getLoaderByExtension(".jpeg", new URLSearchParams())).toBe("url")
   })
+
+  test("should get loader by extension custom two dot", () => {
+    expect(getLoaderByExtension(".css", new URLSearchParams(), "/style.module.css")).toBe("css-module")
+  })
 })
