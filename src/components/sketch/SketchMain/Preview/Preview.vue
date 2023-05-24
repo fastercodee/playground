@@ -1,30 +1,35 @@
 <template>
-  <PreviewNavBar
-    v-model:src="srcIFrame"
-    :loading="iframeLoading"
-    @click:reload="iframeReload"
-    @click:back="iframeBack"
-    @click:forward="iframeForward"
-  />
-  <template v-if="comLoaded">
+  <div class="flex flex-col flex-nowrap fit">
+    <PreviewNavBar
+      v-model:src="srcIFrame"
+      :loading="iframeLoading"
+      @click:reload="iframeReload"
+      @click:back="iframeBack"
+      @click:forward="iframeForward"
+    />
+    <template v-if="comLoaded">
+      <iframe
+        v-if="sketchStore.rootのsketch"
+        :src="srcIFrame"
+        class="min-h-0 w-full h-full bg-white"
+        @load="iframeLoading = false"
+      />
+      <div v-else class="w-full h-full" />
+    </template>
+    <div v-else class="w-full h-full flex items-center justify-center">
+      Wait for a second...
+    </div>
+  </div>
+
+  <Teleport to="body">
     <iframe
       v-if="sketchStore.rootのsketch"
-      :src="srcIFrame"
-      class="w-full h-full bg-white"
-      @load="iframeLoading = false"
+      :src="`${srcIFrame}/pw-com.html`"
+      ref="iframeRef"
+      @load="onLoad"
+      class="hidden"
     />
-  </template>
-  <div class="w-full h-full flex items-center justify-center">
-    Wait for a second...
-  </div>
-  <iframe
-    v-if="sketchStore.rootのsketch"
-    :src="`${srcIFrame}/pw-com.html`"
-    ref="iframeRef"
-    @load="onLoad"
-    class="hidden"
-  />
-  <div v-else class="w-full h-full" />
+  </Teleport>
 </template>
 
 <script lang="ts" setup>
@@ -128,11 +133,7 @@ function setup() {
     try {
       if (!sketchStore.rootのsketch) throw new Error("no sketch")
 
-      const res = await respondWith(
-        sketchStore.rootのsketch,
-        sketchStore,
-        url
-      )
+      const res = await respondWith(sketchStore.rootのsketch, sketchStore, url)
 
       console.log("%c resolved: ", "color:red", res.content)
       watchFs.addWatchFile(res.path)

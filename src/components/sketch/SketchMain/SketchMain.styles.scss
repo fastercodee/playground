@@ -21,6 +21,10 @@
       .area_3 {
         @apply w-full h-1/2;
       }
+      .area_2 {
+        border-top-width: 1px;
+        border-bottom-width: 1px;
+      }
     }
   }
   &.rows {
@@ -38,6 +42,10 @@
       .area_3 {
         @apply w-1/2;
       }
+      .area_2 {
+        border-left-width: 1px;
+        border-right-width: 1px;
+      }
     }
   }
   &.bottom {
@@ -46,14 +54,21 @@
       order: 2;
     }
     .area_1 {
-      @apply w-full h-1/2;
+      @apply h-1/2;
+      width: 100%;
+      border-top-width: 1px;
     }
     .group {
       @apply flex flex-nowrap w-full h-full;
       order: 1;
       .area_2,
       .area_3 {
-        @apply w-1/2 h-full;
+        @apply w-1/2;
+        height: 100% !important;
+      }
+      .area_3 {
+        flex: 1;
+        border-left-width: 1px;
       }
     }
   }
@@ -61,44 +76,68 @@
     @apply flex flex-nowrap;
     .area_1 {
       order: 2;
-      @apply w-1/2 h-full;
-      --width: 50%;
+      @apply w-1/2;
+      height: 100% !important;
+      border-left-width: 1px;
     }
+
     .group {
       @apply flex flex-col flex-nowrap w-full h-full;
       order: 1;
       .area_2,
       .area_3 {
-        @apply w-full h-1/2;
+        @apply h-1/2;
+        width: 100% !important;
+      }
+      .area_2 {
+        height: 63%;
+      }
+      .area_3 {
+        flex: 1;
+        border-top-width: 1px;
       }
     }
   }
   &.top {
     @apply flex flex-col flex-nowrap;
     .area_1 {
-      @apply w-full h-1/2;
+      @apply h-1/2;
+      width: 100% !important;
+      border-bottom-width: 1px;
     }
     .group {
       @apply flex flex-nowrap w-full h-full;
       .area_2,
       .area_3 {
-        @apply w-1/2 h-full;
+        @apply w-1/2;
+        height: 100% !important;
       }
       .area_3 {
         flex: 1;
+        border-left-width: 1px;
       }
     }
   }
   &.left {
     @apply flex flex-nowrap;
     .area_1 {
-      @apply w-1/2 h-full;
+      @apply w-1/2;
+      height: 100% !important;
+      border-right-width: 1px;
     }
     .group {
       @apply flex flex-col flex-nowrap w-full h-full;
       .area_2,
       .area_3 {
-        @apply w-full h-1/2;
+        @apply h-1/2;
+        width: 100% !important;
+      }
+      .area_2 {
+        height: 63%;
+      }
+      .area_3 {
+        flex: 1;
+        border-top-width: 1px;
       }
     }
   }

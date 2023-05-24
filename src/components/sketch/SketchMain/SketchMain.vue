@@ -148,11 +148,21 @@ const map = computed(
 )
 </script>
 
-<style lang="scss" scoped src="./SketchMain.styles.scss"></style>
-
 <style lang="scss" scoped>
 .disable-resizable {
   @apply min-w-0;
   flex-shrink: 1 !important;
+}
+</style>
+
+<style lang="scss" scoped>
+@import "./SketchMain.styles.scss";
+
+.container {
+  .area_1,
+  .area_2,
+  .area_3 {
+    @apply border-gray-400 border-opacity-20;
+  }
 }
 </style>

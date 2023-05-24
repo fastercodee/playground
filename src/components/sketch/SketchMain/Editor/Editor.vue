@@ -53,7 +53,7 @@ watch(
     @apply bg-transparent relative;
     &:before {
       content: "";
-      @apply absolute w-full h-full top-0 left-0 z--1 border border-gray-400 border-opacity-20;
+      @apply absolute w-full h-full top-0 left-0 z--1;
     }
   }
   :deep(.cm-matchingBracket) {

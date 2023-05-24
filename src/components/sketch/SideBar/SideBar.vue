@@ -34,6 +34,11 @@
       <button class="w-48px h-48px hover:text-gray-400 relative">
         <Icon icon="fluent:window-console-20-filled" class="w-24px h-24px" />
       </button>
+
+      <button class="w-48px h-48px hover:text-gray-400 relative" @click="settingsLayout=true">
+        <Icon icon="codicon:layout" class="w-24px h-24px" />
+        <!-- tabler:layout -->
+      </button>
       <!-- <button @click="settingsLayout = !settingsLayout">Settings Layout</button> -->
     </div>
 

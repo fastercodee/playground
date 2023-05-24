@@ -24,6 +24,12 @@ export const useSettingsStore = defineStore("settings", () => {
         area_3: AreaComponent.Console,
       }
     }
+    if (mode === Mode.left)
+      return {
+        area_1: AreaComponent.Editor,
+        area_2: AreaComponent.Preview,
+        area_3: AreaComponent.Console,
+      }
 
     return {
       area_1: AreaComponent.Editor,
