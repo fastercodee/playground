@@ -1,6 +1,6 @@
 <template>
   <header class="py-2 px-3 text-12px flex justify-between">
-    HEADER
+    <div class="min-h-0 truncate">{{ entryCurrent?.name ?? "HEADER" }}</div>
     <div>
       <Icon
         icon="codicon:new-file"
@@ -49,41 +49,13 @@ import TreeDirectory from "./components/TreeDirectory.vue"
 const clipboardFSStore = useClipboardFS()
 const sketchStore = useSketchStore()
 
-async function init() {
-  await Filesystem.mkdir({
-    path: "home/-1/src",
-    recursive: true,
-    directory: Directory.External,
-  }).catch(() => false)
-
-  await Filesystem.writeFile({
-    path: "home/-1/index.html",
-    data: `
-<h1>Hello h1</h1>
-\\<script src="/src/main.js"><\\/script>
-    `.replace(/\\/g, ""),
-    encoding: Encoding.UTF8,
-    directory: Directory.External,
-  })
-  await Filesystem.writeFile({
-    path: "home/-1/src/main.js",
-    data: `
-setInterval(() => {
-  document.querySelector("h1").textContent = new Date().toString();
-}, 1000)
-    `,
-    encoding: Encoding.UTF8,
-    directory: Directory.External,
-  })
-}
-
 const entryCurrent = computedAsync(
   async () => {
     if (!sketchStore.dirnameSketch) return
 
     const entryRoot: Entry<"directory"> = createFakeDirectory("home")
     // entryRoot.directory = entryRoot
-return await readDetails<"directory">(sketchStore.dirnameSketch, entryRoot)
+    return await readDetails<"directory">(sketchStore.dirnameSketch, entryRoot)
   },
   undefined,
   {
