@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col flex-nowrap w-full h-full">
+  <div class="flex flex-col flex-nowrap fit">
     <SeasonManager />
     <div
       v-if="seasonEditStore.currentEntry"
@@ -53,7 +53,7 @@ watch(
     @apply bg-transparent relative;
     &:before {
       content: "";
-      @apply absolute w-full h-full top-0 left-0 z--1;
+      @apply absolute fit top-0 left-0 z--1;
     }
   }
   :deep(.cm-matchingBracket) {

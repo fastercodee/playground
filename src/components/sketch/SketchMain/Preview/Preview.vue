@@ -11,12 +11,12 @@
       <iframe
         v-if="sketchStore.rootのsketch"
         :src="srcIFrame"
-        class="min-h-0 w-full h-full bg-white"
+        class="min-h-0 fit bg-white"
         @load="iframeLoading = false"
       />
-      <div v-else class="w-full h-full" />
+      <div v-else class="fit" />
     </template>
-    <div v-else class="w-full h-full flex items-center justify-center">
+    <div v-else class="fit flex items-center justify-center">
       Wait for a second...
     </div>
   </div>

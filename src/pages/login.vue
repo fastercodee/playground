@@ -28,7 +28,7 @@ meta:
       <q-card-section>
         <form
           @submit.prevent="logIn"
-          class="w-full h-full"
+          class="fit"
           :disabled="verifyOAuth2 && !verifyOAuth2Failure ? '' : undefined"
         >
           <q-input

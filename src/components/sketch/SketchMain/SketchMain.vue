@@ -24,7 +24,7 @@
       :ref="(el) => (resizableRef.area_1 = el as InstanceType<typeof Resizable>)"
     >
       <div
-        class="w-full h-full"
+        class="fit"
         :ref="(el) => (targetRef.area_1 = el as HTMLDivElement)"
       />
     </Resizable>
@@ -52,7 +52,7 @@
         :ref="(el) => (resizableRef.area_2 = el as InstanceType<typeof Resizable>)"
       >
         <div
-          class="w-full h-full relative"
+          class="fit relative"
           :ref="(el) => (targetRef.area_2 = el as HTMLDivElement)"
         />
       </Resizable>
@@ -77,7 +77,7 @@
         :ref="(el) => (resizableRef.area_3 = el as  InstanceType<typeof Resizable>)"
       >
         <div
-          class="w-full h-full"
+          class="fit"
           :ref="(el) => (targetRef.area_3 = el as HTMLDivElement)"
         />
       </Resizable>

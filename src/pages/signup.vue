@@ -20,7 +20,7 @@ meta:
       </q-toolbar>
     </q-header>
 
-    <main class="w-full h-full">
+    <main class="fit">
       <q-form @submit="signUp">
         <q-card flat class="w-full max-w-280px mx-auto mx-5 py-20 transparent">
           <q-card-section>
@@ -142,18 +142,20 @@ const rules = {
     (v: string) => {
       if (!v.trim().length) return true
 
-      return api
-        .post("/auth/check_email", {
-          email: v,
-        })
-        .then(() => true)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .catch((err: AxiosError<any>) => {
-          return (
-            err?.response?.data?.errors?.email?.[0] ??
-            err?.response?.data?.message
-          )
-        })
+      return (
+        api
+          .post("/auth/check_email", {
+            email: v,
+          })
+          .then(() => true)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .catch((err: AxiosError<any>) => {
+            return (
+              err?.response?.data?.errors?.email?.[0] ??
+              err?.response?.data?.message
+            )
+          })
+      )
     },
   ],
   password: [
@@ -170,15 +172,17 @@ const rules = {
     (v: string) => {
       if (!v.trim().length) return true
 
-      return api
-        .post("/auth/check_username", {
-          username: v,
-        })
-        .then(() => true)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .catch((err: AxiosError<any>) => {
-          return err?.response?.data?.message
-        })
+      return (
+        api
+          .post("/auth/check_username", {
+            username: v,
+          })
+          .then(() => true)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .catch((err: AxiosError<any>) => {
+            return err?.response?.data?.message
+          })
+      )
     },
   ],
 }
