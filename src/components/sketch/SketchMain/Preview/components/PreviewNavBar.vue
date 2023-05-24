@@ -64,7 +64,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (name: "update:src", value: string): void
-  (name: "click:back" | "click:forward" | "click:reload" | 'click:hard-reload'): void
+  (name: "click:back" | "click:forward" | "click:reload" | "click:hard-reload"): void
 }>()
 
 function exteralLink() {
