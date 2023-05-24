@@ -29,6 +29,18 @@
       />
     </q-btn>
 
+    <q-btn
+      round
+      dense
+      class="!px-1 !py-1 min-w-0 min-h-0"
+      @click="emit('click:hard-reload')"
+    >
+      <Icon
+        icon="mdi:reload-alert"
+        class="icon"
+      />
+    </q-btn>
+
     <input
       :value="src"
       @input="emit('update:src', ($event.target as HTMLInputElement).value)"
@@ -52,7 +64,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (name: "update:src", value: string): void
-  (name: "click:back" | "click:forward" | "click:reload"): void
+  (name: "click:back" | "click:forward" | "click:reload" | 'click:hard-reload'): void
 }>()
 
 function exteralLink() {

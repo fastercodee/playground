@@ -6,6 +6,7 @@
       @click:reload="iframeReload"
       @click:back="iframeBack"
       @click:forward="iframeForward"
+      @click:hard-reload="iframeHardReload"
     />
     <template v-if="comLoaded">
       <iframe
@@ -114,6 +115,16 @@ function iframeForward() {
   if (!port1) return
 
   ping<ComPreviewVue>(port1, "forward")
+}
+function iframeHardReload() {
+  if (!iframeRef.value) return
+
+  iframeLoading.value = true
+  comLoaded.value = false
+
+  const { src } = iframeRef.value
+  iframeRef.value.src = ""
+  iframeRef.value.src = src
 }
 
 function setup() {
