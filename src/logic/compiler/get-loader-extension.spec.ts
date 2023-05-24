@@ -16,6 +16,13 @@ describe("get-loader-extension", () => {
   })
 
   test("should get loader by extension custom two dot", () => {
-    expect(getLoaderByExtension(".css", new URLSearchParams(), "/style.module.css")).toBe("css-module")
+    expect(
+      getLoaderByExtension(".css", new URLSearchParams(), "/style.module.css")
+    ).toBe("css-module")
+  })
+
+  test("should get loader sass", () => {
+    expect(getLoaderByExtension(".scss", new URLSearchParams())).toBe("sass")
+    expect(getLoaderByExtension(".sass", new URLSearchParams())).toBe("sass")
   })
 })

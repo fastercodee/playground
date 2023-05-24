@@ -92,6 +92,19 @@ function plugin(contents: ArrayBuffer, currentPath: string): Plugin {
             loader: "js",
           }
         }
+        if (importAs === "sass") {
+          const result = await import("./plugins/sass").then(
+            ({ compileSass }) =>
+              compileSass("", uint8ToUTF8(new Uint8Array(contents)))
+          )
+
+          return {
+            contents: `(() => {const style = document.createElement('style'); style.innerHTML = ${JSON.stringify(
+              result.css
+            )}; document.head.appendChild(style)})();\n`,
+            loader: "js",
+          }
+        }
 
         return {
           contents: new Uint8Array(contents),
@@ -121,6 +134,8 @@ export const allowCompile = [
   "mtsx",
   "vue",
   "svelte",
+  "scss",
+  "sass",
 ]
 export const allowEndFile = ["module.css"]
 // eslint-disable-next-line functional/no-let

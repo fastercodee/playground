@@ -311,10 +311,36 @@ const count = ref(0)
     )
 
     expect(code).include(
-      "\".__App_1a3a6a4b{color:red}.__header_75c41e03{font-size:22px;color:black}.__a_8daa19aa{color:blue;font-weight:500}\";"
+      '".__App_1a3a6a4b{color:red}.__header_75c41e03{font-size:22px;color:black}.__a_8daa19aa{color:blue;font-weight:500}";'
     )
     expect(code).include(
-      " { \"App\": \"__App_1a3a6a4b\", \"header\": \"__header_75c41e03\", \"a\": \"__a_8daa19aa\" };"
+      ' { "App": "__App_1a3a6a4b", "header": "__header_75c41e03", "a": "__a_8daa19aa" };'
     )
+  })
+
+  test("should compile file sass", async () => {
+    const code = uint8ToUTF8(
+      new Uint8Array(
+        await compilerFile(
+          utf8ToUint8(`
+.App {
+  color: red;
+
+  .header {
+    font-size: 22px;
+    color: black
+  }
+
+}
+          `),
+          "/style.scss",
+          ".scss",
+          new URLSearchParams(),
+          sketchStore
+        )
+      )
+    )
+
+    console.log(css)
   })
 })

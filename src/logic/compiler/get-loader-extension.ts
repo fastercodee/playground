@@ -1,10 +1,11 @@
 import { Loader } from "esbuild-wasm"
 
-export type LoaderCustom = Loader | "url" | "css-module"
+export type LoaderCustom = Loader | "url" | "css-module" | "sass"
 
 const regLoader: Record<string, LoaderCustom> = {
   "\\.svg|png|jpe?g|gie?f|webp": "url",
-  "\\.module\\.css": "css-module"
+  "\\.module\\.css": "css-module",
+  "\\.sc|ass": "sass",
 }
 const baseLoader = [
   ...new Set<LoaderCustom>([
@@ -29,7 +30,7 @@ const baseLoader = [
 export function getLoaderByExtension(
   ext: string,
   searchParams: URLSearchParams,
-  pathname: string = ext,
+  pathname: string = ext
 ): LoaderCustom | undefined {
   const loaderByQuery = baseLoader.find((item) => searchParams.has(item))
 
@@ -57,7 +58,7 @@ export function getLoaderByExtension(
   }
 
   for (const regLoaderKey in regLoader) {
-    if (pathname.match(regLoaderKey)) return regLoader[regLoaderKey]
+    if (pathname.match(regLoaderKey + "$")) return regLoader[regLoaderKey]
   }
 
   return baseLoader.includes(ext.slice(1) as LoaderCustom)
