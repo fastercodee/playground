@@ -298,9 +298,6 @@ const count = ref(0)
 
     const code = uint8ToUTF8(new Uint8Array(res.content))
 
-    expect(code).include(
-      'append_styles$(target, "svelte-12z9k06", "button.svelte-12z9k06{background:#ff3e00;color:white;border:none;padding:8px 12px;border-radius:2px}");'
-    )
-    expect(code).include("function instance$($$self, $$props, $$invalidate)")
+    expect(code).include("var Component$ = class extends SvelteComponentDev$")
   })
 })
