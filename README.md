@@ -17,7 +17,7 @@ A fcanvas playground code
 
 ## Upcoming
 - [x] support solidjs
-- [ ] svelte
+- [x] svelte
 - [ ] SFC CSS module
 - [ ] SASS
 - [ ] add tester similar to vitest

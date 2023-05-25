@@ -86,7 +86,7 @@ describe("compiler-file", async () => {
           )
         )
       )
-    ).include('import Counter from "/Counter.vue?import=.vue";')
+    ).include('import Counter from "/Counter.vue?import=vue";')
   })
 
   test("should compile file ?url", async () => {
@@ -280,7 +280,7 @@ const count = ref(0)
 
     expect(code).include('"hello"')
     expect(code).include('__file = "main.vue"')
-    expect(code).include('import Counter from "/Counter.vue?import=.vue";')
+    expect(code).include('import Counter from "/Counter.vue?import=vue";')
   })
 
   test("should compile file css module", async () => {
@@ -311,10 +311,50 @@ const count = ref(0)
     )
 
     expect(code).include(
-      "\".__App_1a3a6a4b{color:red}.__header_75c41e03{font-size:22px;color:black}.__a_8daa19aa{color:blue;font-weight:500}\";"
+      '".__App_1a3a6a4b{color:red}.__header_75c41e03{font-size:22px;color:black}.__a_8daa19aa{color:blue;font-weight:500}";'
     )
     expect(code).include(
-      " { \"App\": \"__App_1a3a6a4b\", \"header\": \"__header_75c41e03\", \"a\": \"__a_8daa19aa\" };"
+      ' { "App": "__App_1a3a6a4b", "header": "__header_75c41e03", "a": "__a_8daa19aa" };'
     )
+  })
+
+  test("should compile svelte", async () => {
+    const code = uint8ToUTF8(
+      new Uint8Array(
+        await compilerFile(
+          utf8ToUint8(`
+    <script>
+      let count = 0;
+
+      function handleClick() {
+        count += 1;
+      }
+    </script>
+
+      <style>
+        button {
+          background: #ff3e00;
+          color: white;
+          border: none;
+          padding: 8px 12px;
+          border-radius: 2px;
+        }
+      </style>
+
+      <button on:click={handleClick}>
+        Clicked {count} {count === 1 ? 'time' : 'times'}
+      </button>`),
+          "/App.svelte",
+          ".svelte",
+          new URLSearchParams(),
+          sketchStore
+        )
+      )
+    )
+
+    expect(code).include(
+      'append_styles$(target, "svelte-12z9k06", "button.svelte-12z9k06{background:#ff3e00;color:white;border:none;padding:8px 12px;border-radius:2px}");'
+    )
+    expect(code).include("function instance$($$self, $$props, $$invalidate)")
   })
 })

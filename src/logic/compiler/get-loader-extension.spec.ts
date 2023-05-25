@@ -18,4 +18,12 @@ describe("get-loader-extension", () => {
   test("should get loader by extension custom two dot", () => {
     expect(getLoaderByExtension(".css", new URLSearchParams(), "/style.module.css")).toBe("css-module")
   })
+
+  test("should get loader svelte", () => {
+    expect(getLoaderByExtension(".svelte", new URLSearchParams())).toBe("svelte")
+  })
+
+  test("should get loader vue", () => {
+    expect(getLoaderByExtension(".vue", new URLSearchParams())).toBe("vue")
+  })
 })

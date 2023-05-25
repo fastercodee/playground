@@ -1,10 +1,12 @@
 import { Loader } from "esbuild-wasm"
 
-export type LoaderCustom = Loader | "url" | "css-module"
+export type LoaderCustom = Loader | "url" | "css-module" | "svelte" | "vue"
 
 const regLoader: Record<string, LoaderCustom> = {
   "\\.svg|png|jpe?g|gie?f|webp": "url",
-  "\\.module\\.css": "css-module"
+  "\\.module\\.css": "css-module",
+  "\\.svelte": "svelte",
+  "\\.vue": "vue"
 }
 const baseLoader = [
   ...new Set<LoaderCustom>([

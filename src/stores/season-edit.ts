@@ -3,8 +3,6 @@ import { basename, dirname, extname } from "path"
 import { autocompletion, closeBrackets } from "@codemirror/autocomplete"
 import { history as exHistory } from "@codemirror/commands"
 import { esLint } from "@codemirror/lang-javascript"
-import { jsonParseLinter } from "@codemirror/lang-json"
-import { vue } from "@codemirror/lang-vue"
 import {
   bracketMatching,
   defaultHighlightStyle,
@@ -73,7 +71,7 @@ async function loadLinter(name: string, config: Record<string, unknown>) {
       return linter(esLint(new eslint.Linter(), config))
     }
     case "json": {
-      return linter(jsonParseLinter())
+      return linter((await import("@codemirror/lang-json")).jsonParseLinter())
     }
     default:
       return linter(() => [])
@@ -278,7 +276,22 @@ export const useSeasonEdit = defineStore("season-edit", () => {
     if (ext === "vue") {
       editor.value?.dispatch({
         effects: [
-          language.reconfigure(vue()),
+          language.reconfigure(
+            (await import("@codemirror/lang-vue").then((res) => res.vue))()
+          ),
+          linter.reconfigure(extensionNOOP),
+        ],
+      })
+    } else if (ext === "svelte") {
+      editor.value?.dispatch({
+        effects: [
+          language.reconfigure(
+            (
+              await import("@replit/codemirror-lang-svelte").then(
+                (res) => res.svelte
+              )
+            )()
+          ),
           linter.reconfigure(extensionNOOP),
         ],
       })

@@ -64,7 +64,7 @@ function plugin(
 
         const resolveByImport = resolverImport(url, importAs)
         if (resolveByImport) return resolveByImport
-        if (importAs === ".vue") {
+        if (importAs === "vue") {
           const result = await import("./plugins/vue").then(({ compileVue }) =>
             compileVue(
               basename(url.pathname),
@@ -95,6 +95,17 @@ function plugin(
               )}; document.head.appendChild(style)})();\n` + result.js,
             loader: "js",
           }
+        }
+        if (importAs === "svelte") {
+          const result = await import("./plugins/svelte").then(
+            ({ compileSvelte }) =>
+              compileSvelte(
+                basename(url.pathname),
+                uint8ToUTF8(new Uint8Array(contents))
+              )
+          )
+
+          return { contents: result.js, loader: "js" }
         }
 
         return {

@@ -263,4 +263,44 @@ const count = ref(0)
       ' { "App": "__App_1a3a6a4b", "header": "__header_75c41e03", "a": "__a_8daa19aa" };'
     )
   })
+
+  test("should request /App.svelte?import=svelte", async () => {
+    await writeFile(
+      "App.svelte",
+      ` <script>
+      let count = 0;
+
+      function handleClick() {
+        count += 1;
+      }
+    </script>
+
+      <style>
+        button {
+          background: #ff3e00;
+          color: white;
+          border: none;
+          padding: 8px 12px;
+          border-radius: 2px;
+        }
+      </style>
+
+      <button on:click={handleClick}>
+        Clicked {count} {count === 1 ? 'time' : 'times'}
+      </button>`
+    )
+
+    const res = await respondWith(
+      rootのsketch,
+      sketchStore,
+      new URL("http://localhost/App.svelte?import=svelte")
+    )
+
+    const code = uint8ToUTF8(new Uint8Array(res.content))
+
+    expect(code).include(
+      'append_styles$(target, "svelte-12z9k06", "button.svelte-12z9k06{background:#ff3e00;color:white;border:none;padding:8px 12px;border-radius:2px}");'
+    )
+    expect(code).include("function instance$($$self, $$props, $$invalidate)")
+  })
 })
