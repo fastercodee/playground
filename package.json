@@ -14,7 +14,7 @@
     "test:watch": "vitest",
     "dev": "quasar dev",
     "typing": "npx vue-tsc",
-    "build": "quasar build",
+    "build": "pnpm build:starters && quasar build",
     "build:starters": "tsx src/starters/build-template.ts",
     "ci": "pnpm format && pnpm lint --fix && pnpm typing"
   },
