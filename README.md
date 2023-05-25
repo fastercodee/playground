@@ -16,7 +16,10 @@ A fcanvas playground code
 [![Try build](https://github.com/fcanvas/playground/actions/workflows/try-build.yml/badge.svg)](https://github.com/fcanvas/playground/actions/workflows/try-build.yml)
 
 ## Upcoming
-- [ ] support solidjs, svelte
+- [x] support solidjs
+- [ ] svelte
+- [ ] SFC CSS module
+- [ ] SASS
 - [ ] add tester similar to vitest
 - [ ] add settings
 - [ ] add check sketches
