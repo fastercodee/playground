@@ -48,6 +48,9 @@ Preact + TypeScript
 Solid + TypeScript
 ![image](https://github.com/fcanvas/playground/assets/45375496/5aff163c-eb70-4831-bac7-17ebc981a69c)
 
+Svelte + TypeScript
+![image](https://github.com/fcanvas/playground/assets/45375496/1bff1661-af74-4ab9-a719-205897eee59f)
+
 ## Install the dependencies
 
 ```bash
