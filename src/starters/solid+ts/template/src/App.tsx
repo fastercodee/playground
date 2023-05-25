@@ -4,7 +4,7 @@ import logo from "./logo.svg"
 
 import h from "solid-js/h"
 
-import "./App.module.css"
+import styles from "./App.module.css"
 
 const App: Component = () => {
   return (

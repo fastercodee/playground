@@ -152,6 +152,7 @@ export async function compilerFile(
     plugins: [plugin(content, pathname + (search ? `?${search}` : ""))],
     define: {
       global: "window",
+      "import.meta.env.DEV": JSON.stringify(true)
     },
     jsxDev: true,
     jsx: jsxConfig?.jsx ?? "automatic",
