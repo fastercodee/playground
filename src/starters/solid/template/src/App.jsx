@@ -1,5 +1,4 @@
 import logo from './logo.svg';
-import h from "solid-js/h";
 
 import styles from './App.module.css';
 

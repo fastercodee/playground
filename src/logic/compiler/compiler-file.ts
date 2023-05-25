@@ -18,7 +18,11 @@ export function getImportAs(url: URL): LoaderCustom | `.${string}` | null {
 }
 export const rExecTS = /\.(?:m|c)?j|tsx?$/
 
-function plugin(contents: ArrayBuffer, currentPath: string): Plugin {
+function plugin(
+  contents: ArrayBuffer,
+  currentPath: string,
+  isSolid: boolean
+): Plugin {
   return {
     name: "plugin-resolve",
     setup(build) {
@@ -94,7 +98,14 @@ function plugin(contents: ArrayBuffer, currentPath: string): Plugin {
         }
 
         return {
-          contents: new Uint8Array(contents),
+          contents: new Uint8Array(
+            isSolid
+              ? concatArrayBuffer(
+                  utf8ToUint8('import h from "solid-js/h";'),
+                  contents
+                )
+              : contents
+          ),
           loader: getLoaderByExtension(
             extname(url.pathname),
             url.searchParams
@@ -144,15 +155,18 @@ export async function compilerFile(
   const jsxConfig =
     (await sketchStore.getJSXConfig()) ??
     (await getDataAsync(sketchStore.packageのFile)).tsconfig?.compilerOptions
+  const isSolid = jsxConfig?.jsxImportSource === "solid-js"
 
   const result = await build({
     entryPoints: [pathname + (search ? `?${search}` : "")],
     bundle: true,
     write: false,
-    plugins: [plugin(content, pathname + (search ? `?${search}` : ""))],
+    plugins: [
+      plugin(content, pathname + (search ? `?${search}` : ""), isSolid),
+    ],
     define: {
       global: "window",
-      "import.meta.env.DEV": JSON.stringify(true)
+      "import.meta.env.DEV": JSON.stringify(true),
     },
     jsxDev: true,
     jsx: jsxConfig?.jsx ?? "automatic",
