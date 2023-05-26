@@ -62,6 +62,14 @@ export const useSettingsStore = defineStore("settings", () => {
     }
   }
 
+  const fileIconTheme = ref(FILE_ICON_THEMES[1])
+
+  const getIcon = computedAsync(() => {
+    return import(`src/assets/${fileIconTheme}/dist/getIcon.ts`).then(
+      (res) => res.default
+    )
+  })
+
   return {
     mode,
     countAreaActive,
@@ -69,5 +77,8 @@ export const useSettingsStore = defineStore("settings", () => {
     getMapTargetDefault,
     areaActive,
     isModeDisabled,
+
+    fileIconTheme,
+    getIcon,
   }
 })

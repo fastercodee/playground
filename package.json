@@ -90,7 +90,8 @@
     "vue-console-feed": "^0.0.28",
     "vue-re-resizable": "6.9.19-beta.5",
     "vue-request": "2.0.0-rc.4",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "path": "npm:path-cross"
   },
   "devDependencies": {
     "@babel/runtime": "^7.21.0",

@@ -41,7 +41,7 @@
             :to="`/local/${dir.dirname}`"
           >
             <q-item-section avatar class="min-w-0 pr-1">
-              <img
+              <IconAssets
                 :src="
                   getIcon({
                     light: false,
@@ -140,7 +140,7 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-icon-theme/dist/getIcon"
+import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import { Entry } from "src/logic/read-details"
 import { getListTemplates, loadFiles } from "src/starters"
 import { Sketch } from "src/types/api/Models/Sketch"

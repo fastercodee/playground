@@ -22,7 +22,7 @@
         :key="entry.fullPath"
         @click="seasonEditStore.openFile(entry)"
       >
-        <img
+        <IconAssets
           :src="
             getIcon({
               light: false,
@@ -56,7 +56,7 @@
 import { basename, dirname } from "path"
 
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-icon-theme/dist/getIcon"
+import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import { useSeasonEdit } from "src/stores/season-edit"
 import type { Entry } from "src/types/Entry"
 

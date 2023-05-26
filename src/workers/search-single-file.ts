@@ -9,6 +9,7 @@ import {
 import { FilesystemWeb } from "@tachibana-shin/capacitor-filesystem/dist/esm/web"
 import { isBinaryFile } from "arraybuffer-isbinary"
 import { isNative } from "src/constants"
+import { base64ToUint8 } from "src/logic/base64-buffer"
 import type { Match, SearchOptions } from "src/logic/search-text"
 import { searchText } from "src/logic/search-text"
 import { uint8ToUTF8 } from "src/logic/text-buffer"

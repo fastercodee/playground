@@ -8,7 +8,7 @@
         :icon="`codicon:chevron-${opening ? 'down' : 'right'}`"
         class="size-17px mr-2px"
       />
-      <img
+      <IconAssets
         :src="
           getIcon({
             light: false,
@@ -73,7 +73,7 @@
 import { basename, dirname, relative } from "path"
 
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-icon-theme/dist/getIcon"
+import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import type { Entry } from "src/logic/read-details"
 import { StatusChange } from "src/stores/sketch"
 

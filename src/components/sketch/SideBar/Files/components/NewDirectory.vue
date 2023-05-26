@@ -6,7 +6,7 @@
         :icon="`codicon:chevron-right`"
         class="size-17px mr-2px"
       />
-      <img
+      <IconAssets
         :src="
           getIcon({
             light: false,
@@ -32,7 +32,7 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-icon-theme/dist/getIcon"
+import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import type { Entry } from "src/types/Entry"
 
 defineProps<{

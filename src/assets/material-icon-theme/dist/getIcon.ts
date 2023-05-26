@@ -10,11 +10,15 @@ export interface Options {
   readonly language?: keyof (typeof MaterialIcons)["languageIds"]
 }
 
-function getIconById(id: keyof typeof MaterialIcons.iconDefinitions): string {
-  return (
-    "/src/assets/material-icon-theme/" +
-    MaterialIcons.iconDefinitions[id].iconPath
-  )
+const icons = import.meta.glob("../icons/*.svg", { as: "url" })
+
+async function getIconById(
+  id: keyof typeof MaterialIcons.iconDefinitions
+): Promise<string> {
+  return icons["../" + MaterialIcons.iconDefinitions[id].iconPath]().then(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (res) => (res as any).default
+  ) as Promise<string>
 }
 
 function getIconDefinitions({
@@ -108,7 +112,7 @@ function getIconDefinitions({
   }
 }
 
-export default function getIcon(options: Options): string {
+export default function getIcon(options: Options): Promise<string> {
   const icon = getIconDefinitions(options)
 
   if (icon in MaterialIcons.iconDefinitions)
