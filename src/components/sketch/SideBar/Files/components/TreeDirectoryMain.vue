@@ -28,7 +28,7 @@
       :sib-directories="sibDirectories"
       :sib-files="sibFiles"
       @save="
-        ($event) => {
+        ($event: string) => {
           changeName($event)
           nameInput = ''
         }

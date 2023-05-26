@@ -32,7 +32,7 @@
             )
           "
           @click:close-item="
-            (full, isDir) => emit('click:close-item', full, isDir)
+            (full: string, isDir: boolean) => emit('click:close-item', full, isDir)
           "
         />
       </template>
@@ -51,7 +51,7 @@
           }"
           @click:close-match="emit('click:close-match', fullPath, $event)"
           @click:replace-match="
-            (fullPath, match) => replaceMatch(fullPath, match, replace)
+            (fullPath: string, match: Match) => replaceMatch(fullPath, match, replace)
           "
           @click:close="emit('click:close-item', fullPath, false)"
           @click:replace="
