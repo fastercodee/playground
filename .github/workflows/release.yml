@@ -27,7 +27,7 @@ jobs:
           run_install: false
 
       - name: Install depends
-        run: npm i  --legacy-peer-deps && pnpm build:starters && cd preview && npm i  --legacy-peer-deps && cd ..
+        run: pnpm run setup
 
       - name: Test
         run: pnpm test

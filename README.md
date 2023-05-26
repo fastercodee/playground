@@ -22,7 +22,7 @@ Online playground for write and play JavaScript, TypeScript, Vue, React, Lit, So
 - [x] jvascript module
 - [x] typescript module
 - [x] jsx, tsx, vue sfc
-- [x] import NPM package 
+- [x] import NPM package
 - [x] support solidjs
 - [x] svelte
 - [ ] SFC CSS module
@@ -61,7 +61,7 @@ Svelte + TypeScript
 ## Install the dependencies
 
 ```bash
-pnpm setup
+pnpm run setup
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
