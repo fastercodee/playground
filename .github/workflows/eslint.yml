@@ -11,12 +11,12 @@ name: ESLint
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
-    - cron: '15 10 * * 5'
+    - cron: "15 10 * * 5"
 
 jobs:
   eslint:
@@ -43,7 +43,7 @@ jobs:
           run_install: false
 
       - name: Install depends
-        run: pnpm setup
+        run: pnpm run setup
 
       - name: Run ESLint
         run: pnpm lint #--fix
