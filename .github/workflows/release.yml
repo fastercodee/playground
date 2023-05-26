@@ -27,11 +27,11 @@ jobs:
           run_install: false
 
       - name: Install depends
-        run: pnpm run setup
+        run: npm i && pnpm build:starters && cd preview && npm i && cd ..
 
       - name: Test
-        run: pnpm  test
-        
+        run: pnpm test
+
       - name: Typing
         run: pnpm typing
 
