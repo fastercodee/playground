@@ -152,7 +152,6 @@ const templates = computedAsync(() => getListTemplates())
 
 const searchSketch = ref("")
 
-const appUrl = APP_URL
 const decevier = computedAsync(
   async () => {
     const entryRoot: Entry<"directory"> = createFakeDirectory("")

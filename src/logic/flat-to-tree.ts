@@ -1,6 +1,5 @@
 import { normalize, relative } from "path"
 
-
 export interface TreeFile<T> {
   fullPath: string
   matches: T

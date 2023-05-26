@@ -82,7 +82,7 @@ const props = defineProps<{
   actions?: typeof contextmenu
 
   sibDirectories: Record<string, Entry<"directory">>
-  sibFiles:Record<string,  Entry<"file">>
+  sibFiles: Record<string, Entry<"file">>
 }>()
 const emit = defineEmits<{
   (name: "renamed", newName: string): void

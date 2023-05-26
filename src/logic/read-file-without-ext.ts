@@ -23,7 +23,7 @@ export async function readFileWithoutExt(
               path: `${path}.${exts[i]}`,
               directory: Directory.External,
             }).then((res) => base64ToUint8(res.data).buffer),
-            ext: '.' + exts[i]as `.${string}`,
+            ext: ("." + exts[i]) as `.${string}`,
             path: `${path}.${exts[i]}`,
           }
         } catch (err) {

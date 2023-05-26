@@ -1,31 +1,31 @@
 export function parseGitIgnore(gitignore: string): string[] {
-  const lines = gitignore.split("\n");
-  const excludes = [];
+  const lines = gitignore.split("\n")
+  const excludes = []
 
   for (const line of lines) {
-    const trimmed = line.trim();
+    const trimmed = line.trim()
 
     if (trimmed === "" || trimmed.startsWith("#")) {
-      continue;
+      continue
     }
 
     // eslint-disable-next-line functional/no-let
-    let exclude = trimmed;
+    let exclude = trimmed
 
     if (exclude.startsWith("/")) {
-      exclude = exclude.slice(1);
+      exclude = exclude.slice(1)
     }
 
     if (exclude.endsWith("/")) {
-      exclude = `${exclude}*`;
+      exclude = `${exclude}*`
     }
 
     if (exclude.includes("/")) {
-      exclude = `${exclude}/**`;
+      exclude = `${exclude}/**`
     }
 
-    excludes.push(exclude);
+    excludes.push(exclude)
   }
 
-  return excludes;
-};
+  return excludes
+}

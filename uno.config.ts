@@ -13,10 +13,7 @@ export default defineConfig({
     presetOnu(),
   ],
   rules: [
-    [
-      /^size-\[([^[\]]+)\]/,
-      ([, value]) => ({ width: value, height: value }),
-    ],
+    [/^size-\[([^[\]]+)\]/, ([, value]) => ({ width: value, height: value })],
   ],
   transformers: [transformerDirectives()],
 })

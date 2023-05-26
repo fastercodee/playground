@@ -6,7 +6,7 @@ const regLoader: Record<string, LoaderCustom> = {
   "\\.svg|png|jpe?g|gie?f|webp": "url",
   "\\.module\\.css": "css-module",
   "\\.svelte": "svelte",
-  "\\.vue": "vue"
+  "\\.vue": "vue",
 }
 const baseLoader = [
   ...new Set<LoaderCustom>([
@@ -31,7 +31,7 @@ const baseLoader = [
 export function getLoaderByExtension(
   ext: string,
   searchParams: URLSearchParams,
-  pathname: string = ext,
+  pathname: string = ext
 ): LoaderCustom | undefined {
   const loaderByQuery = baseLoader.find((item) => searchParams.has(item))
 

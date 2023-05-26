@@ -8,7 +8,11 @@
     "noEmitOnError": false,
     /* end */
     "baseUrl": "./",
-    "types": ["vitest/globals", "vite-plugin-pages/client", "vite-plugin-vue-layouts/client"],
+    "types": [
+      "vitest/globals",
+      "vite-plugin-pages/client",
+      "vite-plugin-vue-layouts/client"
+    ],
     "esModuleInterop": true,
     "lib": ["esnext", "DOM"]
   },
@@ -16,6 +20,6 @@
     "preview/public/src_sw.ts",
     "preview/public/src_sw.ts.js",
     "**/*.mjs",
-    "preview/src/sw.ts"
+    "src/starters/**/*"
   ]
 }

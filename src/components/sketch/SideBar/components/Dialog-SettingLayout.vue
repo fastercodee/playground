@@ -118,7 +118,6 @@
 
 <script lang="ts" setup>
 import {
-  Area,
   AreaComponent,
   AreaComponentSize,
   Mode,

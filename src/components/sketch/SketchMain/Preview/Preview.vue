@@ -25,7 +25,7 @@
   <Teleport to="body">
     <iframe
       v-if="sketchStore.rootのsketch"
-      :src="`${srcIFrame}/pw-com.html`"
+      :src="`${srcIFrame}/__pw-com.html`"
       ref="iframeRef"
       @load="onLoad"
       class="hidden"

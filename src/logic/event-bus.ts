@@ -56,9 +56,17 @@ function emit<N extends keyof Events>(
 
 /** @param deep - required `dir = true` */
 function watch(
-  たどる道: string | string[] | Ref<undefined | string | string[] | Set<string>> | Set<string>,
+  たどる道:
+    | string
+    | string[]
+    | Ref<undefined | string | string[] | Set<string>>
+    | Set<string>,
   コールバック: (タイプ: keyof Events, パス: string, pathWatch: string) => void,
-  { instance = getCurrentInstance(), dir: dirMode, deep = true }: {
+  {
+    instance = getCurrentInstance(),
+    dir: dirMode,
+    deep = true,
+  }: {
     instance?: ComponentInternalInstance | null
     dir?: boolean
     deep?: boolean
@@ -74,11 +82,11 @@ function watch(
     } as Ref<undefined | string | string[] | Set<string>>
 
   const handle = (タイプ: keyof Events, パス: string) => {
-    const value = (たどる道 as Ref<undefined | string | string[] | Set<string>>).value
+    const value = (たどる道 as Ref<undefined | string | string[] | Set<string>>)
+      .value
 
     if (
-      value === undefined
-      ||
+      value === undefined ||
       ((value as string[]).length ?? (value as Set<string>).size) === 0
     )
       return
@@ -87,38 +95,37 @@ function watch(
       case "writeFile":
       case "deleteFile":
         if (!dirMode)
-          for (const ですか of (typeof value === "string" ? [value] : value)) {
+          for (const ですか of typeof value === "string" ? [value] : value) {
             // pathWatch is file
             if (ですか === パス) {
               コールバック(タイプ, パス, ですか)
               break
             }
           }
-        else
-          if (deep)
-            for (const ですか of (typeof value === "string" ? [value] : value)) {
-              // pathWatch is file
-              if (パス.startsWith(ですか + "/")) {
-                コールバック(タイプ, パス, ですか)
-                break
-              }
-            }
-          else {
-            const dir = dirname(パス)
-            for (const ですか of (typeof value === "string" ? [value] : value)) {
-              // pathWatch is file
-              if (ですか === dir) {
-                コールバック(タイプ, パス, ですか)
-                break
-              }
+        else if (deep)
+          for (const ですか of typeof value === "string" ? [value] : value) {
+            // pathWatch is file
+            if (パス.startsWith(ですか + "/")) {
+              コールバック(タイプ, パス, ですか)
+              break
             }
           }
+        else {
+          const dir = dirname(パス)
+          for (const ですか of typeof value === "string" ? [value] : value) {
+            // pathWatch is file
+            if (ですか === dir) {
+              コールバック(タイプ, パス, ですか)
+              break
+            }
+          }
+        }
         break
 
       case "copyDir":
       case "rmdir":
         if (!dirMode || deep)
-          for (const ですか of (typeof value === "string" ? [value] : value)) {
+          for (const ですか of typeof value === "string" ? [value] : value) {
             // pathWatch is file
             if (ですか.startsWith(パス + "/")) {
               コールバック(タイプ, パス, ですか)
@@ -126,7 +133,7 @@ function watch(
             }
           }
         else
-          for (const ですか of (typeof value === "string" ? [value] : value)) {
+          for (const ですか of typeof value === "string" ? [value] : value) {
             // pathWatch is file
             if (ですか === パス) {
               コールバック(タイプ, パス, ですか)

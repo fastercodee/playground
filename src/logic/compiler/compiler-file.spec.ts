@@ -351,7 +351,7 @@ const count = ref(0)
         )
       )
     )
-    
+
     expect(code).include("var Component$ = class extends SvelteComponentDev$")
   })
 })

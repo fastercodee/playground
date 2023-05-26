@@ -8,19 +8,19 @@ export interface Control<Body extends object, Response extends object> {
 
 type MetaAndFiles<Require extends boolean = boolean> = Require extends true
   ? {
-    meta: string[]
-    files: File[]
-  }
+      meta: string[]
+      files: File[]
+    }
   : // eslint-disable-next-line @typescript-eslint/ban-types
-  {}
+    {}
 
 type MetaAndHashes<Require extends boolean = boolean> = Require extends true
   ? {
-    meta: string[]
-    hashes: string[]
-  }
+      meta: string[]
+      hashes: string[]
+    }
   : // eslint-disable-next-line @typescript-eslint/ban-types
-  {}
+    {}
 
 type FilePath = string
 export interface SketchController {
@@ -61,23 +61,23 @@ export interface SketchController {
       {
         uid: number
       } & MetaAndHashes & {
-        deletes?: string[]
-      },
+          deletes?: string[]
+        },
       {
         sketch: Sketch<true, false>
         file_changes: Record<
           FilePath,
           | {
-            type: "M" | "N" | "D"
-            file: File
-          }
+              type: "M" | "N" | "D"
+              file: File
+            }
           | {
-            type: "U+"
-            file: File
-          }
+              type: "U+"
+              file: File
+            }
           | {
-            type: "U"
-          }
+              type: "U"
+            }
         >
       }
     >
@@ -88,8 +88,8 @@ export interface SketchController {
       uid: number
       deletes?: string[]
     } & MetaAndFiles & {
-      files: globalThis.File[]
-    },
+        files: globalThis.File[]
+      },
     {
       sketch: Sketch<true, false>
       files_added: Record<string, { uid: number; hash: string }>
@@ -97,9 +97,9 @@ export interface SketchController {
   >
   update_info: Control<
     {
-      name?: string,
-      description?: string,
-      private?: "0" | "1",
+      name?: string
+      description?: string
+      private?: "0" | "1"
     },
     {
       sketch: Sketch<true, false>
@@ -108,7 +108,7 @@ export interface SketchController {
   fork: Control<
     {
       uid: number
-      name?: string,
+      name?: string
     },
     {
       sketch: Sketch<true, false>

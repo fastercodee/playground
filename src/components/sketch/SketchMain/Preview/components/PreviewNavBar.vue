@@ -35,10 +35,7 @@
       class="!px-1 !py-1 min-w-0 min-h-0"
       @click="emit('click:hard-reload')"
     >
-      <Icon
-        icon="mdi:reload-alert"
-        class="icon"
-      />
+      <Icon icon="mdi:reload-alert" class="icon" />
     </q-btn>
 
     <input
@@ -64,7 +61,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (name: "update:src", value: string): void
-  (name: "click:back" | "click:forward" | "click:reload" | "click:hard-reload"): void
+  (
+    name: "click:back" | "click:forward" | "click:reload" | "click:hard-reload"
+  ): void
 }>()
 
 function exteralLink() {

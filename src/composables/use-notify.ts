@@ -9,6 +9,7 @@ export function useNotify() {
       type: "negative",
       group: false,
       message:
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (err as AxiosError<any> | undefined)?.response?.data?.message ??
         (err as Error | undefined)?.message,
     })

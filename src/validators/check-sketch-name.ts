@@ -2,7 +2,11 @@ import { AxiosError } from "axios"
 import { Sketch } from "src/types/api/Models/Sketch"
 import { Auth } from "vue-auth3"
 
-export async function checkSketchName(value: string, auth: Auth, sketchInfo?: Sketch<true, false> | null) {
+export async function checkSketchName(
+  value: string,
+  auth: Auth,
+  sketchInfo?: Sketch<true, false> | null
+) {
   if (sketchInfo === undefined) return
   if (sketchInfo?.name === name) return true
 
@@ -25,5 +29,4 @@ export async function checkSketchName(value: string, auth: Auth, sketchInfo?: Sk
       (err as AxiosError<any>)?.response?.data?.message
     )
   }
-
 }

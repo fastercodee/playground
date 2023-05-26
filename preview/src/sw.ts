@@ -6,7 +6,7 @@ addEventListener("install", () => {
   self.skipWaiting()
 })
 
-addEventListener("activate", (event) => {
+addEventListener("activate", (event: ExtendableEvent) => {
   event.waitUntil(clients.claim())
 })
 
@@ -23,7 +23,7 @@ export type Communicate = {
 
 const cast = new BroadcastChannel("sw-fetch")
 
-addEventListener("fetch", (event) => {
+addEventListener("fetch", (event: FetchEvent) => {
   const request = event.request
   // eslint-disable-next-line n/no-unsupported-features/node-builtins
   const url = new URL(request.url)
@@ -31,7 +31,7 @@ addEventListener("fetch", (event) => {
   if (
     request.method.toLowerCase() === "get" &&
     url.origin === location.origin &&
-    url.pathname !== "/pw-com.html" &&
+    url.pathname !== "/__pw-com.html" &&
     url.pathname !== "/__pw_inject-console.js" &&
     (!process.env.isDev ||
       (!url.pathname.startsWith("/@vite/") &&

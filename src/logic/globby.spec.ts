@@ -60,7 +60,7 @@ describe("globby", async () => {
     expect(files).toEqual(["globby/src/main.js"])
   })
 
-  test("exclude folder start /",async () => {
+  test("exclude folder start /", async () => {
     const files: string[] = []
 
     for await (const file of await globby("globby/", ["*.js"], ["/src"])) {
@@ -68,10 +68,9 @@ describe("globby", async () => {
     }
 
     expect(files).toEqual(["globby/bar.js", "globby/foo.js"])
-
   })
 
-  test("exclude folder start / end /",async () => {
+  test("exclude folder start / end /", async () => {
     const files: string[] = []
 
     for await (const file of await globby("globby/", ["*.js"], ["/src/"])) {
@@ -79,6 +78,5 @@ describe("globby", async () => {
     }
 
     expect(files).toEqual(["globby/bar.js", "globby/foo.js"])
-
   })
 })

@@ -13,7 +13,7 @@ import type { ComPreviewVue } from "../../src/components/sketch/SketchMain/Previ
 
 const swMain = new BroadcastChannel("sw-main")
 
-listen<ComPreviewVue>(swMain, "reload", () => location.reload())
+listen<ComPreviewVue>(swMain, "reload", () => (location as Location).reload())
 listen<ComPreviewVue>(swMain, "back", () => history.back())
 listen<ComPreviewVue>(swMain, "forward", () => history.forward())
 

@@ -10,39 +10,44 @@ export function useVerifyOAuth2() {
 
   const id_token = computed(() => {
     if (route.query.type === "google") {
-      return route.query.id_token ?? new URLSearchParams(route.hash.slice(1)).get("id_token")
+      return (
+        route.query.id_token ??
+        new URLSearchParams(route.hash.slice(1)).get("id_token")
+      )
     }
-    if (route.query.type === "github")
-      return route.query.code
+    if (route.query.type === "github") return route.query.code
   })
 
   const verifyOAuth2 = computed(() => {
-    if (route.query.oauth2 !== "true") return false;
+    if (route.query.oauth2 !== "true") return false
     if (typeof route.query.type !== "string") return false
 
-    if (!OAuth2_SUPPORTS.includes(route.query.type.toLowerCase())) return false;
+    if (!OAuth2_SUPPORTS.includes(route.query.type.toLowerCase())) return false
 
-    if (!id_token.value) return false;
+    if (!id_token.value) return false
 
-    return true;
+    return true
   })
 
   async function loginWithOauth2(username?: string) {
     const type = route.query.type
 
     try {
-      return await auth.login({
-        url: "/auth/oauth2",
-        data: {
-          type,
-          id_token: id_token.value,
-          username
-        }
-      }).then(res => res.data.user as User)
+      return await auth
+        .login({
+          url: "/auth/oauth2",
+          data: {
+            type,
+            id_token: id_token.value,
+            username,
+          },
+        })
+        .then((res) => res.data.user as User)
     } catch (err) {
       console.log(err)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const code: string | undefined = (err as AxiosError<any> | undefined)?.response?.data?.code
+      const code: string | undefined = (err as AxiosError<any> | undefined)
+        ?.response?.data?.code
       if (code === "username_required") {
         // question scan username
         await router.push({
@@ -50,8 +55,8 @@ export function useVerifyOAuth2() {
           query: {
             type,
             id_token: id_token.value,
-            oauth2: "true"
-          }
+            oauth2: "true",
+          },
         })
         return
       }
@@ -66,6 +71,7 @@ export function useVerifyOAuth2() {
   }
 
   return {
-    verifyOAuth2, loginWithOauth2
+    verifyOAuth2,
+    loginWithOauth2,
   }
 }

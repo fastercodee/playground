@@ -10,9 +10,9 @@ export function checkErrorFileName(
     return skipEmpty
       ? undefined
       : {
-        type: "error",
-        message: "A file or folder name must be provided.",
-      }
+          type: "error",
+          message: "A file or folder name must be provided.",
+        }
   }
 
   if (fileName in sibDirectories || fileName in sibFiles) {

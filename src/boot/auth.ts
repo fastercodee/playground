@@ -33,7 +33,7 @@ export default boot(({ app, router }) => {
       enabled: true, // send a request to `/api/user` if the user information stored in the cookie is not visible
       cache: true, // save user information to localStorage for use
       enabledInBackground: true, // refresh user information in the background
-      waitRefresh: true
+      waitRefresh: true,
     },
     loginData: {
       keyUser: "user",
@@ -60,7 +60,10 @@ export function loginWithGoogle() {
     nonce: "1",
   }
 
-  window.open(oauth2Endpoint + "?" + new URLSearchParams(params).toString(), "_self")
+  window.open(
+    oauth2Endpoint + "?" + new URLSearchParams(params).toString(),
+    "_self"
+  )
 }
 
 export function loginWithGithub() {
@@ -73,12 +76,15 @@ export function loginWithGithub() {
     scope: "read:user user:email",
   }
 
-  window.open(oauth2Endpoint + "?" + new URLSearchParams(params).toString(), "_self")
+  window.open(
+    oauth2Endpoint + "?" + new URLSearchParams(params).toString(),
+    "_self"
+  )
 }
 
 Object.assign(window, {
   loginWithGoogle,
-  loginWithGithub
+  loginWithGithub,
 })
 
 // eslint-disable-next-line camelcase

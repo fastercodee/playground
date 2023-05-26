@@ -1,7 +1,11 @@
 name: TypeScript Checker Declaration
 
 # This action works with pull requests and pushes
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   typing:
@@ -23,11 +27,11 @@ jobs:
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 7.25.1
+          version: 7
           run_install: false
 
       - name: Install depends
-        run: pnpm i --no-frozen-lockfile
+        run: pnpm setup
 
       - name: Typing
-        run: pnpm build && cd preview && pnpm i && cd .. && pnpm typing
+        run: pnpm typing

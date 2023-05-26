@@ -65,19 +65,19 @@ export async function directoryDetails(entry: Entry<"directory">) {
   const files: Record<string, Entry<"file">> = Object.create(null)
   const directories: Record<string, Entry<"directory">> = Object.create(null)
 
-    ; (
-      await Promise.all(
-        (
-          await Filesystem.readdir({
-            path: entry.fullPath,
-            directory: Directory.External,
-          })
-        ).files.map((item) => new Entry(item.type, item.name, entry))
-      )
-    ).forEach((item) => {
-      if (item.type === "file") files[item.name] = (item as Entry<"file">)
-      else directories[item.name] = (item as Entry<"directory">)
-    })
+  ;(
+    await Promise.all(
+      (
+        await Filesystem.readdir({
+          path: entry.fullPath,
+          directory: Directory.External,
+        })
+      ).files.map((item) => new Entry(item.type, item.name, entry))
+    )
+  ).forEach((item) => {
+    if (item.type === "file") files[item.name] = item as Entry<"file">
+    else directories[item.name] = item as Entry<"directory">
+  })
 
   return { files, directories }
 }

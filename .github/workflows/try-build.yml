@@ -1,13 +1,14 @@
+
 name: Try build
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: ["main"]
+    branches: [ "main" ]
   schedule:
-    - cron: "15 10 * * 5"
+    - cron: '15 10 * * 5'
 
 jobs:
   build:
@@ -26,11 +27,20 @@ jobs:
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 7.25.1
+          version: 7
           run_install: false
 
       - name: Install depends
-        run: pnpm i --no-frozen-lockfile
+        run: pnpm setup
 
-      - name: Build
+      - name: Build "main"
+        run: pnpm build
+
+      - name: "cd ./preview"
+        run: cd ./preview
+
+      - name: Install depends
+        run: pnpm i
+
+      - name: "Build "preview"
         run: pnpm build

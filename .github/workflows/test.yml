@@ -16,13 +16,9 @@ jobs:
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 7.25.1
+          version: 7
           run_install: false
-
-      - name: Install depends
-        run: pnpm i --no-frozen-lockfile
-
-      - name: Build & Test
+      - name: Test
         run: |
-          pnpm build
+          pnpm setup
           pnpm test
