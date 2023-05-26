@@ -1,6 +1,6 @@
 # fCanvas Playground (fcanvas-playground)
 
-A fcanvas playground code
+Online playground for write and play JavaScript, TypeScript, Vue, React, Lit, Solid, Svelte
 
 [![GitHub license](https://img.shields.io/github/license/sketch-code-editor/playground)](https://github.com/sketch-code-editor/playground/blob/main/LICENSE) <img alt="GitHub Issues" src="https://img.shields.io/github/issues/sketch-code-editor/playground" />
 ![](https://api.codiga.io/project/36164/score/svg)
@@ -11,12 +11,18 @@ A fcanvas playground code
 [![Test](https://github.com/sketch-code-editor/playground/actions/workflows/test.yml/badge.svg)](https://github.com/sketch-code-editor/playground/actions/workflows/test.yml)
 [![CodeQL](https://github.com/sketch-code-editor/playground/actions/workflows/codeql.yml/badge.svg)](https://github.com/sketch-code-editor/playground/actions/workflows/codeql.yml)
 [![ESLint](https://github.com/sketch-code-editor/playground/actions/workflows/eslint.yml/badge.svg)](https://github.com/sketch-code-editor/playground/actions/workflows/eslint.yml)
-[![Prettier](https://github.com/sketch-code-editor/playground/actions/workflows/prettier.yml/badge.svg)](https://github.com/sketch-code-editor/playground/actions/workflows/pretter.yml)
+[![Prettier](https://github.com/sketch-code-editor/playground/actions/workflows/pretter.yml/badge.svg)](https://github.com/sketch-code-editor/playground/actions/workflows/pretter.yml)
 [![TypeScript Checker Declaration](https://github.com/sketch-code-editor/playground/actions/workflows/typing.yml/badge.svg)](https://github.com/sketch-code-editor/playground/actions/workflows/typing.yml)
 [![Try build](https://github.com/sketch-code-editor/playground/actions/workflows/try-build.yml/badge.svg)](https://github.com/sketch-code-editor/playground/actions/workflows/try-build.yml)
 
+> **Beta**: The app is under development and only core features are implemented
+
 ## Upcoming
 
+- [x] jvascript module
+- [x] typescript module
+- [x] jsx, tsx, vue sfc
+- [x] import NPM package 
 - [x] support solidjs
 - [x] svelte
 - [ ] SFC CSS module
@@ -26,7 +32,7 @@ A fcanvas playground code
 - [ ] add check sketches
 - [ ] add comment sketch
 - [ ] add like sketch
--
+- [ ] share sketch offline
 - [ ] add a compiler/interpreter to run C/C++, Python or Ruby
 - [ ] cache all files?
 
@@ -55,39 +61,29 @@ Svelte + TypeScript
 ## Install the dependencies
 
 ```bash
-yarn
-# or
-npm install
+pnpm setup
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 
 ```bash
-quasar dev
+pnpm dev
 ```
 
 ### Lint the files
 
 ```bash
-yarn lint
-# or
-npm run lint
+pnpm lint
 ```
 
 ### Format the files
 
 ```bash
-yarn format
-# or
-npm run format
+pnpm format
 ```
 
 ### Build the app for production
 
 ```bash
-quasar build
+pnpm build
 ```
-
-### Customize the configuration
-
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
