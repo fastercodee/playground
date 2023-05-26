@@ -1,5 +1,6 @@
 import { OnuResolver } from "onu-ui"
 import AutoImport from "unplugin-auto-import/vite"
+import Components from "unplugin-vue-components/vite"
 import vitePluginArraybuffer from "vite-plugin-arraybuffer"
 import json5 from "vite-plugin-json5"
 import { defineConfig } from "vitest/config"
@@ -55,6 +56,9 @@ export default defineConfig({
         filepath: "./.eslintrc-auto-import.json", // Default `./.eslintrc-auto-import.json`
         globalsPropValue: true, // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
       },
+    }),
+    Components({
+      resolvers: [OnuResolver()],
     }),
   ],
 })
