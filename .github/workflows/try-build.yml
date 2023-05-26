@@ -42,5 +42,5 @@ jobs:
       - name: Install depends
         run: pnpm i
 
-      - name: "Build "preview"
+      - name: Build "preview"
         run: pnpm build

@@ -29,11 +29,12 @@ jobs:
       - name: Install depends
         run: pnpm run setup
 
+      - name: Test
+        run: pnpm  test
+        
       - name: Typing
         run: pnpm typing
 
-      - name: Test
-        run: pnpm  test
   release:
     needs: ci
     runs-on: ubuntu-latest
