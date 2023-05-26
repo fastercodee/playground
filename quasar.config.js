@@ -109,8 +109,8 @@ module.exports = configure(function (/* ctx */) {
       // viteVuePluginOptions: {},
 
       vitePlugins: [
-        ["vite-plugin-pages"],
-        ["vite-plugin-json5"],
+        ["vite-plugin-pages", {}],
+        ["vite-plugin-json5", {}],
         ["vite-plugin-arraybuffer", {}],
         [
           "vite-plugin-vue-layouts",
@@ -120,7 +120,7 @@ module.exports = configure(function (/* ctx */) {
             routeStyle: "nuxt",
           },
         ],
-        ["unocss/vite"],
+        ["unocss/vite", {}],
         [
           "unplugin-auto-import/vite",
           {
