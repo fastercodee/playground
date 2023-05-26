@@ -4,6 +4,7 @@ declare namespace NodeJS {
     VUE_ROUTER_MODE: "hash" | "history" | "abstract" | undefined
     VUE_ROUTER_BASE: string | undefined
     API_URL: string
+    PREVIEW_URL: string
     OAUTH2_GOOGLE_CLIENT_ID: string
     OAUTH2_GITHUB_CLIENT_ID: string
   }

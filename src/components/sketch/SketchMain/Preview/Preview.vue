@@ -53,13 +53,7 @@ const watchFs = new WatcherFs()
 const iframeLoading = ref(true)
 // ====== /status ======
 
-const srcIFrame = ref(
-  process.env.GITPOD_WORKSPACE_URL
-    ? process.env.GITPOD_WORKSPACE_URL.replace("https://", "https://9999-")
-    : process.env.CODESPACE_NAME
-    ? `https://${process.env.CODESPACE_NAME}-9999.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`
-    : "https://preview-fcanvas.github.io"
-)
+const srcIFrame = ref(process.env.PREVIEW_URL)
 
 // eslint-disable-next-line functional/no-let
 let listenerGetFile: null | (() => void) = null

@@ -54,7 +54,7 @@ export function loginWithGoogle() {
   // Parameters to pass to OAuth 2.0 endpoint.
   const params = {
     client_id: process.env.OAUTH2_GOOGLE_CLIENT_ID,
-    redirect_uri: `${APP_URL}login?oauth2=true&type=google`,
+    redirect_uri: `${location.origin}/login?oauth2=true&type=google`,
     response_type: "id_token",
     scope: "email profile openid",
     nonce: "1",
@@ -72,7 +72,7 @@ export function loginWithGithub() {
   // Parameters to pass to OAuth 2.0 endpoint.
   const params = {
     client_id: process.env.OAUTH2_GITHUB_CLIENT_ID,
-    redirect_uri: `${APP_URL}login?oauth2=true&type=github`,
+    redirect_uri: `${location.origin}login?oauth2=true&type=github`,
     scope: "read:user user:email",
   }
 
