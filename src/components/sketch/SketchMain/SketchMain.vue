@@ -1,9 +1,13 @@
 <template>
   <div
     class="container overflow-hidden max-w-full"
-    :class="Mode[settingsStore.mode]"
+    :class="[
+      Mode[settingsStore.mode],
+      `active-${settingsStore.countAreaActive}`,
+    ]"
   >
     <Resizable
+      v-if="settingsStore.countAreaActive > 1"
       class="area_1"
       :enable="{
         top: mode === Mode.bottom,
@@ -30,6 +34,7 @@
     </Resizable>
     <div class="group min-w-0">
       <Resizable
+        v-if="settingsStore.countAreaActive > 2"
         class="area_2"
         :enable="{
           top: false,

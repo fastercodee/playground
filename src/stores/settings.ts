@@ -7,6 +7,18 @@ import { defineStore } from "pinia"
 
 export const useSettingsStore = defineStore("settings", () => {
   const mode = ref<Mode>(Mode.top)
+
+  const areaActive = reactive<Record<AreaComponent, boolean>>({
+    [AreaComponent.Console]: true,
+    [AreaComponent.Editor]: true,
+    [AreaComponent.Preview]: true,
+  })
+  const countAreaActive = computed(() => {
+    // eslint-disable-next-line functional/no-let
+    let count = 0
+    for (const val of Object.values(areaActive)) if (val) count++
+    return count
+  })
   // bottom reverse
   // right reverse
 
@@ -38,5 +50,24 @@ export const useSettingsStore = defineStore("settings", () => {
     }
   }
 
-  return { mode, mapTargetTo, getMapTargetDefault }
+  function isModeDisabled(mode: Mode, count = countAreaActive.value): boolean {
+    // if (mode === Mode.left)
+    switch (count) {
+      case 3:
+        return false
+      case 2:
+        return mode !== Mode.columns && mode !== Mode.rows
+      default:
+        return true
+    }
+  }
+
+  return {
+    mode,
+    countAreaActive,
+    mapTargetTo,
+    getMapTargetDefault,
+    areaActive,
+    isModeDisabled,
+  }
 })

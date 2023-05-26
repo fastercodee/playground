@@ -26,6 +26,16 @@
         border-bottom-width: 1px;
       }
     }
+
+    &.active-2 {
+      .area_1 {
+        @apply h-1/2 flex-none;
+        border-bottom-width: 1px;
+      }
+      .group .area_3 {
+        @apply h-full flex-1;
+      }
+    }
   }
   &.rows {
     &,
@@ -45,6 +55,16 @@
       .area_2 {
         border-left-width: 1px;
         border-right-width: 1px;
+      }
+    }
+
+    &.active-2 {
+      .area_1 {
+        @apply w-1/2 flex-none;
+        border-right-width: 1px;
+      }
+      .group .area_3 {
+        @apply w-full flex-1;
       }
     }
   }
@@ -139,6 +159,12 @@
         flex: 1;
         border-top-width: 1px;
       }
+    }
+  }
+
+  &.active-1 {
+    .area_1 {
+      @apply fit;
     }
   }
 }
