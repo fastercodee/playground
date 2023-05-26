@@ -43,7 +43,7 @@ jobs:
           run_install: false
 
       - name: Install depends
-        run: pnpm run setup
+        run: pnpm run setup && pnpm test
 
       - name: Run ESLint
         run: pnpm lint #--fix
