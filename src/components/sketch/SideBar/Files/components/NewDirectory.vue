@@ -8,7 +8,7 @@
       />
       <IconAssets
         :src="
-          getIcon({
+          settingsStore.getIcon?.({
             light: false,
             isFolder: type === 'directory',
             isOpen: false,
@@ -32,7 +32,6 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import type { Entry } from "src/types/Entry"
 
 defineProps<{
@@ -41,6 +40,7 @@ defineProps<{
   sibDirectories: Record<string, Entry<"directory">>
   sibFiles: Record<string, Entry<"file">>
 }>()
+const settingsStore = useSettingsStore()
 const emit = defineEmits<{
   (name: "save", val: string): void
   (name: "cancel"): void

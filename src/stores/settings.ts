@@ -1,10 +1,19 @@
+import { basename } from "path"
+
 import type { Area } from "components/sketch/SketchMain/SketchMain.types"
 import {
   AreaComponent,
   Mode,
 } from "components/sketch/SketchMain/SketchMain.types"
 import { defineStore } from "pinia"
+import type TypeGetIcon from "src/assets/material-icon-theme/dist/getIcon"
 
+const themers = Object.fromEntries(
+  Object.entries(import.meta.glob("src/assets/*/dist/getIcon.ts")).map(
+    ([path, module]) => [basename(path.replace("dist/getIcon.ts", "")), module]
+  )
+)
+console.log({ themer: themers })
 export const useSettingsStore = defineStore("settings", () => {
   const mode = ref<Mode>(Mode.top)
 
@@ -64,10 +73,9 @@ export const useSettingsStore = defineStore("settings", () => {
 
   const fileIconTheme = ref(FILE_ICON_THEMES[1])
 
-  const getIcon = computedAsync(() => {
-    return import(`src/assets/${fileIconTheme}/dist/getIcon.ts`).then(
-      (res) => res.default
-    )
+  const getIcon = computedAsync<typeof TypeGetIcon>(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return themers[fileIconTheme.value]?.().then((res) => (res as any).default)
   })
 
   return {

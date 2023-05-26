@@ -12,7 +12,7 @@
     />
     <IconAssets
       :src="
-        getIcon({
+        settingsStore.getIcon?.({
           light: false,
           isFolder: entry.type === 'directory',
           isOpen: opening,
@@ -71,7 +71,6 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import { useClipboardFS } from "src/stores/clipboard-fs"
 import type { Entry } from "src/types/Entry"
 
@@ -95,6 +94,7 @@ const emit = defineEmits<{
     }
   ): void
 }>()
+const settingsStore = useSettingsStore()
 const { isEntryCuting } = useClipboardFS()
 
 const renaming = ref(false)

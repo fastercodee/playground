@@ -106,6 +106,5 @@ function vitePluginServiceWorker(): PluginOption {
 
 export default defineConfig({
   plugins: [vitePluginServiceWorker(), viteSingleFile()],
-  build: {
-  }
+  build: {},
 })

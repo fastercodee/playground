@@ -10,7 +10,7 @@
       />
       <IconAssets
         :src="
-          getIcon({
+          settingsStore.getIcon?.({
             light: false,
             isFolder: type === 'directory',
             isOpen: opening,
@@ -73,7 +73,6 @@
 import { basename, dirname, relative } from "path"
 
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import type { Entry } from "src/logic/read-details"
 import { StatusChange } from "src/stores/sketch"
 
@@ -92,6 +91,7 @@ const emit = defineEmits<{
 }>()
 
 const sketchStore = useSketchStore()
+const settingsStore = useSettingsStore()
 
 const pathdir = computed(
   () =>

@@ -43,7 +43,7 @@
             <q-item-section avatar class="min-w-0 pr-1">
               <IconAssets
                 :src="
-                  getIcon({
+                  settingsStore.getIcon?.({
                     light: false,
                     isFolder: true,
                     isOpen: false,
@@ -140,7 +140,6 @@
 
 <script lang="ts" setup>
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import { Entry } from "src/logic/read-details"
 import { getListTemplates, loadFiles } from "src/starters"
 import { Sketch } from "src/types/api/Models/Sketch"
@@ -148,6 +147,7 @@ import { validateRequired } from "src/validators/required"
 import { validateSketchName } from "src/validators/validate-sketch-name"
 
 const router = useRouter()
+const settingsStore = useSettingsStore()
 const templates = computedAsync(() => getListTemplates())
 
 const searchSketch = ref("")

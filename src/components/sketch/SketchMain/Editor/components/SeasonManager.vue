@@ -24,7 +24,7 @@
       >
         <IconAssets
           :src="
-            getIcon({
+            settingsStore.getIcon?.({
               light: false,
               isFolder: false,
               isOpen: false,
@@ -56,11 +56,11 @@
 import { basename, dirname } from "path"
 
 import { Icon } from "@iconify/vue"
-import getIcon from "src/assets/material-theme-icon/dist/getIcon"
 import { useSeasonEdit } from "src/stores/season-edit"
 import type { Entry } from "src/types/Entry"
 
 const seasonEditStore = useSeasonEdit()
+const settingsStore = useSettingsStore()
 
 const containerRef = ref<HTMLDivElement>()
 

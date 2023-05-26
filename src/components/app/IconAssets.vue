@@ -1,5 +1,6 @@
 <template>
-  <img :src="source" />
+  <img v-if="source" :src="source" />
+  <span v-else class="inline-block" />
 </template>
 
 <script lang="ts" setup>
@@ -8,6 +9,4 @@ const props = defineProps<{
 }>()
 
 const source = computedAsync(() => props.src)
-
-console.log(props)
 </script>
