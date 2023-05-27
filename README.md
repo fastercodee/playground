@@ -8,6 +8,9 @@ Online playground for write and play JavaScript, TypeScript, Vue, React, Lit, So
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f7aa98fed72047759afb7621e3f4f520)](https://app.codacy.com/gh/fastercodee/playground/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Hits-of-Code](https://hitsofcode.com/github/fastercodee/playground?branch=main)](https://hitsofcode.com/github/fastercodee/playground/view?branch=main)
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/473482f1-aa29-42c1-a672-f2418b98f499/deploy-status)](https://app.netlify.com/sites/fastercode/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/8810f8b1-ac17-4df5-84d2-f6dccde7fa9a/deploy-status)](https://app.netlify.com/sites/preview-fastercode/deploys)
+
 [![Test](https://github.com/fastercodee/playground/actions/workflows/test.yml/badge.svg)](https://github.com/fastercodee/playground/actions/workflows/test.yml)
 [![CodeQL](https://github.com/fastercodee/playground/actions/workflows/codeql.yml/badge.svg)](https://github.com/fastercodee/playground/actions/workflows/codeql.yml)
 [![ESLint](https://github.com/fastercodee/playground/actions/workflows/eslint.yml/badge.svg)](https://github.com/fastercodee/playground/actions/workflows/eslint.yml)
