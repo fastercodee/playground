@@ -12,7 +12,9 @@
     "eamodio.gitlens",
     "unthrottled.doki-theme",
     "pkief.material-product-icons",
-    "equinusocio.vsc-material-theme-icons"
+    "equinusocio.vsc-material-theme-icons",
+    "yoavbls.pretty-ts-errors",
+    "zixuanchen.vitest-explorer"
   ],
   "unwantedRecommendations": [
     "octref.vetur",
