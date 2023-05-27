@@ -36,7 +36,7 @@ Online playground for write and play JavaScript, TypeScript, Vue, React, Lit, So
 - [ ] add comment sketch
 - [x] tab package manager
 - [ ] add like sketch
-- [ ] share sketch offline
+- [ ] share code without hosting on the server
 - [ ] add a compiler/interpreter to run C/C++, Python or Ruby
 - [ ] cache all files?
 
