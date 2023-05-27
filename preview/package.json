@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 9999",
-    "build": "rm -f public/src_sw.ts.js && vite build --sourcemap false && vite build -c vite-com.config.ts --emptyOutDir false && vite build -c vite-inject.config.ts --emptyOutDir false",
+    "build": "rm -f public/src_sw.ts.js && vite build && vite build -c vite-com.config.ts --emptyOutDir false && vite build -c vite-inject.config.ts --emptyOutDir false",
     "preview": "vite preview"
   },
   "devDependencies": {
