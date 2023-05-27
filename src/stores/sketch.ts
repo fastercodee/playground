@@ -524,12 +524,13 @@ export const useSketchStore = defineStore("sketch", () => {
 
     return cur
   }
-  const packageのFile = useFile<Readonly<PackageJSON>, false>(
+  const packageのFile = useFile<PackageJSON, true>(
     () => `${rootのsketch.value}/package.json`,
     JSON.stringify(null),
-    false,
+    true,
     {
       get: parseJSON,
+      set: (e) => JSON.stringify(e, null, 2),
     }
   )
 

@@ -31,10 +31,6 @@
 
       <q-separator class="!w-[calc(100%-12px)] h-1px" />
 
-      <button class="w-48px h-48px hover:text-gray-400 relative">
-        <Icon icon="fluent:window-console-20-filled" class="w-24px h-24px" />
-      </button>
-
       <button
         class="w-48px h-48px hover:text-gray-400 relative"
         @click="settingsLayout = true"
@@ -138,6 +134,9 @@
       <KeepAlive>
         <Changes v-if="!sketchStore.fetching && tabSelection === 'change'" />
       </KeepAlive>
+      <KeepAlive>
+        <PackageManager v-if="!sketchStore.fetching && tabSelection === 'package'" />
+      </KeepAlive>
     </div>
   </Resizable>
 
@@ -155,8 +154,8 @@ const user = useUser<User>()
 const sketchStore = useSketchStore()
 
 const tabSelection = ref<
-  null | "info" | "file" | "search" | "change" | "setting"
->("file")
+  null | "info" | "file" | "search" | "change" | "setting" | "package"
+>("package")
 const tabs: {
   icon: string
   value: Exclude<typeof tabSelection.value, null>
@@ -178,6 +177,10 @@ const tabs: {
     icon: "material-symbols:cloud-sync-outline",
     value: "change",
     badge: computed(() => Object.keys(sketchStore.変化).length),
+  },
+  {
+    icon: "codicon:package",
+    value: "package",
   },
 ]
 

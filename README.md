@@ -34,6 +34,7 @@ Online playground for write and play JavaScript, TypeScript, Vue, React, Lit, So
 - [ ] add settings
 - [ ] add check sketches
 - [ ] add comment sketch
+- [x] tab package manager
 - [ ] add like sketch
 - [ ] share sketch offline
 - [ ] add a compiler/interpreter to run C/C++, Python or Ruby

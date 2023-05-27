@@ -68,10 +68,10 @@ module.exports = configure(function (/* ctx */) {
         PREVIEW_URL: process.env.GITPOD_WORKSPACE_URL
           ? process.env.GITPOD_WORKSPACE_URL.replace(
               "https://",
-              "https://9999-"
+              "https://9889-"
             )
           : process.env.CODESPACE_NAME
-          ? `https://${process.env.CODESPACE_NAME}-9999.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`
+          ? `https://${process.env.CODESPACE_NAME}-9889.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`
           : undefined,
         ...process.env,
         ...require("dotenv").config().parsed,
