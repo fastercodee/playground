@@ -29,6 +29,14 @@ export async function respondWith(
     }
   }
 
+  if (pathname.startsWith("/npm/")) {
+    const content = await fetch(
+      `https://cdn.jsdelivr.net/npm/${pathname.slice("/npm/".length)}`
+    ).then((res) => res.arrayBuffer())
+
+    return { content, ext: ".js", path: pathname.slice("/npm/".length) }
+  }
+
   const requireImport = searchParams.has("import")
 
   if (pathname === "/")

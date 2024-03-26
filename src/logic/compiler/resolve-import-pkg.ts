@@ -19,7 +19,7 @@ export function resolveImportPkg(name: string, pkgs: PackageJSON) {
       .map((item) => `${item[0]}@${item[1]}`)
       .join(",")
 
-  return `https://esm.sh/${`${pkgName}@${
+  return `https://esm.run/${`${pkgName}@${
     pkgs.dependencies?.[pkgName] ?? "latest"
   }${
     indexSlashPath === -1 || indexSlashPath >= name.length
